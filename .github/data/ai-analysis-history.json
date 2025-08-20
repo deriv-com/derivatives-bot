@@ -1,7 +1,39 @@
 {
-  "lastUpdated": "2025-08-20T08:57:51.213Z",
-  "totalMergedPRs": 9,
+  "lastUpdated": "2025-08-20T12:58:14.090Z",
+  "totalMergedPRs": 10,
   "analyses": [
+    {
+      "percentage": 78,
+      "totalCharacters": 1916,
+      "aiCharacters": 1501,
+      "files": [
+        {
+          "name": "src/app/app-content.jsx",
+          "totalCharacters": 109,
+          "aiCharacters": 55,
+          "percentage": 50,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import useDevMode from '@/hooks/useDevMode';\n    // Initialize dev mode keyboard shortcuts\n    useDevMode();\n"
+        },
+        {
+          "name": "src/hooks/useDevMode.ts",
+          "totalCharacters": 1807,
+          "aiCharacters": 1446,
+          "percentage": 80,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { useEffect } from 'react';\nimport { botNotification } from '@/components/bot-notification/bot-notification';\nimport { APP_IDS } from '@/components/shared/utils/config/config';\nimport { LocalStorageConstants } from '@deriv-com/utils';\n\nconst DEV_SERVER_URL = 'qa197.deriv.dev';\nconst DEV_APP_ID = APP_IDS.LOCALHOST; // 36300\n\nconst useDevMode = () => {\n    const switchToDevServer = () => {\n        // Show connecting notification first\n        botNotification(`Connecting to dev server: ${DEV..."
+        }
+      ],
+      "timestamp": "2025-08-20T12:58:14.037Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "11",
+      "branch": "test-production-connector",
+      "author": "prince-deriv",
+      "prTitle": "chore: added quick dev mode toggle",
+      "hasAnalysis": true
+    },
     {
       "timestamp": "2025-08-20T08:57:51.165Z",
       "repository": "deriv-com/derivatives-bot",
