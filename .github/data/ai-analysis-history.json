@@ -1,7 +1,20 @@
 {
-  "lastUpdated": "2025-08-20T06:44:20.120Z",
-  "totalMergedPRs": 8,
+  "lastUpdated": "2025-08-20T08:57:51.213Z",
+  "totalMergedPRs": 9,
   "analyses": [
+    {
+      "timestamp": "2025-08-20T08:57:51.165Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "9",
+      "branch": "matin/disable_translation",
+      "author": "matin-deriv",
+      "prTitle": "chore: Disable Translation Workflow",
+      "hasAnalysis": false,
+      "percentage": 0,
+      "totalCharacters": 0,
+      "aiCharacters": 0,
+      "files": []
+    },
     {
       "timestamp": "2025-08-20T06:44:20.066Z",
       "repository": "deriv-com/derivatives-bot",

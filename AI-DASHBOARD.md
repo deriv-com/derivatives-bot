@@ -3,7 +3,7 @@
 <div align="center">
 
 **deriv-com/derivatives-bot**
-📅 Last updated: 2025-08-20 06:44:20 UTC • 🔄 Tracking merged PRs to main/master
+📅 Last updated: 2025-08-20 08:57:51 UTC • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -13,7 +13,7 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 8 | **📈 Average AI Code** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 9% |
+| **📁 Total Merged PRs** | 9 | **📈 Average AI Code** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 9% |
 | **🤖 PRs with AI Analysis** | 5 | **🎯 Overall AI Percentage** | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 3% |
 | **📄 Files Analyzed** | 22 | **⚡ Total AI Characters** | 992 |
 
@@ -21,10 +21,11 @@
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 8 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 9 PRs)
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
+| [#9](#) **chore: Disable Translation Workflow** | [@matin-deriv](https://github.com/matin-deriv) | 8/20/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#6](#) **Claude Code** | [@ashkan-deriv](https://github.com/ashkan-deriv) | 8/20/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#1](#) **Prince/ MVP Cleanup ** | [@prince-deriv](https://github.com/prince-deriv) | 8/20/2025 | 9 | 992 / 2,161 chars | 🟧🟧🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜  46% |
 | [#2](#) **Matin/Update CODEOWNERS file and GH Workflows** | [@matin-deriv](https://github.com/matin-deriv) | 8/19/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
