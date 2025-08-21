@@ -1,7 +1,120 @@
 {
-  "lastUpdated": "2025-08-20T12:58:14.090Z",
-  "totalMergedPRs": 10,
+  "lastUpdated": "2025-08-21T02:42:18.477Z",
+  "totalMergedPRs": 11,
   "analyses": [
+    {
+      "percentage": 31,
+      "totalCharacters": 8622,
+      "aiCharacters": 2649,
+      "files": [
+        {
+          "name": "src/app/CoreStoreProvider.tsx",
+          "totalCharacters": 313,
+          "aiCharacters": 160,
+          "percentage": 51,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { toMoment } from '@/components/shared';\n                if (balance && typeof balance.balance === 'number') {\n                    client.setBalance(balance.balance.toString());\n\n                    if (balance.currency) {\n                        client.setCurrency(balance.currency);\n                    }"
+        },
+        {
+          "name": "src/components/layout/header/AccountSwitcherWallet/account-switcher-wallet-item.tsx",
+          "totalCharacters": 57,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "            localStorage.setItem('session_token', token);"
+        },
+        {
+          "name": "src/components/layout/header/AccountSwitcherWallet/account-switcher-wallet-mobile.tsx",
+          "totalCharacters": 146,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { handleTraderHubRedirect } from '@/utils/traders-hub-redirect';\n    ({ is_visible, toggle, residence }: TAccountSwitcherWalletMobile) => {"
+        },
+        {
+          "name": "src/components/layout/header/account-switcher.tsx",
+          "totalCharacters": 299,
+          "aiCharacters": 176,
+          "percentage": 59,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                    account?.loginid === client.loginid\n                        ? parseFloat(client.balance || '0').toFixed(getDecimalPlaces(account.currency))\n                        : parseFloat('0').toFixed(getDecimalPlaces(account.currency))\n        localStorage.setItem('session_token', token);"
+        },
+        {
+          "name": "src/components/layout/header/header.tsx",
+          "totalCharacters": 603,
+          "aiCharacters": 127,
+          "percentage": 21,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    const { data: activeAccount } = useActiveAccount({\n        allBalanceData: client?.all_accounts_balance,\n        directBalance: client?.balance,\n    });\n                    {isDesktop && (\n                        <Button\n                            className='header__logout-button'\n                            onClick={() => {\n                                client?.logout?.();\n                            }}\n                            tertiary\n                        >\n                      ..."
+        },
+        {
+          "name": "src/components/layout/header/mobile-menu/use-mobile-menu-config.tsx",
+          "totalCharacters": 632,
+          "aiCharacters": 145,
+          "percentage": 23,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    LegacyLogout1pxIcon,\n\n                    label: localize('Hub'),\n                ...(is_logged_in\n                    ? [\n                          {\n                              as: 'button' as const,\n                              label: localize('Log out'),\n                              LeftComponent: LegacyLogout1pxIcon,\n                              onClick: () => {\n                                  client?.logout?.();\n                              },\n                          },\n     ..."
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/api-base.ts",
+          "totalCharacters": 3843,
+          "aiCharacters": 730,
+          "percentage": 19,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "\n        this.handleTokenExchangeIfNeeded();\n    }\n\n    private async handleTokenExchangeIfNeeded() {\n        // Check URL directly for one-time token (no localStorage needed)\n        const urlParams = new URLSearchParams(window.location.search);\n        const oneTimeToken = urlParams.get('token');\n\n        if (oneTimeToken) {\n            // Remove token from URL immediately for security\n            const url = new URL(window.location.href);\n            url.searchParams.delete('token');\n        ..."
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/appId.js",
+          "totalCharacters": 56,
+          "aiCharacters": 52,
+          "percentage": 93,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    const token = localStorage.getItem('session_token');"
+        },
+        {
+          "name": "src/hooks/api/account/useActiveAccount.tsx",
+          "totalCharacters": 679,
+          "aiCharacters": 536,
+          "percentage": 79,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "const useActiveAccount = ({\n    allBalanceData,\n    directBalance,\n}: {\n    allBalanceData: Balance | null;\n    directBalance?: string;\n}) => {\n                  balance: currentBalanceData?.balance\n                      ? addComma(currentBalanceData.balance.toFixed(getDecimalPlaces(currentBalanceData.currency)))\n                      : directBalance\n                        ? addComma(parseFloat(directBalance).toFixed(getDecimalPlaces(activeAccount.currency)))\n                        : addComma(..."
+        },
+        {
+          "name": "src/stores/client-store.ts",
+          "totalCharacters": 1903,
+          "aiCharacters": 723,
+          "percentage": 38,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { api_base, observer } from '@/external/bot-skeleton';\nimport type RootStore from './root-store';\n    private authDataSubscription: { unsubscribe: () => void } | null = null;\n    private root_store: RootStore;\n\n    removeTokenFromUrl() {\n        const url = new URL(window.location.href);\n        if (url.searchParams.has('token')) {\n            url.searchParams.delete('token');\n            window.history.replaceState({}, document.title, url.toString());\n        }\n    }\n\n    storeSessionTok..."
+        },
+        {
+          "name": "src/utils/auth-utils.ts",
+          "totalCharacters": 91,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    localStorage.removeItem('session_token');\n    localStorage.removeItem('session_token');"
+        }
+      ],
+      "timestamp": "2025-08-21T02:42:18.427Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "4",
+      "branch": "core-auth-flow",
+      "author": "prince-deriv",
+      "prTitle": "Prince/ Authentication Flow",
+      "hasAnalysis": true
+    },
     {
       "percentage": 78,
       "totalCharacters": 1916,

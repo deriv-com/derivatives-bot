@@ -3,7 +3,7 @@
 <div align="center">
 
 **deriv-com/derivatives-bot**
-📅 Last updated: 2025-08-20 12:58:14 UTC • 🔄 Tracking merged PRs to main/master
+📅 Last updated: 2025-08-21 02:42:18 UTC • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -13,18 +13,19 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 10 | **📈 Average AI Code** | 🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜ 21% |
-| **🤖 PRs with AI Analysis** | 6 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 7% |
-| **📄 Files Analyzed** | 24 | **⚡ Total AI Characters** | 2,493 |
+| **📁 Total Merged PRs** | 11 | **📈 Average AI Code** | 🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜ 22% |
+| **🤖 PRs with AI Analysis** | 7 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 12% |
+| **📄 Files Analyzed** | 35 | **⚡ Total AI Characters** | 5,142 |
 
 ---
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 10 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 11 PRs)
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
+| [#4](#) **Prince/ Authentication Flow** | [@prince-deriv](https://github.com/prince-deriv) | 8/21/2025 | 11 | 2,649 / 8,622 chars | 🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜  31% |
 | [#11](#) **chore: added quick dev mode toggle** | [@prince-deriv](https://github.com/prince-deriv) | 8/20/2025 | 2 | 1,501 / 1,916 chars | 🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨⬜⬜⬜  78% |
 | [#9](#) **chore: Disable Translation Workflow** | [@matin-deriv](https://github.com/matin-deriv) | 8/20/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#6](#) **Claude Code** | [@ashkan-deriv](https://github.com/ashkan-deriv) | 8/20/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
@@ -34,7 +35,6 @@
 | [#545](#) **chore: update shiftai-cli version** | [@prince-deriv](https://github.com/prince-deriv) | 8/18/2025 | 2 | 0 / 413 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#543](#) **Prince/ added githooks shiftai** | [@prince-deriv](https://github.com/prince-deriv) | 8/18/2025 | 5 | 0 / 27,276 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#536](#) **Rupato/fix  self exclusion** | [@rupato-deriv](https://github.com/rupato-deriv) | 8/14/2025 | 2 | 0 / 850 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#533](#) **Prince/ added ai analysis workflows** | [@prince-deriv](https://github.com/prince-deriv) | 8/6/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 
 ---
 
