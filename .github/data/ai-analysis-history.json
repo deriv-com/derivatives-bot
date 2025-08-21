@@ -1,7 +1,39 @@
 {
-  "lastUpdated": "2025-08-21T05:27:09.094Z",
-  "totalMergedPRs": 12,
+  "lastUpdated": "2025-08-21T07:51:26.046Z",
+  "totalMergedPRs": 13,
   "analyses": [
+    {
+      "percentage": 84,
+      "totalCharacters": 425,
+      "aiCharacters": 357,
+      "files": [
+        {
+          "name": "jest.setup.ts",
+          "totalCharacters": 180,
+          "aiCharacters": 149,
+          "percentage": 83,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "\n// Mock fetch for tests\nglobal.fetch = jest.fn(() =>\n    Promise.resolve({\n        ok: true,\n        json: () => Promise.resolve({ is_tmb_enabled: false }),\n    })\n) as jest.Mock;"
+        },
+        {
+          "name": "src/components/layout/header/mobile-menu/__tests__/menu-content.spec.tsx",
+          "totalCharacters": 245,
+          "aiCharacters": 208,
+          "percentage": 85,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    // Mock client as logged in to show Hub link\n    mock_store.client.is_logged_in = true;\n\n        expect(screen.getByText(/Hub/)).toBeInTheDocument();\n        const text = screen.getByText(/Hub/);\n        const text = screen.getByText(/Hub/);"
+        }
+      ],
+      "timestamp": "2025-08-21T07:51:25.997Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "17",
+      "branch": "fix-test-issues",
+      "author": "prince-deriv",
+      "prTitle": "Prince/ Fix test issues",
+      "hasAnalysis": true
+    },
     {
       "timestamp": "2025-08-21T05:27:09.045Z",
       "repository": "deriv-com/derivatives-bot",
