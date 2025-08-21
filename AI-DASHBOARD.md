@@ -3,7 +3,7 @@
 <div align="center">
 
 **deriv-com/derivatives-bot**
-📅 Last updated: 2025-08-21 07:51:26 UTC • 🔄 Tracking merged PRs to main/master
+📅 Last updated: 2025-08-21 09:11:49 UTC • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -13,18 +13,19 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 13 | **📈 Average AI Code** | 🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜ 30% |
-| **🤖 PRs with AI Analysis** | 8 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 13% |
-| **📄 Files Analyzed** | 37 | **⚡ Total AI Characters** | 5,499 |
+| **📁 Total Merged PRs** | 14 | **📈 Average AI Code** | 🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜ 27% |
+| **🤖 PRs with AI Analysis** | 9 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 13% |
+| **📄 Files Analyzed** | 39 | **⚡ Total AI Characters** | 5,499 |
 
 ---
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 13 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 14 PRs)
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
+| [#19](#) **Prince/update shai version** | [@prince-deriv](https://github.com/prince-deriv) | 8/21/2025 | 2 | 0 / 351 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#17](#) **Prince/ Fix test issues** | [@prince-deriv](https://github.com/prince-deriv) | 8/21/2025 | 2 | 357 / 425 chars | 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜  84% |
 | [#14](#) **chore: Clean-up GH Workflows for Staging & Production Deployments** | [@matin-deriv](https://github.com/matin-deriv) | 8/21/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#4](#) **Prince/ Authentication Flow** | [@prince-deriv](https://github.com/prince-deriv) | 8/21/2025 | 11 | 2,649 / 8,622 chars | 🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜  31% |
@@ -34,7 +35,6 @@
 | [#1](#) **Prince/ MVP Cleanup ** | [@prince-deriv](https://github.com/prince-deriv) | 8/20/2025 | 9 | 992 / 2,161 chars | 🟧🟧🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜  46% |
 | [#2](#) **Matin/Update CODEOWNERS file and GH Workflows** | [@matin-deriv](https://github.com/matin-deriv) | 8/19/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#551](#) **chore: update shiftai-cli version** | [@prince-deriv](https://github.com/prince-deriv) | 8/18/2025 | 4 | 0 / 689 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#545](#) **chore: update shiftai-cli version** | [@prince-deriv](https://github.com/prince-deriv) | 8/18/2025 | 2 | 0 / 413 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 
 ---
 

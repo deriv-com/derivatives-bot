@@ -1,7 +1,39 @@
 {
-  "lastUpdated": "2025-08-21T07:51:26.046Z",
-  "totalMergedPRs": 13,
+  "lastUpdated": "2025-08-21T09:11:49.719Z",
+  "totalMergedPRs": 14,
   "analyses": [
+    {
+      "percentage": 0,
+      "totalCharacters": 351,
+      "aiCharacters": 0,
+      "files": [
+        {
+          "name": "package-lock.json",
+          "totalCharacters": 308,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                \"@deriv-com/shiftai-cli\": \"^0.0.6\",\n            \"version\": \"0.0.6\",\n            \"resolved\": \"https://registry.npmjs.org/@deriv-com/shiftai-cli/-/shiftai-cli-0.0.6.tgz\",\n            \"integrity\": \"sha512-T5J4fNn3hM/nNAQyzL4yN2jWr0+xRlb7dsecPzX1lmPL/8vG4RfxPPSq7Ye+TMhi8W64NGalWZdlVx/bTJdiEg==\","
+        },
+        {
+          "name": "package.json",
+          "totalCharacters": 43,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "        \"@deriv-com/shiftai-cli\": \"^0.0.6\","
+        }
+      ],
+      "timestamp": "2025-08-21T09:11:49.671Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "19",
+      "branch": "update-shiftai-cli-version",
+      "author": "prince-deriv",
+      "prTitle": "Prince/update shai version",
+      "hasAnalysis": true
+    },
     {
       "percentage": 84,
       "totalCharacters": 425,
