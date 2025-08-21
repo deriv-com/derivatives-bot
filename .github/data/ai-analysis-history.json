@@ -1,7 +1,75 @@
 {
-  "lastUpdated": "2025-08-21T09:11:49.719Z",
-  "totalMergedPRs": 14,
+  "lastUpdated": "2025-08-21T10:53:03.927Z",
+  "totalMergedPRs": 15,
   "analyses": [
+    {
+      "percentage": 61,
+      "totalCharacters": 818,
+      "aiCharacters": 503,
+      "files": [
+        {
+          "name": "src/components/layout/header/account-switcher.scss",
+          "totalCharacters": 58,
+          "aiCharacters": 54,
+          "percentage": 93,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    border-inline-end: 1px solid var(--general-section-1);"
+        },
+        {
+          "name": "src/components/layout/header/account-switcher.tsx",
+          "totalCharacters": 409,
+          "aiCharacters": 311,
+          "percentage": 76,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import React from 'react';\nimport { AccountSwitcher as UIAccountSwitcher } from '@deriv-com/ui';\nimport { TAccountSwitcher } from './common/types';\n        activeAccount && (\n            <UIAccountSwitcher\n                buttonClassName='account-switcher-fixed'\n                activeAccount={activeAccount}\n                isDisabled={true} // Force disabled to prevent interactions\n            />\n        )"
+        },
+        {
+          "name": "src/components/layout/header/header.tsx",
+          "totalCharacters": 137,
+          "aiCharacters": 67,
+          "percentage": 49,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    const { getCurrency, is_virtual } = client ?? {};\n                {isDesktop && client?.is_logged_in && <MenuItems.TradershubLink />}"
+        },
+        {
+          "name": "src/components/layout/header/mobile-menu/use-mobile-menu-config.tsx",
+          "totalCharacters": 95,
+          "aiCharacters": 17,
+          "percentage": 18,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { BrandDerivLogoCoralIcon } from '@deriv/quill-icons';\n                is_logged_in && {"
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/api-base.ts",
+          "totalCharacters": 99,
+          "aiCharacters": 54,
+          "percentage": 55,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                      balance: authorize.balance,\n                      loginid: authorize.loginid,"
+        },
+        {
+          "name": "src/types/api-types.ts",
+          "totalCharacters": 20,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    balance: number;"
+        }
+      ],
+      "timestamp": "2025-08-21T10:53:03.878Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "16",
+      "branch": "core-authflow-improvements",
+      "author": "prince-deriv",
+      "prTitle": "Prince/ Authentication flow improvements",
+      "hasAnalysis": true
+    },
     {
       "percentage": 0,
       "totalCharacters": 351,
