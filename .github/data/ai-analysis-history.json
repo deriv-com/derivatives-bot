@@ -1,7 +1,20 @@
 {
-  "lastUpdated": "2025-08-21T02:42:18.477Z",
-  "totalMergedPRs": 11,
+  "lastUpdated": "2025-08-21T05:27:09.094Z",
+  "totalMergedPRs": 12,
   "analyses": [
+    {
+      "timestamp": "2025-08-21T05:27:09.045Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "14",
+      "branch": "matin/gh_workflows_cleanup",
+      "author": "matin-deriv",
+      "prTitle": "chore: Clean-up GH Workflows for Staging & Production Deployments",
+      "hasAnalysis": false,
+      "percentage": 0,
+      "totalCharacters": 0,
+      "aiCharacters": 0,
+      "files": []
+    },
     {
       "percentage": 31,
       "totalCharacters": 8622,
