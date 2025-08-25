@@ -1,7 +1,282 @@
 {
-  "lastUpdated": "2025-08-21T10:53:03.927Z",
-  "totalMergedPRs": 15,
+  "lastUpdated": "2025-08-25T08:28:55.278Z",
+  "totalMergedPRs": 16,
   "analyses": [
+    {
+      "percentage": 24,
+      "totalCharacters": 79961,
+      "aiCharacters": 19044,
+      "files": [
+        {
+          "name": ".github/data/ai-analysis-history.json",
+          "totalCharacters": 2963,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "  \"lastUpdated\": \"2025-08-21T10:53:03.927Z\",\n  \"totalMergedPRs\": 15,\n    {\n      \"percentage\": 61,\n      \"totalCharacters\": 818,\n      \"aiCharacters\": 503,\n      \"files\": [\n        {\n          \"name\": \"src/components/layout/header/account-switcher.scss\",\n          \"totalCharacters\": 58,\n          \"aiCharacters\": 54,\n          \"percentage\": 93,\n          \"status\": \"modified\",\n          \"hasAddedContent\": true,\n          \"addedContent\": \"    border-inline-end: 1px solid var(--general-section-1);\"\n..."
+        },
+        {
+          "name": ".github/workflows/ai-dashboard.yml",
+          "totalCharacters": 0,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "only-deletions",
+          "hasAddedContent": false,
+          "addedContent": ""
+        },
+        {
+          "name": "AI-DASHBOARD.md",
+          "totalCharacters": 562,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "📅 Last updated: 2025-08-21 10:53:03 UTC • 🔄 Tracking merged PRs to main/master\n| **📁 Total Merged PRs** | 15 | **📈 Average AI Code** | 🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜ 30% |\n| **🤖 PRs with AI Analysis** | 10 | **🎯 Overall AI Percentage** | 🟥⬜⬜⬜⬜⬜⬜⬜⬜⬜ 14% |\n| **📄 Files Analyzed** | 45 | **⚡ Total AI Characters** | 6,002 |\n> 📊 Showing the 10 most recent merged PRs (stats above include all 15 PRs)\n| [#16](#) **Prince/ Authentication flow improvements** | [@prince-deriv](https://github.com/prince-deriv) | 8/2..."
+        },
+        {
+          "name": "package-lock.json",
+          "totalCharacters": 11574,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                \"@deriv-com/derivatives-charts\": \"^1.0.5\",\n        \"node_modules/@deriv-com/derivatives-charts\": {\n            \"version\": \"1.0.5\",\n            \"resolved\": \"https://registry.npmjs.org/@deriv-com/derivatives-charts/-/derivatives-charts-1.0.5.tgz\",\n            \"integrity\": \"sha512-oJ2f2g+AdbanfUYkbIo+4PKCFY9sNMMy9fnbs3ZBEd/d8zXB+xnPIlgNBhU4tnyAddCzGItyNhppEmEPmM00rg==\",\n            \"license\": \"ISC\",\n            \"dependencies\": {\n                \"@types/lodash.set\": \"^4.3.7\",\n       ..."
+        },
+        {
+          "name": "package.json",
+          "totalCharacters": 50,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "        \"@deriv-com/derivatives-charts\": \"^1.0.5\","
+        },
+        {
+          "name": "rsbuild.config.ts",
+          "totalCharacters": 534,
+          "aiCharacters": 384,
+          "percentage": 72,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                from: 'node_modules/@deriv-com/derivatives-charts/dist/*',\n            { from: 'node_modules/@deriv-com/derivatives-charts/dist/chart/assets/*', to: 'assets/[name][ext]' },\n            {\n                from: 'node_modules/@deriv-com/derivatives-charts/dist/chart/assets/fonts/*',\n                to: 'assets/fonts/[name][ext]',\n            },\n            {\n                from: 'node_modules/@deriv-com/derivatives-charts/dist/chart/assets/shaders/*',\n                to: 'assets/sh..."
+        },
+        {
+          "name": "src/app/app-content.jsx",
+          "totalCharacters": 73,
+          "aiCharacters": 73,
+          "percentage": 100,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { setSmartChartsPublicPath } from '@deriv-com/derivatives-charts';"
+        },
+        {
+          "name": "src/components/layout/header/account-switcher.scss",
+          "totalCharacters": 58,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    border-inline-end: 1px solid var(--general-section-1);"
+        },
+        {
+          "name": "src/components/layout/header/account-switcher.tsx",
+          "totalCharacters": 409,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import React from 'react';\nimport { AccountSwitcher as UIAccountSwitcher } from '@deriv-com/ui';\nimport { TAccountSwitcher } from './common/types';\n        activeAccount && (\n            <UIAccountSwitcher\n                buttonClassName='account-switcher-fixed'\n                activeAccount={activeAccount}\n                isDisabled={true} // Force disabled to prevent interactions\n            />\n        )"
+        },
+        {
+          "name": "src/components/layout/header/header.tsx",
+          "totalCharacters": 137,
+          "aiCharacters": 116,
+          "percentage": 85,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    const { getCurrency, is_virtual } = client ?? {};\n                {isDesktop && client?.is_logged_in && <MenuItems.TradershubLink />}"
+        },
+        {
+          "name": "src/components/layout/header/mobile-menu/use-mobile-menu-config.tsx",
+          "totalCharacters": 95,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { BrandDerivLogoCoralIcon } from '@deriv/quill-icons';\n                is_logged_in && {"
+        },
+        {
+          "name": "src/components/shared/services/trading-times-service.ts",
+          "totalCharacters": 7932,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "class TradingTimesService {\n    private trading_times_cache: any = null;\n    private cache_expiry: number = 0;\n    private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes\n\n    /**\n     * Get trading times data with caching\n     */\n    async getTradingTimes(): Promise<any> {\n        const now = Date.now();\n\n        // Return cached data if still valid\n        if (this.trading_times_cache && now < this.cache_expiry && this.trading_times_cache.markets) {\n            return this.trading_times_..."
+        },
+        {
+          "name": "src/components/shared/utils/common-data.js",
+          "totalCharacters": 23443,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "/**\n * Common Data Utilities\n *\n * This file contains centralized data constants and utility functions\n * to improve maintainability and provide consistent data across components.\n */\n\n// Trading Times Data\nexport const TRADING_TIMES = {\n    // Trading times for major symbols\n    SYMBOLS: [\n        // Forex - 24/5 markets\n        'frxEURUSD',\n        'frxGBPUSD',\n        'frxUSDJPY',\n        'frxAUDUSD',\n        'frxUSDCAD',\n        'frxUSDCHF',\n        'frxNZDUSD',\n        'frxEURGBP',\n        ..."
+        },
+        {
+          "name": "src/components/shared/utils/contract/trade-url-params-config.ts",
+          "totalCharacters": 150,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "        const isSymbolValid = active_symbols.some(\n            item => (item as any).underlying_symbol === symbol || item.symbol === symbol\n        );"
+        },
+        {
+          "name": "src/components/shared/utils/helpers/active-symbols.ts",
+          "totalCharacters": 2611,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    // Handle both old and new field names for backward compatibility\n    const getSymbolField = (item: any) => item.underlying_symbol || item.symbol;\n    return active_symbols.filter(x => getSymbolField(x) === symbol)[0]\n        ? !active_symbols.filter(symbol_info => getSymbolField(symbol_info) === symbol)[0].exchange_is_open\n            active_symbols.find(\n                symbol_info =>\n                    (symbol_info as any).underlying_symbol === client_fav_symbol ||\n                    sy..."
+        },
+        {
+          "name": "src/external/bot-skeleton/scratch/blocks/Binary/Trade Definition/trade_definition_tradeoptions.js",
+          "totalCharacters": 2324,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { DURATIONS } from '../../../../../../components/shared/utils/common-data';\n            contracts_for\n                .getDurations(this.selected_symbol, this.selected_trade_type)\n                .then(durations => {\n                    // Use fallback if no durations received\n                    if (!durations || durations.length === 0) {\n                        durations = DURATIONS;\n                    }\n                    // Keep duration in memory so we can later reference them for ..."
+        },
+        {
+          "name": "src/external/bot-skeleton/scratch/dbot.js",
+          "totalCharacters": 1905,
+          "aiCharacters": 838,
+          "percentage": 44,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                        contracts_for\n                            ?.getTradeTypeCategories?.(market, submarket, symbol)\n                            .then(categories => {\n                                const category_field = this.getField('TRADETYPECAT_LIST');\n                                if (category_field) {\n                                    category_field.updateOptions(categories, {\n                                        default_value: category,\n                                        s..."
+        },
+        {
+          "name": "src/external/bot-skeleton/scratch/shared.js",
+          "totalCharacters": 876,
+          "aiCharacters": 727,
+          "percentage": 83,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { getContractTypeOptions as getContractTypeOptionsFromCommon } from '../../../components/shared/utils/common-data';\n    // First try to get from config\n    if (trade_type && trade_type !== 'na' && trade_type !== '') {\n        const trade_types = config().opposites[trade_type.toUpperCase()];\n        if (trade_types) {\n            const contract_options = trade_types.map(type => Object.entries(type)[0].reverse());\n            // When user selected a specific contract, only return the contra..."
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/account-limits.js",
+          "totalCharacters": 226,
+          "aiCharacters": 208,
+          "percentage": 92,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { getAccountLimits } from '../../../../components/shared/utils/common-data';\n\n        // Use common data instead of duplicating here\n        return getAccountLimits(currency, landing_company_shortcode, selected_market);"
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/active-symbols.js",
+          "totalCharacters": 2144,
+          "aiCharacters": 1672,
+          "percentage": 78,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { MARKET_OPTIONS, SUBMARKET_OPTIONS, SYMBOL_OPTIONS } from '../../../../components/shared/utils/common-data';\n        if (this.active_symbols.length === 0) {\n            return {};\n        }\n\n            // Handle both old and new field names for backward compatibility\n            const symbol_code = symbol.underlying_symbol || symbol.symbol;\n            const symbol_submarket = symbol.submarket;\n            const symbol_market = symbol.market;\n\n                config().DISABLED_SYMBOLS.i..."
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/api-base.ts",
+          "totalCharacters": 13024,
+          "aiCharacters": 8856,
+          "percentage": 68,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';\nimport { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';\n    active_symbols: any[] = [];\n    active_symbols_promise: Promise<any[] | undefined> | null = null;\n        const hasToken = V2GetActiveToken();\n\n        if (!this.has_active_symbols && !hasToken) {\n            this.active_symbols_promise = this.getActiveSymbols().then(() => un..."
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/contracts-for.js",
+          "totalCharacters": 2284,
+          "aiCharacters": 1576,
+          "percentage": 69,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { DURATIONS, TRADE_TYPE_CATEGORIES, TRADE_TYPES } from '../../../../components/shared/utils/common-data';\n        // Check if API is available\n        if (!api_base.api) {\n            return [];\n        }\n\n            try {\n                const response = await api_base.api.send({ contracts_for: symbol });\n\n                if (response.error) {\n                    this.retrieving_contracts_for[symbol].resolve();\n                    delete this.retrieving_contracts_for[symbol];\n          ..."
+        },
+        {
+          "name": "src/external/bot-skeleton/services/api/trading-times.js",
+          "totalCharacters": 3087,
+          "aiCharacters": 1976,
+          "percentage": 64,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { getTradingTimes, TRADING_TIMES } from '../../../../components/shared/utils/common-data';\nimport { api_base } from './api-base';\n        try {\n            // Check if API is available\n            if (!api_base.api && !this.ws) {\n                this.setTradingTimes();\n                return;\n            }\n            const response = await (api_base.api?.send({ trading_times: last_update_date }) ||\n                this.ws?.send({ trading_times: last_update_date }));\n            if (respo..."
+        },
+        {
+          "name": "src/hooks/api/account/useActiveAccount.tsx",
+          "totalCharacters": 144,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "                        : addComma(parseFloat('0').toFixed(getDecimalPlaces(activeAccount.currency))), //  [AI] Format zero with proper decimals"
+        },
+        {
+          "name": "src/pages/chart/chart.tsx",
+          "totalCharacters": 398,
+          "aiCharacters": 275,
+          "percentage": 69,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { ChartTitle, SmartChart } from '@deriv-com/derivatives-charts';\nimport '@deriv-com/derivatives-charts/dist/smartcharts.css';\n                stateChangeListener={(state: string) => {\n                    // Handle state changes: INITIAL, READY, SCROLL_TO_LEFT\n                    if (state === 'READY') {\n                        setChartStatus(true);\n                    }\n                }}"
+        },
+        {
+          "name": "src/pages/chart/toolbar-widgets.tsx",
+          "totalCharacters": 251,
+          "aiCharacters": 236,
+          "percentage": 94,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "import { ChartMode, DrawTools, Share, StudyLegend, ToolbarWidget, Views } from '@deriv-com/derivatives-charts';\n    const validPosition = position === 'top' || position === 'bottom' ? position : 'top';\n\n        <ToolbarWidget position={validPosition}>"
+        },
+        {
+          "name": "src/stores/chart-store.ts",
+          "totalCharacters": 523,
+          "aiCharacters": 403,
+          "percentage": 77,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "        const symbol =\n            market_block?.getFieldValue('SYMBOL_LIST') ??\n            (api_base?.active_symbols[0]\n                ? (api_base.active_symbols[0] as any).underlying_symbol || (api_base.active_symbols[0] as any).symbol\n                : undefined);\n    getMarketsOrder = (active_symbols: any[]) => {\n        if (!active_symbols || !Array.isArray(active_symbols)) {\n            return [synthetic_index];\n        }\n\n\n            .sort((a, b) => (a.display_name || '').localeCompare..."
+        },
+        {
+          "name": "src/types/api-types.ts",
+          "totalCharacters": 20,
+          "aiCharacters": 16,
+          "percentage": 80,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "    balance: number;"
+        },
+        {
+          "name": "src/types/derivatives-charts.d.ts",
+          "totalCharacters": 2164,
+          "aiCharacters": 1688,
+          "percentage": 78,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "declare module '@deriv-com/derivatives-charts' {\n    import { ComponentType, ReactNode } from 'react';\n\n    export interface SmartChartProps {\n        id?: string;\n        barriers?: any[];\n        showLastDigitStats?: boolean;\n        chartControlsWidgets?: any;\n        enabledChartFooter?: boolean;\n        stateChangeListener?: (state: string, option?: any) => void;\n        chartStatusListener?: (status: boolean) => void;\n        toolbarWidget?: () => ReactNode;\n        chartType?: string;\n   ..."
+        }
+      ],
+      "timestamp": "2025-08-25T08:28:55.230Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "21",
+      "branch": "Rupato/Fix--active-symbols",
+      "author": "rupato-deriv",
+      "prTitle": "fix: active symbols to load blockly and chart",
+      "hasAnalysis": true
+    },
     {
       "percentage": 61,
       "totalCharacters": 818,
