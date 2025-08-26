@@ -61,4 +61,4 @@ jobs:
         uses: anthropics/claude-code-action@ada5bc42ebb031c1b30d9e12ec73cb7f978b4846
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          timeout_minutes: "60" # [AI]
+          timeout_minutes: "60" # [/AI]

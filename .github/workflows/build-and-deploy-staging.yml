@@ -1,4 +1,3 @@
-# [AI]
 name: Build staging and Deploy to Cloudflare Pages
 
 on:
@@ -90,4 +89,3 @@ jobs:
                     echo "Deployment to Cloudflare Pages failed."
                     exit 1
                   fi
-                  # [AI]
