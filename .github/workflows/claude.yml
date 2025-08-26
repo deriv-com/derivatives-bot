@@ -1,3 +1,4 @@
+# [AI]
 name: Claude Code Assistant
 
 on:
@@ -49,7 +50,7 @@ jobs:
           echo "PR is from: $FORK_REPO:$BRANCH_NAME"
 
       - name: Checkout PR branch from fork
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           repository: ${{ steps.pr.outputs.fork_repo }}
           ref: ${{ steps.pr.outputs.branch_name }}
@@ -57,7 +58,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Claude Code Action
-        uses: anthropics/claude-code-action@beta
+        uses: anthropics/claude-code-action@ada5bc42ebb031c1b30d9e12ec73cb7f978b4846
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          timeout_minutes: "60"
+          timeout_minutes: "60" # [AI]
