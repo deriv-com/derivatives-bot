@@ -3,7 +3,7 @@
 <div align="center">
 
 **deriv-com/derivatives-bot**
-📅 Last updated: 2025-08-25 08:28:55 UTC • 🔄 Tracking merged PRs to main/master
+📅 Last updated: 2025-08-26 12:08:43 UTC • 🔄 Tracking merged PRs to main/master
 
 </div>
 
@@ -13,18 +13,19 @@
 
 | Metric | Value | Metric | Value |
 |--------|-------|--------|-------|
-| **📁 Total Merged PRs** | 16 | **📈 Average AI Code** | 🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜ 29% |
-| **🤖 PRs with AI Analysis** | 11 | **🎯 Overall AI Percentage** | 🟥🟥⬜⬜⬜⬜⬜⬜⬜⬜ 20% |
-| **📄 Files Analyzed** | 74 | **⚡ Total AI Characters** | 25,046 |
+| **📁 Total Merged PRs** | 17 | **📈 Average AI Code** | 🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜ 27% |
+| **🤖 PRs with AI Analysis** | 12 | **🎯 Overall AI Percentage** | 🟥🟥⬜⬜⬜⬜⬜⬜⬜⬜ 20% |
+| **📄 Files Analyzed** | 77 | **⚡ Total AI Characters** | 25,046 |
 
 ---
 
 ## 🚀 Recent Merged Pull Requests
 
-> 📊 Showing the 10 most recent merged PRs (stats above include all 16 PRs)
+> 📊 Showing the 10 most recent merged PRs (stats above include all 17 PRs)
 
 | PR | Author | Date | Files | AI Content | Percentage |
 |----|--------|------|-------|------------|------------|
+| [#28](#) **chore: update version hashes** | [@prince-deriv](https://github.com/prince-deriv) | 8/26/2025 | 3 | 0 / 661 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#21](#) **fix: active symbols to load blockly and chart** | [@rupato-deriv](https://github.com/rupato-deriv) | 8/25/2025 | 29 | 19,044 / 79,961 chars | 🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜  24% |
 | [#16](#) **Prince/ Authentication flow improvements** | [@prince-deriv](https://github.com/prince-deriv) | 8/21/2025 | 6 | 503 / 818 chars | 🟨🟨🟨🟨🟨🟨🟨🟨🟨⬜⬜⬜⬜⬜⬜  61% |
 | [#19](#) **Prince/update shai version** | [@prince-deriv](https://github.com/prince-deriv) | 8/21/2025 | 2 | 0 / 351 chars | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
@@ -34,7 +35,6 @@
 | [#11](#) **chore: added quick dev mode toggle** | [@prince-deriv](https://github.com/prince-deriv) | 8/20/2025 | 2 | 1,501 / 1,916 chars | 🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨🟨⬜⬜⬜  78% |
 | [#9](#) **chore: Disable Translation Workflow** | [@matin-deriv](https://github.com/matin-deriv) | 8/20/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
 | [#6](#) **Claude Code** | [@ashkan-deriv](https://github.com/ashkan-deriv) | 8/20/2025 | N/A | No data | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜   0% |
-| [#1](#) **Prince/ MVP Cleanup ** | [@prince-deriv](https://github.com/prince-deriv) | 8/20/2025 | 9 | 992 / 2,161 chars | 🟧🟧🟧🟧🟧🟧🟧⬜⬜⬜⬜⬜⬜⬜⬜  46% |
 
 ---
 

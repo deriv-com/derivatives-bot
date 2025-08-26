@@ -1,7 +1,48 @@
 {
-  "lastUpdated": "2025-08-25T08:28:55.278Z",
-  "totalMergedPRs": 16,
+  "lastUpdated": "2025-08-26T12:08:43.041Z",
+  "totalMergedPRs": 17,
   "analyses": [
+    {
+      "percentage": 0,
+      "totalCharacters": 661,
+      "aiCharacters": 0,
+      "files": [
+        {
+          "name": ".github/workflows/build-and-deploy-production.yml",
+          "totalCharacters": 250,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "              uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4\n              uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3\n              uses: actions/cache/restore@638ed79f9dc94c1de1baef91bcab5edaa19451f4"
+        },
+        {
+          "name": ".github/workflows/build-and-deploy-staging.yml",
+          "totalCharacters": 250,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "              uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4\n              uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3\n              uses: actions/cache/restore@638ed79f9dc94c1de1baef91bcab5edaa19451f4"
+        },
+        {
+          "name": ".github/workflows/claude.yml",
+          "totalCharacters": 161,
+          "aiCharacters": 0,
+          "percentage": 0,
+          "status": "modified",
+          "hasAddedContent": true,
+          "addedContent": "        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4\n        uses: anthropics/claude-code-action@ada5bc42ebb031c1b30d9e12ec73cb7f978b4846"
+        }
+      ],
+      "timestamp": "2025-08-26T12:08:42.992Z",
+      "repository": "deriv-com/derivatives-bot",
+      "pullRequest": "28",
+      "branch": "fix-workflow-version",
+      "author": "prince-deriv",
+      "prTitle": "chore: update version hashes",
+      "hasAnalysis": true
+    },
     {
       "percentage": 24,
       "totalCharacters": 79961,
