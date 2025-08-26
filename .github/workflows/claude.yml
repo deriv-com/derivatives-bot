@@ -61,3 +61,10 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           timeout_minutes: "60"
+      - name: Commit changes
+        run: |
+          git config --global user.name "Claude"
+          git config --global user.email "claude@deriv.com"
+          git add .
+          git commit -m "Claude: Update code"
+          git push
