@@ -2,7 +2,7 @@ import { TContractInfo } from '@/components/summary/summary-card.types';
 
 export const mock_contract: TContractInfo = {
     transaction_ids: { buy: 123, sell: 6789 },
-    underlying: 'EURUSD',
+    underlying_symbol: 'EURUSD',
     entry_tick: 1.2345,
     exit_tick: 1.6789,
     entry_tick_time: '5pm',

@@ -96,7 +96,7 @@ export default function DesktopTransactionTable({
                                     label={
                                         <IconWrapper
                                             message={data?.display_name}
-                                            icon={<MarketIcon type={data?.underlying} size='sm' />}
+                                            icon={<MarketIcon type={data?.underlying_symbol} size='sm' />}
                                         />
                                     }
                                 />

@@ -14,6 +14,7 @@ export type TContractInfo = Omit<
     entry_tick_time?: TDateType;
     exit_tick?: TDateType;
     exit_tick_time?: TDateType;
+    underlying_symbol?: string;
 };
 
 export interface TSummaryCardProps {

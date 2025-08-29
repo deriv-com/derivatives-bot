@@ -88,7 +88,7 @@ export const checkServerMaintenance = (website_status: WebsiteStatus | undefined
 
 export const isContractSupportedAndStarted = (symbol: string, contract_info?: TContractInfo) =>
     !!contract_info &&
-    symbol === contract_info.underlying &&
+    symbol === contract_info.underlying_symbol &&
     //Added check for unsupported and forward starting contracts, which have not started yet
     !!getSupportedContracts()[contract_info?.contract_type as keyof ReturnType<typeof getSupportedContracts>] &&
     hasContractStarted(contract_info);

@@ -79,7 +79,7 @@ export default function MobileTransactionCards({ transaction }: { transaction: T
                         <div className={`${PARENT_CLASS}__icon-wrapper`}>
                             <IconContainer
                                 message={transaction?.display_name}
-                                icon={<MarketIcon type={transaction?.underlying} size='md' />}
+                                icon={<MarketIcon type={transaction?.underlying_symbol} size='md' />}
                             />
                             <IconContainer
                                 message={getContractTypeName(transaction)}

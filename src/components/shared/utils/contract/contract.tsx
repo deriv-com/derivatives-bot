@@ -10,7 +10,7 @@ type TGetAccuBarriersDTraderTimeout = (params: {
     barriers_update_timestamp: number;
     has_default_timeout: boolean;
     tick_update_timestamp: number | null;
-    underlying: string;
+    underlying_symbol: string;
 }) => number;
 
 // Trade types that are considered as vanilla financials
@@ -180,11 +180,11 @@ export const getAccuBarriersDTraderTimeout: TGetAccuBarriersDTraderTimeout = ({
     barriers_update_timestamp,
     has_default_timeout,
     tick_update_timestamp,
-    underlying,
+    underlying_symbol,
 }) => {
-    if (has_default_timeout || !tick_update_timestamp) return getAccuBarriersDefaultTimeout(underlying);
+    if (has_default_timeout || !tick_update_timestamp) return getAccuBarriersDefaultTimeout(underlying_symbol);
     const target_update_time =
-        tick_update_timestamp + getAccuBarriersDefaultTimeout(underlying) + ANIMATION_CORRECTION_TIME;
+        tick_update_timestamp + getAccuBarriersDefaultTimeout(underlying_symbol) + ANIMATION_CORRECTION_TIME;
     const difference = target_update_time - barriers_update_timestamp;
     return difference < 0 ? 0 : difference;
 };

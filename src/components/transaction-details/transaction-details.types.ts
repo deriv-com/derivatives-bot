@@ -28,7 +28,7 @@ export type TTransaction = {
         buy: number;
         sell: number;
     };
-    underlying: string;
+    underlying_symbol: string;
 };
 
 export type TTransactions = {

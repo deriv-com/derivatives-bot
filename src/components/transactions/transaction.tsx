@@ -175,7 +175,7 @@ const Transaction = ({ contract, active_transaction_id, onClickTransaction }: TT
                     <div className='transactions__loader-container'>
                         {contract ? (
                             <TransactionIconWithText
-                                icon={<MarketIcon type={contract.underlying} />}
+                                icon={<MarketIcon type={contract.underlying_symbol} />}
                                 title={contract.display_name || ''}
                             />
                         ) : (
