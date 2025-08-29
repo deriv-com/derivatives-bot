@@ -1,5 +1,5 @@
 import { standalone_routes } from '@/components/shared';
-import { LegacyOpenPositionIcon, LegacyProfitTableIcon,LegacyStatementIcon } from '@deriv/quill-icons/Legacy';
+import { LegacyOpenPositionIcon, LegacyProfitTableIcon, LegacyStatementIcon } from '@deriv/quill-icons/Legacy';
 import { useTranslations } from '@deriv-com/translations';
 import { MenuItem, Text } from '@deriv-com/ui';
 

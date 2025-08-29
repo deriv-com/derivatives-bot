@@ -41,7 +41,7 @@ class Validator<T extends object, S extends object> {
         if (rule.name === 'length') {
             message = template(message, [
                 rule.options.min === rule.options.max
-                    ? rule.options.min?.toString() ?? ''
+                    ? (rule.options.min?.toString() ?? '')
                     : `${rule.options.min}-${rule.options.max}`,
             ]);
         } else if (rule.name === 'min') {

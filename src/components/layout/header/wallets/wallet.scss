@@ -19,16 +19,14 @@ $usdt-color: (
     ),
     'header': (
         'light': (
-            'mobile':
-                radial-gradient(
+            'mobile': radial-gradient(
                     100% 4130.74% at 0% 100%,
                     rgb(0 147 147 / 40%) 0%,
                     rgb(0 147 147 / 16%) 50.52%,
                     rgb(4 217 217 / 40%) 100%
                 )
                 #fff,
-            'desktop':
-                radial-gradient(
+            'desktop': radial-gradient(
                     100% 4130.74% at 0% 100%,
                     rgb(0 147 147 / 40%) 0%,
                     rgb(0 147 147 / 16%) 50.52%,
@@ -37,16 +35,14 @@ $usdt-color: (
                 #fff,
         ),
         'dark': (
-            'mobile':
-                radial-gradient(
+            'mobile': radial-gradient(
                     100% 4130.74% at 0% 100%,
                     rgb(0 147 147 / 40%) 0%,
                     rgb(0 147 147 / 16%) 50.52%,
                     rgb(4 217 217 / 40%) 100%
                 )
                 #151717,
-            'desktop':
-                radial-gradient(
+            'desktop': radial-gradient(
                     100% 4130.74% at 0% 100%,
                     rgb(0 147 147 / 40%) 0%,
                     rgb(0 147 147 / 16%) 50.52%,
@@ -66,8 +62,7 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(244 67 54 / 40%) 0%,
                         rgb(244 67 54 / 16%) 50.52%,
@@ -80,16 +75,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(244 67 54 / 40%) 0%,
                         rgb(244 67 54 / 16%) 50.52%,
                         rgb(40 57 145 / 56%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(244 67 54 / 40%) 0%,
                         rgb(244 67 54 / 16%) 50.52%,
@@ -98,16 +91,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(244 67 54 / 40%) 0%,
                         rgb(244 67 54 / 16%) 50.52%,
                         rgb(40 57 145 / 56%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(244 67 54 / 40%) 0%,
                         rgb(244 67 54 / 16%) 50.52%,
@@ -134,16 +125,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(13 180 61 / 40%) 0%,
                         rgb(13 180 61 / 16%) 50.52%,
                         rgb(255 205 0 / 56%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(13 180 61 / 40%) 0%,
                         rgb(13 180 61 / 16%) 50.52%,
@@ -152,16 +141,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(13 180 61 / 40%) 0%,
                         rgb(13 180 61 / 16%) 50.52%,
                         rgb(255 205 0 / 56%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(13 180 61 / 40%) 0%,
                         rgb(13 180 61 / 16%) 50.52%,
@@ -176,29 +163,34 @@ $wallet-bg-color: (
             'light': (
                 'mobile': radial-gradient(100% 4130.74% at 0% 100%, rgb(40 57 145 / 24%) 0%, rgb(248 209 46 / 48%) 100%)
                     #fff,
-                'desktop':
-                    radial-gradient(100% 4130.74% at 0% 100%, rgb(40 57 145 / 24%) 0%, rgb(248 209 46 / 48%) 100%) #fff,
+                'desktop': radial-gradient(
+                        100% 4130.74% at 0% 100%,
+                        rgb(40 57 145 / 24%) 0%,
+                        rgb(248 209 46 / 48%) 100%
+                    )
+                    #fff,
             ),
             'dark': (
                 'mobile': radial-gradient(100% 4130.74% at 0% 100%, rgb(40 57 145 / 24%) 0%, rgb(248 209 46 / 48%) 100%)
                     #151717,
-                'desktop':
-                    radial-gradient(100% 4130.74% at 0% 100%, rgb(40 57 145 / 24%) 0%, rgb(248 209 46 / 48%) 100%)
+                'desktop': radial-gradient(
+                        100% 4130.74% at 0% 100%,
+                        rgb(40 57 145 / 24%) 0%,
+                        rgb(248 209 46 / 48%) 100%
+                    )
                     #151717,
             ),
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
                         rgb(248 209 46 / 56%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
@@ -207,16 +199,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
                         rgb(248 209 46 / 56%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
@@ -229,16 +219,14 @@ $wallet-bg-color: (
     'gbp': (
         'card': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 24%) 0%,
                         rgb(40 57 145 / 24%) 0.01%,
                         rgb(244 67 54 / 48%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 24%) 0%,
                         rgb(40 57 145 / 24%) 0.01%,
@@ -247,16 +235,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 24%) 0%,
                         rgb(40 57 145 / 24%) 0.01%,
                         rgb(244 67 54 / 48%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 24%) 0%,
                         rgb(40 57 145 / 24%) 0.01%,
@@ -267,16 +253,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
                         rgb(244 67 54 / 56%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
@@ -285,16 +269,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
                         rgb(244 67 54 / 56%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(40 57 145 / 40%) 0%,
                         rgb(40 57 145 / 16%) 50.52%,
@@ -321,16 +303,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 68 79 / 40%) 0%,
                         rgb(255 68 79 / 16%) 50.52%,
                         rgb(255 100 68 / 56%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 68 79 / 40%) 0%,
                         rgb(255 68 79 / 16%) 50.52%,
@@ -339,16 +319,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 68 79 / 40%) 0%,
                         rgb(255 68 79 / 16%) 50.52%,
                         rgb(255 100 68 / 56%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 68 79 / 40%) 0%,
                         rgb(255 68 79 / 16%) 50.52%,
@@ -361,34 +339,44 @@ $wallet-bg-color: (
     'payment-agent': (
         'card': (
             'light': (
-                'mobile':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(151 151 151 / 24%) 0%, rgb(178 194 195 / 48%) 100%)
+                'mobile': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(151 151 151 / 24%) 0%,
+                        rgb(178 194 195 / 48%) 100%
+                    )
                     #fff,
-                'desktop':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(151 151 151 / 24%) 0%, rgb(178 194 195 / 48%) 100%)
+                'desktop': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(151 151 151 / 24%) 0%,
+                        rgb(178 194 195 / 48%) 100%
+                    )
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(151 151 151 / 24%) 0%, rgb(178 194 195 / 48%) 100%)
+                'mobile': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(151 151 151 / 24%) 0%,
+                        rgb(178 194 195 / 48%) 100%
+                    )
                     #151717,
-                'desktop':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(151 151 151 / 24%) 0%, rgb(178 194 195 / 48%) 100%)
+                'desktop': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(151 151 151 / 24%) 0%,
+                        rgb(178 194 195 / 48%) 100%
+                    )
                     #151717,
             ),
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(151 151 151 / 40%) 0%,
                         rgb(151 151 151 / 16%) 50.52%,
                         rgb(178 194 195 / 56%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(151 151 151 / 40%) 0%,
                         rgb(151 151 151 / 16%) 50.52%,
@@ -397,16 +385,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(151 151 151 / 40%) 0%,
                         rgb(151 151 151 / 16%) 50.52%,
                         rgb(178 194 195 / 56%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(151 151 151 / 40%) 0%,
                         rgb(151 151 151 / 16%) 50.52%,
@@ -419,24 +405,28 @@ $wallet-bg-color: (
     'btc': (
         'card': (
             'light': (
-                'mobile':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(247 147 27 / 24%) 0%, rgb(247 199 27 / 47.7%) 99.99%)
+                'mobile': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(247 147 27 / 24%) 0%,
+                        rgb(247 199 27 / 47.7%) 99.99%
+                    )
                     #fff,
-                'desktop':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(247 147 27 / 24%) 0%, rgb(247 199 27 / 47.7%) 99.99%)
+                'desktop': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(247 147 27 / 24%) 0%,
+                        rgb(247 199 27 / 47.7%) 99.99%
+                    )
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 277.78% at 0% 100%,
                         rgb(247 147 27 / 24%) 0%,
                         rgb(247 199 27 / 47.7%) 99.99%,
                         rgb(255 100 68 / 48%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 277.78% at 0% 100%,
                         rgb(247 147 27 / 24%) 0%,
                         rgb(247 199 27 / 47.7%) 99.99%,
@@ -447,16 +437,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(247 147 27 / 40%) 0%,
                         rgb(247 147 27 / 16%) 50.52%,
                         rgb(247 199 27 / 40%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(247 147 27 / 40%) 0%,
                         rgb(247 147 27 / 16%) 50.52%,
@@ -465,16 +453,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(247 147 27 / 40%) 0%,
                         rgb(247 147 27 / 16%) 50.52%,
                         rgb(247 199 27 / 40%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(247 147 27 / 40%) 0%,
                         rgb(247 147 27 / 16%) 50.52%,
@@ -489,14 +475,21 @@ $wallet-bg-color: (
             'light': (
                 'mobile': radial-gradient(100% 277.78% at 0% 100%, rgb(82 86 127 / 24%) 0%, rgb(130 140 173 / 48%) 100%)
                     #fff,
-                'desktop':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(82 86 127 / 24%) 0%, rgb(130 140 173 / 48%) 100%) #fff,
+                'desktop': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(82 86 127 / 24%) 0%,
+                        rgb(130 140 173 / 48%) 100%
+                    )
+                    #fff,
             ),
             'dark': (
                 'mobile': radial-gradient(100% 277.78% at 0% 100%, rgb(82 86 127 / 24%) 0%, rgb(130 140 173 / 48%) 100%)
                     #151717,
-                'desktop':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(82 86 127 / 24%) 0%, rgb(130 140 173 / 48%) 100%)
+                'desktop': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(82 86 127 / 24%) 0%,
+                        rgb(130 140 173 / 48%) 100%
+                    )
                     #151717,
             ),
         ),
@@ -504,8 +497,7 @@ $wallet-bg-color: (
             'light': (
                 'mobile': radial-gradient(100% 277.78% at 0% 100%, rgb(82 86 127 / 24%) 0%, rgb(130 140 173 / 48%) 100%)
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(82 86 127 / 40%) 0%,
                         rgb(82 86 127 / 16%) 50.52%,
@@ -516,8 +508,7 @@ $wallet-bg-color: (
             'dark': (
                 'mobile': radial-gradient(100% 277.78% at 0% 100%, rgb(82 86 127 / 24%) 0%, rgb(130 140 173 / 48%) 100%)
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(82 86 127 / 40%) 0%,
                         rgb(82 86 127 / 16%) 50.52%,
@@ -530,19 +521,27 @@ $wallet-bg-color: (
     'ltc': (
         'card': (
             'light': (
-                'mobile':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(165 168 169 / 24%) 0%, rgb(193 204 207 / 48%) 100%)
+                'mobile': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(165 168 169 / 24%) 0%,
+                        rgb(193 204 207 / 48%) 100%
+                    )
                     #fff,
-                'desktop':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(165 168 169 / 24%) 0%, rgb(193 204 207 / 48%) 100%)
+                'desktop': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(165 168 169 / 24%) 0%,
+                        rgb(193 204 207 / 48%) 100%
+                    )
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(100% 277.78% at 0% 100%, rgb(165 168 169 / 24%) 0%, rgb(193 204 207 / 48%) 100%)
+                'mobile': radial-gradient(
+                        100% 277.78% at 0% 100%,
+                        rgb(165 168 169 / 24%) 0%,
+                        rgb(193 204 207 / 48%) 100%
+                    )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(165 168 169 / 40%) 0%,
                         rgb(165 168 169 / 16%) 50.52%,
@@ -553,16 +552,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(165 168 169 / 40%) 0%,
                         rgb(165 168 169 / 16%) 50.52%,
                         rgb(193 204 207 / 40%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(165 168 169 / 40%) 0%,
                         rgb(165 168 169 / 16%) 50.52%,
@@ -571,16 +568,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(165 168 169 / 40%) 0%,
                         rgb(165 168 169 / 16%) 50.52%,
                         rgb(193 204 207 / 40%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(165 168 169 / 40%) 0%,
                         rgb(165 168 169 / 16%) 50.52%,
@@ -611,16 +606,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(39 117 202 / 40%) 0%,
                         rgb(39 117 202 / 16%) 50.52%,
                         rgb(34 76 225 / 40%) 100%
                     )
                     #fff,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(39 117 202 / 40%) 0%,
                         rgb(39 117 202 / 16%) 50.52%,
@@ -629,16 +622,14 @@ $wallet-bg-color: (
                     #fff,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(39 117 202 / 40%) 0%,
                         rgb(39 117 202 / 16%) 50.52%,
                         rgb(34 76 225 / 40%) 100%
                     )
                     #151717,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(39 117 202 / 40%) 0%,
                         rgb(39 117 202 / 16%) 50.52%,
@@ -651,21 +642,33 @@ $wallet-bg-color: (
     'xrp': (
         'card': (
             'light': (
-                'mobile':
-                    radial-gradient(295.23% 141.42% at 0% 100%, rgb(108 106 151 / 28%) 0%, rgb(50 48 99 / 48%) 100%)
+                'mobile': radial-gradient(
+                        295.23% 141.42% at 0% 100%,
+                        rgb(108 106 151 / 28%) 0%,
+                        rgb(50 48 99 / 48%) 100%
+                    )
                     #fff,
-                'desktop':
-                    radial-gradient(295.23% 141.42% at 0% 100%, rgb(108 106 151 / 28%) 0%, rgb(50 48 99 / 48%) 100%)
+                'desktop': radial-gradient(
+                        295.23% 141.42% at 0% 100%,
+                        rgb(108 106 151 / 28%) 0%,
+                        rgb(50 48 99 / 48%) 100%
+                    )
                     #fff,
             ),
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(295.23% 141.42% at 0% 100%, rgb(108 106 151 / 28%) 0%, rgb(50 48 99 / 48%) 100%)
+                'mobile': radial-gradient(
+                        295.23% 141.42% at 0% 100%,
+                        rgb(108 106 151 / 28%) 0%,
+                        rgb(50 48 99 / 48%) 100%
+                    )
                     #fff,
-                'desktop':
-                    radial-gradient(295.23% 141.42% at 0% 100%, rgb(108 106 151 / 28%) 0%, rgb(50 48 99 / 48%) 100%)
+                'desktop': radial-gradient(
+                        295.23% 141.42% at 0% 100%,
+                        rgb(108 106 151 / 28%) 0%,
+                        rgb(50 48 99 / 48%) 100%
+                    )
                     #fff,
             ),
         ),
@@ -687,16 +690,14 @@ $wallet-bg-color: (
         ),
         'header': (
             'light': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 100 68 / 40%) 0%,
                         rgb(255 100 68 / 16%) 50.52%,
                         rgb(255 68 79 / 40%) 100%
                     )
                     #212329,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 100 68 / 40%) 0%,
                         rgb(255 100 68 / 16%) 50.52%,
@@ -705,16 +706,14 @@ $wallet-bg-color: (
                     #212329,
             ),
             'dark': (
-                'mobile':
-                    radial-gradient(
+                'mobile': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 100 68 / 40%) 0%,
                         rgb(255 100 68 / 16%) 50.52%,
                         rgb(255 68 79 / 40%) 100%
                     )
                     #fbdddd,
-                'desktop':
-                    radial-gradient(
+                'desktop': radial-gradient(
                         100% 4130.74% at 0% 100%,
                         rgb(255 100 68 / 40%) 0%,
                         rgb(255 100 68 / 16%) 50.52%,

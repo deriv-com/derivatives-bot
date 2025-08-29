@@ -4,7 +4,7 @@
     "domain_name": "Deriv.com",
     "colors": {
         "primary": "#ff444f",
-        "secondary": "#85acb0", 
+        "secondary": "#85acb0",
         "tertiary": "#2a3052",
         "success": "#4bb4b3",
         "danger": "#cc2e3d",
@@ -116,4 +116,4 @@
             "availability": ""
         }
     }
-} 
+}
