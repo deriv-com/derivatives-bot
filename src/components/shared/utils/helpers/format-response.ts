@@ -1,4 +1,4 @@
-import { GetSettings, ProfitTable, ResidenceList, Statement } from '@deriv/api-types';
+import { ProfitTable, Statement } from '@deriv/api-types';
 import { getContractTypeFeatureFlag, IDV_ERROR_STATUS, ONFIDO_ERROR_STATUS, STATUS_CODES } from '../constants';
 import { TContractInfo } from '../contract';
 import { extractInfoFromShortcode, isHighLow } from '../shortcode';
@@ -129,16 +129,4 @@ export const getOnfidoError = (error: TOnfidoErrorStatus) => {
 
 export const getIDVError = (error: TIDVErrorStatus) => {
     return IDV_ERROR_STATUS[error]?.message ?? '';
-};
-
-export const isVerificationServiceSupported = (
-    residence_list: ResidenceList,
-    account_settings: GetSettings,
-    service: 'idv' | 'onfido'
-): boolean => {
-    const citizen = account_settings?.citizen || account_settings?.country_code;
-    if (!citizen) return false;
-    const citizen_data = residence_list.find(item => item.value === citizen);
-
-    return !!citizen_data?.identity?.services?.[service]?.is_country_supported;
 };

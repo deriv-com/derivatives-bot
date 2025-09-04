@@ -1,5 +1,3 @@
-import { useStore } from './useStore';
-
 /**
  * Custom hook to determine if TNC (Terms and Conditions) acceptance is needed.
  *
@@ -15,12 +13,8 @@ import { useStore } from './useStore';
  */
 
 const useIsTNCNeeded = () => {
-    const { client } = useStore();
-    const { account_settings, landing_company_shortcode } = client;
-    const { tnc_status } = account_settings || {};
-    const is_tnc_needed = tnc_status && tnc_status[landing_company_shortcode] === 0;
-
-    return is_tnc_needed;
+    // Since get_settings API is removed, TNC is not needed
+    return false;
 };
 
 export default useIsTNCNeeded;

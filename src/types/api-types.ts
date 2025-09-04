@@ -1,8 +1,6 @@
 import {
     AccountLimitsRequest,
     AccountLimitsResponse,
-    AccountStatusRequest,
-    AccountStatusResponse,
     ActiveSymbolsRequest,
     ActiveSymbolsResponse,
     APITokenRequest,
@@ -59,12 +57,8 @@ import {
     ForgetAllResponse,
     ForgetRequest,
     ForgetResponse,
-    GetAccountSettingsRequest,
-    GetAccountSettingsResponse,
     GetFinancialAssessmentRequest,
     GetFinancialAssessmentResponse,
-    GetSelfExclusionRequest,
-    GetSelfExclusionResponse,
     IdentityVerificationAddDocumentRequest,
     IdentityVerificationAddDocumentResponse,
     KYCAuthenticationStatusRequest,
@@ -400,10 +394,7 @@ type TSocketEndpoints = {
         request: ForgetRequest;
         response: ForgetResponse;
     };
-    get_account_status: {
-        request: AccountStatusRequest;
-        response: AccountStatusResponse;
-    };
+
     get_financial_assessment: {
         request: GetFinancialAssessmentRequest;
         response: GetFinancialAssessmentResponse;
@@ -412,14 +403,7 @@ type TSocketEndpoints = {
         request: AccountLimitsRequest;
         response: AccountLimitsResponse;
     };
-    get_self_exclusion: {
-        request: GetSelfExclusionRequest;
-        response: GetSelfExclusionResponse;
-    };
-    get_settings: {
-        request: GetAccountSettingsRequest;
-        response: GetAccountSettingsResponse;
-    };
+
     identity_verification_document_add: {
         request: IdentityVerificationAddDocumentRequest;
         response: IdentityVerificationAddDocumentResponse;
@@ -919,7 +903,7 @@ export type TAuthData = {
     landing_company_fullname: string;
     landing_company_name: string;
     linked_to: [];
-    local_currencies: Record<string, any>;
+    local_currencies: Record<string, unknown>;
     loginid: string;
     preferred_language: string;
     scopes: string[];

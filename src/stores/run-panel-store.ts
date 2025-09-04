@@ -164,11 +164,6 @@ export default class RunPanelStore {
         });
     };
 
-    performSelfExclusionCheck = async () => {
-        const { self_exclusion } = this.root_store;
-        await self_exclusion.checkRestriction();
-    };
-
     onRunButtonClick = async () => {
         let timer_counter = 1;
         if (window.sendRequestsStatistic) {
@@ -184,7 +179,7 @@ export default class RunPanelStore {
                 }
             }, 10000);
         }
-        const { summary_card, self_exclusion } = this.root_store;
+        const { summary_card } = this.root_store;
         const { client, ui } = this.core;
         const is_ios = mobileOSDetect() === 'iOS';
         this.dbot.saveRecentWorkspace();
@@ -200,12 +195,6 @@ export default class RunPanelStore {
          * syncronously, so keep above await.
          */
         if (is_ios || isSafari()) this.preloadAudio();
-
-        if (!self_exclusion.should_bot_run) {
-            self_exclusion.setIsRestricted(true);
-            return;
-        }
-        self_exclusion.setIsRestricted(false);
 
         this.registerBotListeners();
 
@@ -527,14 +516,6 @@ export default class RunPanelStore {
         // prevent new version update
         const ignore_new_version = new Event('IgnorePWAUpdate');
         document.dispatchEvent(ignore_new_version);
-        const { self_exclusion } = this.root_store;
-
-        if (self_exclusion.should_bot_run && self_exclusion.run_limit !== -1) {
-            self_exclusion.run_limit -= 1;
-            if (self_exclusion.run_limit < 0) {
-                this.onStopButtonClick();
-            }
-        }
     };
 
     onBotSellEvent = () => {
@@ -542,14 +523,13 @@ export default class RunPanelStore {
     };
 
     onBotStopEvent = () => {
-        const { self_exclusion, summary_card } = this.root_store;
+        const { summary_card } = this.root_store;
         const { ui } = this.core;
         const indicateBotStopped = () => {
             this.error_type = undefined;
             this.setContractStage(contract_stages.NOT_RUNNING);
             ui.setAccountSwitcherDisabledMessage();
             this.unregisterBotListeners();
-            self_exclusion.resetSelfExclusion();
         };
         if (this.error_type === ErrorTypes.RECOVERABLE_ERRORS) {
             // Bot should indicate it started in below cases:
@@ -578,7 +558,6 @@ export default class RunPanelStore {
             this.setContractStage(contract_stages.CONTRACT_CLOSED);
             ui.setAccountSwitcherDisabledMessage();
             this.unregisterBotListeners();
-            self_exclusion.resetSelfExclusion();
         }
 
         this.setHasOpenContract(false);

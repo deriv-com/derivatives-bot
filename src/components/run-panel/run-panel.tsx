@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import Journal from '@/components/journal';
-import SelfExclusion from '@/components/self-exclusion';
 import Button from '@/components/shared_ui/button';
 import Drawer from '@/components/shared_ui/drawer';
 import Modal from '@/components/shared_ui/modal';
@@ -143,7 +142,7 @@ const DrawerContent = ({ active_index, is_drawer_open, active_tour, setActiveTab
         return () => {
             document.body.style.overflow = '';
         };
-    }, [is_drawer_open]);
+    }, [is_drawer_open, isDesktop]);
 
     return (
         <>
@@ -259,7 +258,7 @@ const RunPanel = observer(() => {
         is_clear_stat_disabled,
         onClearStatClick,
         onMount,
-        onRunButtonClick,
+        onRunButtonClick, // eslint-disable-line @typescript-eslint/no-unused-vars
         onUnmount,
         setActiveTabIndex,
         toggleDrawer,
@@ -335,7 +334,7 @@ const RunPanel = observer(() => {
                 </Drawer>
                 {!isDesktop && <MobileDrawerFooter />}
             </div>
-            <SelfExclusion onRunButtonClick={onRunButtonClick} />
+
             <StatisticsInfoModal
                 is_mobile={!isDesktop}
                 is_statistics_info_modal_open={is_statistics_info_modal_open}

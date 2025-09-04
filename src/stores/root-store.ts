@@ -13,7 +13,6 @@ import LoadModalStore from './load-modal-store';
 import QuickStrategyStore from './quick-strategy-store';
 import RunPanelStore from './run-panel-store';
 import SaveModalStore from './save-modal-store';
-import SelfExclusionStore from './self-exclusion-store';
 import SummaryCardStore from './summary-card-store';
 import ToolbarStore from './toolbar-store';
 import ToolboxStore from './toolbox-store';
@@ -36,7 +35,7 @@ export default class RootStore {
     public toolbar: ToolbarStore;
     public toolbox: ToolboxStore;
     public quick_strategy: QuickStrategyStore;
-    public self_exclusion: SelfExclusionStore;
+
     public dashboard: DashboardStore;
 
     public chart_store: ChartStore;
@@ -77,7 +76,7 @@ export default class RootStore {
         this.toolbar = new ToolbarStore(this);
         this.toolbox = new ToolboxStore(this, this.core);
         this.quick_strategy = new QuickStrategyStore(this);
-        this.self_exclusion = new SelfExclusionStore(this, this.core);
+
         this.dashboard = new DashboardStore(this, this.core);
 
         // need to be at last for dependency

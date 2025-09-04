@@ -36,7 +36,7 @@ type TApiBaseApi = {
     send: (data: unknown) => void;
     disconnect: () => void;
     authorize: (token: string) => Promise<{ authorize: TAuthData; error: unknown }>;
-    getSelfExclusion: () => Promise<unknown>;
+
     onMessage: () => {
         subscribe: (callback: (message: unknown) => void) => {
             unsubscribe: () => void;
@@ -266,7 +266,6 @@ class APIBase {
                 this.active_symbols_promise = this.getActiveSymbols();
             }
             this.subscribe();
-            // this.getSelfExclusion(); commented this so we dont call it from two places
         } catch (e) {
             this.is_authorized = false;
             clearAuthData();
@@ -285,12 +284,6 @@ class APIBase {
         return this.api.send({
             get_session_token: oneTimeToken,
         });
-    }
-
-    async getSelfExclusion() {
-        if (!this.api || !this.is_authorized) return;
-        await this.api.getSelfExclusion();
-        // TODO: fix self exclusion
     }
 
     async subscribe() {

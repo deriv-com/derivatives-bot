@@ -206,8 +206,6 @@ export const checkSwitcherType = async account_data => {
 
     if (!account_info) return null;
 
-    const account_status = { ...api_base.account_status };
-
     const { country, upgradeable_landing_companies = [] } = account_info;
     const is_eu = isEu(country);
 
@@ -215,7 +213,7 @@ export const checkSwitcherType = async account_data => {
 
     const { financial_company, gaming_company } = landing_companies;
 
-    const { risk_classification } = account_status || {};
+    const risk_classification = null;
     const is_country_low_risk = LOW_RISK_COUNTRIES().includes(country_code);
 
     let is_low_risk = isLowRisk(financial_company, gaming_company, upgradeable_landing_companies);

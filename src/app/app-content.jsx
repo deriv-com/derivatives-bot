@@ -52,15 +52,15 @@ const AppContent = observer(() => {
     initTrackJS(client.loginid);
 
     const livechat_client_information = {
-        is_client_store_initialized: client?.is_logged_in ? !!client?.account_settings?.email : !!client,
+        is_client_store_initialized: client?.is_logged_in ? true : !!client,
         is_logged_in: client?.is_logged_in,
         loginid: client?.loginid,
         landing_company_shortcode: client?.landing_company_shortcode,
         currency: client?.currency,
         residence: client?.residence,
-        email: client?.account_settings?.email,
-        first_name: client?.account_settings?.first_name,
-        last_name: client?.account_settings?.last_name,
+        email: '',
+        first_name: '',
+        last_name: '',
     };
 
     useLiveChat(livechat_client_information);
@@ -87,7 +87,7 @@ const AppContent = observer(() => {
     // Check for EU client error early
     const is_eu_country = client?.is_eu_country;
     const clients_logged_out_country_code = client?.clients_country;
-    const clients_logged_in_country_code = client?.account_settings?.country_code;
+    const clients_logged_in_country_code = '';
     const is_client_logged_in = client?.is_logged_in;
 
     useEffect(() => {
@@ -106,7 +106,14 @@ const AppContent = observer(() => {
                 setIsEuErrorLoading(is_restricted);
             }
         }
-    }, [is_eu_country, clients_logged_out_country_code, clients_logged_in_country_code, is_client_logged_in]);
+    }, [
+        is_eu_country,
+        clients_logged_out_country_code,
+        clients_logged_in_country_code,
+        is_client_logged_in,
+        client.is_eu_country,
+        client.is_logged_in,
+    ]);
 
     const handleMessage = React.useCallback(
         ({ data }) => {
@@ -146,7 +153,7 @@ const AppContent = observer(() => {
     React.useEffect(() => {
         showDigitalOptionsMaltainvestError(client, common);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [client.is_options_blocked, client.account_settings?.country_code, client.clients_country]);
+    }, [client.is_options_blocked, client.clients_country]);
 
     const init = () => {
         ServerTime.init(common);
@@ -205,7 +212,7 @@ const AppContent = observer(() => {
         if (client) {
             initHotjar(client);
         }
-    }, []);
+    }, [client]);
 
     if (common?.error) return null;
 

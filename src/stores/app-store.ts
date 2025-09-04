@@ -108,7 +108,8 @@ export default class AppStore {
             return false;
         }
 
-        this.throwErrorForExceptionCountries(client?.account_settings?.country_code as string);
+        // Country code no longer available from removed get_settings API
+        this.throwErrorForExceptionCountries('');
         if (client.should_show_eu_error) {
             return showDigitalOptionsUnavailableError(common.showError, this.getErrorForEuClients(client.is_logged_in));
         }
@@ -307,12 +308,8 @@ export default class AppStore {
     };
 
     registerResidenceChangeReaction = () => {
-        const { client } = this.core;
-
-        this.disposeResidenceChangeReaction = reaction(
-            () => client.account_settings?.country_code,
-            () => this.handleErrorForEu()
-        );
+        // Country code no longer available from removed get_settings API
+        // Previously set up residence change reaction here
     };
 
     setDBotEngineStores = () => {

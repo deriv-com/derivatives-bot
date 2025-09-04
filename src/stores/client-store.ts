@@ -10,7 +10,7 @@ import {
     setIsAuthorized,
 } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import type { TAuthData, TLandingCompany } from '@/types/api-types';
-import type { Balance, GetAccountStatus, GetSettings, WebsiteStatus } from '@deriv/api-types';
+import type { Balance, WebsiteStatus } from '@deriv/api-types';
 import { Analytics } from '@deriv-com/analytics';
 import type RootStore from './root-store';
 
@@ -22,8 +22,7 @@ export default class ClientStore {
     balance = '0';
     currency = 'AUD';
     is_logged_in = false;
-    account_status: GetAccountStatus | undefined;
-    account_settings: GetSettings | undefined;
+
     website_status: WebsiteStatus | undefined;
     landing_companies: TLandingCompany | undefined;
     upgradeable_landing_companies: string[] = [];
@@ -36,7 +35,6 @@ export default class ClientStore {
     private root_store: RootStore;
 
     // TODO: fix with self exclusion
-    updateSelfExclusion = () => {};
 
     removeTokenFromUrl() {
         const url = new URL(window.location.href);
@@ -94,8 +92,7 @@ export default class ClientStore {
         makeObservable(this, {
             accounts: observable,
             account_list: observable,
-            account_settings: observable,
-            account_status: observable,
+
             all_accounts_balance: observable,
             balance: observable,
             currency: observable,
@@ -122,8 +119,7 @@ export default class ClientStore {
             logout: action,
             onAuthorizeEvent: action,
             setAccountList: action,
-            setAccountSettings: action,
-            setAccountStatus: action,
+
             setAllAccountsBalance: action,
             setBalance: action,
             setCurrency: action,
@@ -133,7 +129,7 @@ export default class ClientStore {
             setLoginId: action,
             setWebsiteStatus: action,
             setUpgradeableLandingCompanies: action,
-            updateTncStatus: action,
+
             is_trading_experience_incomplete: computed,
             is_cr_account: computed,
             account_open_date: computed,
@@ -154,7 +150,7 @@ export default class ClientStore {
         return this.isBotAllowed();
     }
     get is_trading_experience_incomplete() {
-        return this.account_status?.status?.some(status => status === 'trading_experience_not_complete');
+        return false;
     }
 
     get is_eu() {
@@ -201,9 +197,6 @@ export default class ClientStore {
     }
 
     get residence() {
-        if (this.is_logged_in) {
-            return this.account_settings?.country_code ?? '';
-        }
         return '';
     }
 
@@ -325,39 +318,6 @@ export default class ClientStore {
         return accountList[this.loginid] ?? '';
     };
 
-    setAccountStatus(status: GetAccountStatus | undefined) {
-        this.account_status = status;
-    }
-
-    setAccountSettings(settings: GetSettings | undefined) {
-        try {
-            const is_equal_settings = JSON.stringify(settings) === JSON.stringify(this.account_settings);
-            if (!is_equal_settings) {
-                this.account_settings = settings;
-            }
-        } catch (error) {
-            console.error('setAccountSettings error', error);
-        }
-    }
-
-    updateTncStatus(landing_company_shortcode: string, status: number) {
-        try {
-            if (!this.account_settings) return;
-
-            const updated_settings = {
-                ...this.account_settings,
-                tnc_status: {
-                    ...this.account_settings.tnc_status,
-                    [landing_company_shortcode]: status,
-                },
-            };
-
-            this.setAccountSettings(updated_settings);
-        } catch (error) {
-            console.error('updateTncStatus error', error);
-        }
-    }
-
     setWebsiteStatus(status: WebsiteStatus | undefined) {
         this.website_status = status;
     }
@@ -382,8 +342,7 @@ export default class ClientStore {
     logout = async () => {
         // reset all the states
         this.account_list = [];
-        this.account_status = undefined;
-        this.account_settings = undefined;
+
         this.landing_companies = undefined;
         this.accounts = {};
         this.is_logged_in = false;

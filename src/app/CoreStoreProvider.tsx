@@ -8,7 +8,7 @@ import { api_base } from '@/external/bot-skeleton';
 import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
-import { TLandingCompany, TSocketResponseData } from '@/types/api-types';
+import { TSocketResponseData } from '@/types/api-types';
 import { useTranslations } from '@deriv-com/translations';
 
 type TClientInformation = {
@@ -143,38 +143,28 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
     useEffect(() => {
         if (!isAuthorizing && isAuthorized && !accountInitialization.current && client) {
             accountInitialization.current = true;
-            api_base.api.getSettings().then((settingRes: TSocketResponseData<'get_settings'>) => {
-                client?.setAccountSettings(settingRes.get_settings);
-                const client_information: TClientInformation = {
-                    loginid: activeAccount?.loginid,
-                    email: settingRes.get_settings?.email,
-                    currency: client?.currency,
-                    residence: settingRes.get_settings?.residence,
-                    first_name: settingRes.get_settings?.first_name,
-                    last_name: settingRes.get_settings?.last_name,
-                    preferred_language: settingRes.get_settings?.preferred_language,
-                    user_id: ((api_base.account_info as any)?.user_id as number) || activeLoginid,
-                    landing_company_shortcode: activeAccount?.landing_company_name,
-                };
+            const client_information: TClientInformation = {
+                loginid: activeAccount?.loginid,
+                email: '',
+                currency: client?.currency,
+                residence: '',
+                first_name: '',
+                last_name: '',
+                preferred_language: '',
+                user_id:
+                    (api_base.account_info &&
+                    typeof api_base.account_info === 'object' &&
+                    'user_id' in api_base.account_info
+                        ? (api_base.account_info as { user_id: number }).user_id
+                        : null) || activeLoginid,
+                landing_company_shortcode: '',
+            };
 
-                Cookies.set('client_information', JSON.stringify(client_information), {
-                    domain: currentDomain,
-                });
-
-                api_base.api
-                    .landingCompany({
-                        landing_company: settingRes.get_settings?.country_code,
-                    })
-                    .then((res: TSocketResponseData<'landing_company'>) => {
-                        client?.setLandingCompany(res.landing_company as unknown as TLandingCompany);
-                    });
-            });
-
-            api_base.api.getAccountStatus().then((res: TSocketResponseData<'get_account_status'>) => {
-                client?.setAccountStatus(res.get_account_status);
+            Cookies.set('client_information', JSON.stringify(client_information), {
+                domain: currentDomain,
             });
         }
-    }, [isAuthorizing, isAuthorized, client]);
+    }, [isAuthorizing, isAuthorized, client, activeAccount?.loginid, activeLoginid, currentDomain]);
 
     return <>{children}</>;
 });
