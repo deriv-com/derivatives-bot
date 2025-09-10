@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { ChartMode, DrawTools, Share, StudyLegend, ToolbarWidget, Views } from '@deriv-com/derivatives-charts';
+import { ChartMode, DrawTools, Share, StudyLegend, ToolbarWidget, Views } from '@deriv-com/smartcharts-champion';
 
 type TToolbarWidgetsProps = {
     updateChartType: (chart_type: string) => void;
