@@ -196,8 +196,6 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
     if (!symbol) return null;
     const is_connection_opened = !!chart_api?.api;
 
-    console.log('Render Chart with data:', chartData, 'Symbol:', symbol);
-
     return (
         <div
             className={classNames('dashboard__chart-wrapper', {

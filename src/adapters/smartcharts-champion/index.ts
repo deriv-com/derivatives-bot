@@ -132,8 +132,8 @@ const transformations = {
                 display_name: symbol.display_name || symbolCode,
                 market: symbol.market,
                 market_display_name: symbol.market_display_name,
-                subgroup: symbol.subgroup, // Map submarket to subgroup
-                subgroup_display_name: symbol.subgroup_display_name, // Map submarket_display_name to subgroup_display_name
+                subgroup: symbol.subgroup,
+                subgroup_display_name: symbol.subgroup_display_name,
                 submarket: symbol.submarket,
                 submarket_display_name: symbol.submarket_display_name,
                 symbol: symbolCode,
