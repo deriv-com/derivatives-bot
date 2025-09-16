@@ -6,9 +6,9 @@ import FIREBASE_INIT_DATA from '../remote_config.json';
 
 export const AnalyticsInitializer = async () => {
     try {
-        const account_type = LocalStore?.get('active_loginid')
-            ?.match(/[a-zA-Z]+/g)
-            ?.join('');
+        // Get account type from localStorage, fallback to demo if missing
+        const savedAccountType = localStorage.getItem('account_type');
+        const account_type = savedAccountType || 'demo';
 
         // Only try to fetch remote config if URL is properly configured
         const hasValidRemoteConfigUrl =
