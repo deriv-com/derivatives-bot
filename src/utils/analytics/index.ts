@@ -5,14 +5,44 @@ import getCountry from '../getCountry';
 import FIREBASE_INIT_DATA from '../remote_config.json';
 
 export const AnalyticsInitializer = async () => {
-    const account_type = LocalStore?.get('active_loginid')
-        ?.match(/[a-zA-Z]+/g)
-        ?.join('');
+    try {
+        // Get account type from localStorage, fallback to demo if missing
+        const savedAccountType = localStorage.getItem('account_type');
+        const account_type = savedAccountType || 'demo';
 
-    if (process.env.REMOTE_CONFIG_URL) {
-        const flags = await fetch(process.env.REMOTE_CONFIG_URL)
-            .then(res => res.json())
-            .catch(() => FIREBASE_INIT_DATA);
+        // Only try to fetch remote config if URL is properly configured
+        const hasValidRemoteConfigUrl =
+            process.env.REMOTE_CONFIG_URL &&
+            process.env.REMOTE_CONFIG_URL !== '' &&
+            process.env.REMOTE_CONFIG_URL !== 'undefined';
+
+        let flags = FIREBASE_INIT_DATA; // Default fallback
+
+        if (hasValidRemoteConfigUrl) {
+            try {
+                // Create abort controller for timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                const response = await fetch(process.env.REMOTE_CONFIG_URL!, {
+                    signal: controller.signal,
+                });
+
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    flags = await response.json();
+                } else {
+                    console.warn('Remote config fetch failed, using fallback data');
+                }
+            } catch (fetchError) {
+                console.warn('Remote config fetch error, using fallback data:', fetchError);
+            }
+        } else {
+            console.info('Remote config URL not configured, using default flags');
+        }
+
+        // Initialize analytics if conditions are met
         if (process.env.RUDDERSTACK_KEY && flags?.tracking_rudderstack) {
             let ppc_campaign_cookies = Cookies.get('utm_data') as unknown as Record<string, string> | null;
 
@@ -49,7 +79,14 @@ export const AnalyticsInitializer = async () => {
                     },
                 },
             };
-            await Analytics?.initialise(config);
+
+            try {
+                await Analytics?.initialise(config);
+            } catch (analyticsError) {
+                console.error('Analytics initialization failed:', analyticsError);
+            }
         }
+    } catch (error) {
+        console.error('Analytics initializer error:', error);
     }
 };
