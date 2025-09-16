@@ -71,19 +71,8 @@ const getDefaultServerURL = () => {
         return savedAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
     }
 
-    // Fallback logic using loginid (existing logic)
-    let active_loginid_from_url;
-    const search = window.location.search;
-    if (search) {
-        const params = new URLSearchParams(document.location.search.substring(1));
-        active_loginid_from_url = params.get('acct1');
-    }
-
-    const loginid = window.localStorage.getItem('active_loginid') ?? active_loginid_from_url;
-    const is_real = loginid && !/^(VRT|VRW)/.test(loginid);
-
-    // Use new server URLs - real accounts use realv2, others default to demov2
-    return is_real ? 'realv2.derivws.com' : 'demov2.derivws.com';
+    // Always default to demo server if no account_type is specified
+    return 'demov2.derivws.com';
 };
 
 export const getDefaultAppIdAndUrl = () => {
