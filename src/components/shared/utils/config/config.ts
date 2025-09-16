@@ -3,11 +3,16 @@ import { isStaging } from '../url/helpers';
 
 // Simple environment detection based on hostname
 const getCurrentEnvironment = (): 'staging' | 'production' => {
-    const hostname = window.location.hostname;
-    if (hostname.includes('localhost') || hostname.includes('staging')) {
-        return 'staging';
+    try {
+        const hostname = window.location.hostname;
+        if (hostname.includes('localhost') || hostname.includes('staging')) {
+            return 'staging';
+        }
+        return 'production';
+    } catch (error) {
+        console.error('Error detecting environment:', error);
+        return 'production'; // Safe fallback
     }
-    return 'production';
 };
 
 export const APP_IDS = {
@@ -54,24 +59,26 @@ export const isTestLink = () => {
 export const isLocal = () => /localhost(:\d+)?$/i.test(window.location.hostname);
 
 const getDefaultServerURL = () => {
-    // Note: Removed isTestLink() check to use account-type based servers everywhere
+    try {
+        // Check for account_type in URL params first (this overrides everything)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlAccountType = urlParams.get('account_type');
 
-    // Check for account_type in URL params first (this overrides everything)
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlAccountType = urlParams.get('account_type');
+        if (urlAccountType) {
+            // Use realv2 for real accounts, demov2 for demo accounts
+            return urlAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
+        }
 
-    if (urlAccountType) {
-        // Use realv2 for real accounts, demov2 for demo accounts
-        return urlAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
+        // Check localStorage for saved account type
+        const savedAccountType = localStorage.getItem('account_type');
+        if (savedAccountType) {
+            return savedAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
+        }
+    } catch (error) {
+        console.error('Error in getDefaultServerURL:', error);
     }
 
-    // Check localStorage for saved account type
-    const savedAccountType = localStorage.getItem('account_type');
-    if (savedAccountType) {
-        return savedAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
-    }
-
-    // Always default to demo server if no account_type is specified
+    // Always default to demo server if no account_type is specified or if there's an error
     return 'demov2.derivws.com';
 };
 
@@ -156,8 +163,23 @@ export const getDebugServiceWorker = () => {
 };
 
 export const generateOAuthURL = () => {
-    // Use brand config for login URLs
-    const environment = getCurrentEnvironment();
-    const hostname = brandConfig.brand_hostname[environment];
-    return `https://${hostname}/login`;
+    try {
+        // Use brand config for login URLs
+        const environment = getCurrentEnvironment();
+        const hostname = brandConfig?.brand_hostname?.[environment];
+
+        if (hostname) {
+            return `https://${hostname}/login`;
+        }
+    } catch (error) {
+        console.error('Error accessing brand config:', error);
+    }
+
+    // Fallback to hardcoded URLs if brand config fails
+    const hostname = window.location.hostname;
+    if (hostname.includes('staging')) {
+        return 'https://staging-home.deriv.com/dashboard/login';
+    } else {
+        return 'https://home.deriv.com/dashboard/login';
+    }
 };
