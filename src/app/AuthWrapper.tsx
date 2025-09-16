@@ -26,7 +26,6 @@ const setLocalStorageToken = async (
     // Only save account_type when BOTH token and account_type are present
     if (token && accountType) {
         localStorage.setItem('account_type', accountType);
-        console.log(`Account type set to: ${accountType} (with token)`);
     }
     // If no token or account_type, don't save anything - will fallback to demo server
 
