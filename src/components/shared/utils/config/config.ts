@@ -54,10 +54,24 @@ export const isTestLink = () => {
 export const isLocal = () => /localhost(:\d+)?$/i.test(window.location.hostname);
 
 const getDefaultServerURL = () => {
-    if (isTestLink()) {
-        return 'ws.derivws.com';
+    // Note: Removed isTestLink() check to use account-type based servers everywhere
+
+    // Check for account_type in URL params first (this overrides everything)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlAccountType = urlParams.get('account_type');
+
+    if (urlAccountType) {
+        // Use realv2 for real accounts, demov2 for demo accounts
+        return urlAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
     }
 
+    // Check localStorage for saved account type
+    const savedAccountType = localStorage.getItem('account_type');
+    if (savedAccountType) {
+        return savedAccountType === 'demo' ? 'demov2.derivws.com' : 'realv2.derivws.com';
+    }
+
+    // Fallback logic using loginid (existing logic)
     let active_loginid_from_url;
     const search = window.location.search;
     if (search) {
@@ -68,10 +82,8 @@ const getDefaultServerURL = () => {
     const loginid = window.localStorage.getItem('active_loginid') ?? active_loginid_from_url;
     const is_real = loginid && !/^(VRT|VRW)/.test(loginid);
 
-    const server = is_real ? 'green' : 'blue';
-    const server_url = `${server}.derivws.com`;
-
-    return server_url;
+    // Use new server URLs - real accounts use realv2, others default to demov2
+    return is_real ? 'realv2.derivws.com' : 'demov2.derivws.com';
 };
 
 export const getDefaultAppIdAndUrl = () => {
@@ -107,7 +119,10 @@ export const getAppId = () => {
 
 export const getSocketURL = () => {
     const local_storage_server_url = window.localStorage.getItem('config.server_url');
-    if (local_storage_server_url) return local_storage_server_url;
+
+    if (local_storage_server_url) {
+        return local_storage_server_url;
+    }
 
     const server_url = getDefaultServerURL();
 

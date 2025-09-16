@@ -85,11 +85,23 @@ class APIBase {
         // Check URL directly for one-time token (no localStorage needed)
         const urlParams = new URLSearchParams(window.location.search);
         const oneTimeToken = urlParams.get('token');
+        const accountType = urlParams.get('account_type');
+
+        // Only save account_type when BOTH token and account_type are present
+        if (oneTimeToken && accountType) {
+            localStorage.setItem('account_type', accountType);
+            console.log(`Account type set to: ${accountType} (with token)`);
+        }
+        // If no token or account_type, don't save anything - will fallback to demo server
 
         if (oneTimeToken) {
             // Remove token from URL immediately for security
             const url = new URL(window.location.href);
             url.searchParams.delete('token');
+            // Also remove account_type from URL after processing
+            if (accountType) {
+                url.searchParams.delete('account_type');
+            }
             window.history.replaceState({}, document.title, url.toString());
 
             // Exchange the token
