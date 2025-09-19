@@ -9,7 +9,6 @@ import { useStore } from '@/hooks/useStore';
 import useStoreWalletAccountsList from '@/hooks/useStoreWalletAccountsList';
 import { Analytics } from '@deriv-com/analytics';
 import { Localize } from '@deriv-com/translations';
-import WalletBadge from '../wallets/wallet-badge';
 import './account-switcher-wallet-item.scss';
 
 type TAccountSwitcherWalletItemProps = {
@@ -19,7 +18,7 @@ type TAccountSwitcherWalletItemProps = {
 };
 
 export const AccountSwitcherWalletItem = observer(
-    ({ closeAccountsDialog, account, show_badge = false }: TAccountSwitcherWalletItemProps) => {
+    ({ closeAccountsDialog, account }: TAccountSwitcherWalletItemProps) => {
         const {
             currency,
             dtrade_loginid,
@@ -27,7 +26,7 @@ export const AccountSwitcherWalletItem = observer(
             gradients,
             icons,
             is_virtual,
-            landing_company_name,
+
             icon_type,
         } = account;
 
@@ -120,7 +119,6 @@ export const AccountSwitcherWalletItem = observer(
                         )}`}
                     </Text>
                 </div>
-                {show_badge && <WalletBadge is_demo={Boolean(is_virtual)} label={landing_company_name} />}
             </div>
         );
     }

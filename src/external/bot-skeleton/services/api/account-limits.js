@@ -5,8 +5,8 @@ export default class AccountLimits {
         this.ws = store.ws;
     }
     // eslint-disable-next-line default-param-last
-    getStakePayoutLimits(currency = 'AUD', landing_company_shortcode = 'svg', selected_market) {
+    getStakePayoutLimits(currency = 'AUD', selected_market) {
         // Use common data instead of duplicating here
-        return getAccountLimits(currency, landing_company_shortcode, selected_market);
+        return getAccountLimits(currency, selected_market);
     }
 }

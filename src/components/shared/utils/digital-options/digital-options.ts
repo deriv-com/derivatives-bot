@@ -1,5 +1,3 @@
-import { isEuCountry } from '../../common/utility';
-
 type TMessage = {
     title: string;
     text: string;
@@ -15,10 +13,6 @@ type TShowError = {
     redirect_to: string;
     should_clear_error_on_click: boolean;
     should_redirect?: boolean;
-};
-
-type TAccounts = {
-    residence?: string;
 };
 
 export const showDigitalOptionsUnavailableError = (
@@ -41,6 +35,7 @@ export const showDigitalOptionsUnavailableError = (
     });
 };
 
-export const isEuResidenceWithOnlyVRTC = (accounts: TAccounts[]) => {
-    return accounts?.length === 1 && accounts.every(acc => isEuCountry(acc.residence ?? ''));
+export const isEuResidenceWithOnlyVRTC = () => {
+    // Always return false - EU restrictions now handled by backend
+    return false;
 };

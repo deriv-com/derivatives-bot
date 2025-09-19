@@ -43,16 +43,10 @@ import {
     CopyTradingStatisticsResponse,
     CopyTradingStopRequest,
     CopyTradingStopResponse,
-    CountriesListRequest,
-    CountriesListResponse,
     CryptocurrencyConfigurationsRequest,
     CryptocurrencyConfigurationsResponse,
-    DocumentUploadRequest,
-    DocumentUploadResponse,
     EconomicCalendarRequest,
     EconomicCalendarResponse,
-    ExchangeRatesRequest,
-    ExchangeRatesResponse,
     ForgetAllRequest,
     ForgetAllResponse,
     ForgetRequest,
@@ -63,20 +57,12 @@ import {
     IdentityVerificationAddDocumentResponse,
     KYCAuthenticationStatusRequest,
     KYCAuthenticationStatusResponse,
-    LandingCompanyDetailsRequest,
-    LandingCompanyDetailsResponse,
-    LandingCompanyRequest,
-    LandingCompanyResponse,
     LoginHistoryRequest,
     LoginHistoryResponse,
     LogOutRequest,
     LogOutResponse,
-    MT5AccountsListRequest,
-    MT5AccountsListResponse,
     MT5DepositRequest,
     MT5DepositResponse,
-    MT5GetSettingRequest,
-    MT5GetSettingResponse,
     MT5NewAccountRequest,
     MT5NewAccountResponse,
     MT5PasswordChangeRequest,
@@ -87,60 +73,12 @@ import {
     MT5PasswordResetResponse,
     MT5WithdrawalRequest,
     MT5WithdrawalResponse,
-    NewRealMoneyAccountDefaultLandingCompanyRequest,
-    NewRealMoneyAccountDefaultLandingCompanyResponse,
     NewRealMoneyAccountDerivInvestmentEuropeLtdRequest,
     NewRealMoneyAccountDerivInvestmentEuropeLtdResponse,
     NewVirtualMoneyAccountRequest,
     NewVirtualMoneyAccountResponse,
     OAuthApplicationsRequest,
     OAuthApplicationsResponse,
-    P2PAdvertCreateRequest,
-    P2PAdvertCreateResponse,
-    P2PAdvertInformationRequest,
-    P2PAdvertInformationResponse,
-    P2PAdvertiserAdvertsRequest,
-    P2PAdvertiserAdvertsResponse,
-    P2PAdvertiserCreateRequest,
-    P2PAdvertiserCreateResponse,
-    P2PAdvertiserInformationRequest,
-    P2PAdvertiserInformationResponse,
-    P2PAdvertiserListRequest,
-    P2PAdvertiserListResponse,
-    P2PAdvertiserPaymentMethodsRequest,
-    P2PAdvertiserPaymentMethodsResponse,
-    P2PAdvertiserRelationsRequest,
-    P2PAdvertiserRelationsResponse,
-    P2PAdvertiserUpdateRequest,
-    P2PAdvertiserUpdateResponse,
-    P2PAdvertListRequest,
-    P2PAdvertListResponse,
-    P2PAdvertUpdateRequest,
-    P2PAdvertUpdateResponse,
-    P2PChatCreateRequest,
-    P2PChatCreateResponse,
-    P2PCountryListRequest,
-    P2PCountryListResponse,
-    P2POrderCancelRequest,
-    P2POrderCancelResponse,
-    P2POrderConfirmRequest,
-    P2POrderConfirmResponse,
-    P2POrderCreateRequest,
-    P2POrderCreateResponse,
-    P2POrderDisputeRequest,
-    P2POrderDisputeResponse,
-    P2POrderInformationRequest,
-    P2POrderInformationResponse,
-    P2POrderListRequest,
-    P2POrderListResponse,
-    P2POrderReviewRequest,
-    P2POrderReviewResponse,
-    P2PPaymentMethodsRequest,
-    P2PPaymentMethodsResponse,
-    P2PPingRequest,
-    P2PPingResponse,
-    P2PSettingsRequest,
-    P2PSettingsResponse,
     PaymentAgentCreateRequest,
     PaymentAgentCreateResponse,
     PaymentAgentDetailsRequest,
@@ -155,8 +93,6 @@ import {
     PaymentAgentWithdrawResponse,
     PaymentMethodsRequest,
     PaymentMethodsResponse,
-    PayoutCurrenciesRequest,
-    PayoutCurrenciesResponse,
     PingRequest,
     PingResponse,
     PortfolioRequest,
@@ -193,10 +129,6 @@ import {
     SetSelfExclusionResponse,
     StatementRequest,
     StatementResponse,
-    StatesListRequest,
-    StatesListResponse,
-    TermsAndConditionsApprovalRequest,
-    TermsAndConditionsApprovalResponse,
     TicksHistoryRequest,
     TicksHistoryResponse,
     TicksStreamRequest,
@@ -372,18 +304,12 @@ type TSocketEndpoints = {
         request: CryptocurrencyConfigurationsRequest;
         response: CryptocurrencyConfigurationsResponse;
     };
-    document_upload: {
-        request: DocumentUploadRequest;
-        response: DocumentUploadResponse;
-    };
+
     economic_calendar: {
         request: EconomicCalendarRequest;
         response: EconomicCalendarResponse;
     };
-    exchange_rates: {
-        request: ExchangeRatesRequest;
-        response: ExchangeRatesResponse;
-    };
+
     forget_all: {
         request: ForgetAllRequest;
         response: ForgetAllResponse;
@@ -410,16 +336,7 @@ type TSocketEndpoints = {
         request: KYCAuthenticationStatusRequest;
         response: KYCAuthenticationStatusResponse;
     };
-    landing_company_details: {
-        request: LandingCompanyDetailsRequest;
-        response: LandingCompanyDetailsResponse;
-    };
-    landing_company: {
-        request: Omit<LandingCompanyRequest, 'landing_company'> & {
-            landing_company: string;
-        };
-        response: LandingCompanyResponse;
-    };
+
     login_history: {
         request: LoginHistoryRequest;
         response: LoginHistoryResponse;
@@ -432,14 +349,7 @@ type TSocketEndpoints = {
         request: MT5DepositRequest;
         response: MT5DepositResponse;
     };
-    mt5_get_settings: {
-        request: MT5GetSettingRequest;
-        response: MT5GetSettingResponse;
-    };
-    mt5_login_list: {
-        request: MT5AccountsListRequest;
-        response: MT5AccountsListResponse;
-    };
+
     mt5_new_account: {
         request: MT5NewAccountRequest;
         response: MT5NewAccountResponse;
@@ -464,10 +374,7 @@ type TSocketEndpoints = {
         request: NewRealMoneyAccountDerivInvestmentEuropeLtdRequest;
         response: NewRealMoneyAccountDerivInvestmentEuropeLtdResponse;
     };
-    new_account_real: {
-        request: NewRealMoneyAccountDefaultLandingCompanyRequest;
-        response: NewRealMoneyAccountDefaultLandingCompanyResponse;
-    };
+
     new_account_virtual: {
         request: NewVirtualMoneyAccountRequest;
         response: NewVirtualMoneyAccountResponse;
@@ -583,98 +490,7 @@ type TSocketEndpoints = {
         request: OAuthApplicationsRequest;
         response: OAuthApplicationsResponse;
     };
-    p2p_advert_create: {
-        request: P2PAdvertCreateRequest;
-        response: P2PAdvertCreateResponse;
-    };
-    p2p_advert_info: {
-        request: P2PAdvertInformationRequest;
-        response: P2PAdvertInformationResponse;
-    };
-    p2p_advert_list: {
-        request: P2PAdvertListRequest;
-        response: P2PAdvertListResponse;
-    };
-    p2p_advert_update: {
-        request: P2PAdvertUpdateRequest;
-        response: P2PAdvertUpdateResponse;
-    };
-    p2p_advertiser_adverts: {
-        request: P2PAdvertiserAdvertsRequest;
-        response: P2PAdvertiserAdvertsResponse;
-    };
-    p2p_advertiser_create: {
-        request: P2PAdvertiserCreateRequest;
-        response: P2PAdvertiserCreateResponse;
-    };
-    p2p_advertiser_info: {
-        request: P2PAdvertiserInformationRequest;
-        response: P2PAdvertiserInformationResponse;
-    };
-    p2p_advertiser_list: {
-        request: P2PAdvertiserListRequest;
-        response: P2PAdvertiserListResponse;
-    };
-    p2p_advertiser_payment_methods: {
-        request: P2PAdvertiserPaymentMethodsRequest;
-        response: P2PAdvertiserPaymentMethodsResponse;
-    };
-    p2p_advertiser_relations: {
-        request: P2PAdvertiserRelationsRequest;
-        response: P2PAdvertiserRelationsResponse;
-    };
-    p2p_advertiser_update: {
-        request: P2PAdvertiserUpdateRequest;
-        response: P2PAdvertiserUpdateResponse;
-    };
-    p2p_chat_create: {
-        request: P2PChatCreateRequest;
-        response: P2PChatCreateResponse;
-    };
-    p2p_country_list: {
-        request: P2PCountryListRequest;
-        response: P2PCountryListResponse;
-    };
-    p2p_order_cancel: {
-        request: P2POrderCancelRequest;
-        response: P2POrderCancelResponse;
-    };
-    p2p_order_confirm: {
-        request: P2POrderConfirmRequest;
-        response: P2POrderConfirmResponse;
-    };
-    p2p_order_create: {
-        request: P2POrderCreateRequest;
-        response: P2POrderCreateResponse;
-    };
-    p2p_order_dispute: {
-        request: P2POrderDisputeRequest;
-        response: P2POrderDisputeResponse;
-    };
-    p2p_order_info: {
-        request: P2POrderInformationRequest;
-        response: P2POrderInformationResponse;
-    };
-    p2p_order_list: {
-        request: P2POrderListRequest;
-        response: P2POrderListResponse;
-    };
-    p2p_order_review: {
-        request: P2POrderReviewRequest;
-        response: P2POrderReviewResponse;
-    };
-    p2p_payment_methods: {
-        request: P2PPaymentMethodsRequest;
-        response: P2PPaymentMethodsResponse;
-    };
-    p2p_ping: {
-        request: P2PPingRequest;
-        response: P2PPingResponse;
-    };
-    p2p_settings: {
-        request: P2PSettingsRequest;
-        response: P2PSettingsResponse;
-    };
+
     payment_methods: {
         request: PaymentMethodsRequest;
         response: PaymentMethodsResponse;
@@ -703,10 +519,7 @@ type TSocketEndpoints = {
         request: PaymentAgentWithdrawJustificationRequest;
         response: PaymentAgentWithdrawJustificationResponse;
     };
-    payout_currencies: {
-        request: PayoutCurrenciesRequest;
-        response: PayoutCurrenciesResponse;
-    };
+
     ping: {
         request: PingRequest;
         response: PingResponse;
@@ -731,10 +544,7 @@ type TSocketEndpoints = {
         request: RealityCheckRequest;
         response: RealityCheckResponse;
     };
-    residence_list: {
-        request: CountriesListRequest;
-        response: CountriesListResponse;
-    };
+
     revoke_oauth_app: {
         request: RevokeOauthApplicationRequest;
         response: RevokeOauthApplicationResponse;
@@ -771,10 +581,7 @@ type TSocketEndpoints = {
         request: StatementRequest;
         response: StatementResponse;
     };
-    states_list: {
-        request: StatesListRequest;
-        response: StatesListResponse;
-    };
+
     ticks_history: {
         request: TicksHistoryRequest;
         response: TicksHistoryResponse;
@@ -787,10 +594,7 @@ type TSocketEndpoints = {
         request: ServerTimeRequest;
         response: ServerTimeResponse;
     };
-    tnc_approval: {
-        request: TermsAndConditionsApprovalRequest;
-        response: TermsAndConditionsApprovalResponse;
-    };
+
     topup_virtual: {
         request: TopUpVirtualMoneyAccountRequest;
         response: TopUpVirtualMoneyAccountResponse;
@@ -862,23 +666,6 @@ export type TSocketResponseData<T extends TSocketEndpointNames> = Omit<
     'req_id' | 'echo_req' | 'subscription'
 >;
 
-export type TLandingCompany = {
-    financial_company: {
-        shortcode: string;
-    };
-    gaming_company: {
-        shortcode: string;
-    };
-    mt_gaming_company: {
-        financial: {
-            shortcode: string;
-        };
-        swap_free: {
-            shortcode: string;
-        };
-    };
-};
-
 export type TAccount = {
     balance: number;
     currency: string;
@@ -894,14 +681,13 @@ export type TAuthData = {
     email: string;
     fullname: string;
     is_virtual: number;
-    landing_company_fullname: string;
-    landing_company_name: string;
+
     linked_to: [];
     local_currencies: Record<string, unknown>;
     loginid: string;
     preferred_language: string;
     scopes: string[];
-    upgradeable_landing_companies: string[];
+
     user_id: number;
     token?: string;
 };

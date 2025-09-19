@@ -29,7 +29,7 @@ export type TAccount = {
     currency: string;
     icon: React.ReactNode;
     isActive: boolean;
-    isEu: boolean;
+
     isVirtual: boolean;
     loginid: string;
     token: string;
