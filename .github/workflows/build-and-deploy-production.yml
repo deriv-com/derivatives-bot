@@ -3,7 +3,7 @@ name: Build Production and deploy to Cloudflare pages
 on:
   push:
     tags:
-      - production_v*
+      - production_*
 
 concurrency:
     group: cloudflare-pages-build-production
