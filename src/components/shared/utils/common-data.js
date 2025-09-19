@@ -68,6 +68,12 @@ export const TRADING_TIMES = {
         // Commodities
         OTC_OIL_USD: 'Oil/USD',
         OTC_GAS_USD: 'Gas/USD',
+        FRXXPDUSD: 'Palladium/USD',
+        FRXXPTUSD: 'Platinum/USD',
+        'XPD/USD': 'Palladium/USD',
+        'XPT/USD': 'Platinum/USD',
+        XPDUSD: 'Palladium/USD',
+        XPTUSD: 'Platinum/USD',
 
         // Volatility Indices
         R_10: 'Volatility 10 Index',

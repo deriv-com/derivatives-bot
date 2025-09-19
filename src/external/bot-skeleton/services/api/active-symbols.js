@@ -5,6 +5,7 @@ import {
     MARKET_OPTIONS,
     SUBMARKET_OPTIONS,
     SYMBOL_OPTIONS,
+    TRADING_TIMES,
 } from '../../../../components/shared/utils/common-data';
 import { config } from '../../constants/config';
 import PendingPromise from '../../utils/pending-promise';
@@ -108,8 +109,14 @@ export default class ActiveSymbols {
             const { symbols } = submarkets[symbol_submarket];
 
             if (!isExistingValue(symbols, symbol_code)) {
+                // Use custom display name mapping first, then API display name, then symbol code
+                const custom_display_name =
+                    TRADING_TIMES.SYMBOL_DISPLAY_NAMES[symbol_code] ||
+                    TRADING_TIMES.SYMBOL_DISPLAY_NAMES[symbol.display_name];
+                const display_name = custom_display_name || symbol.display_name || symbol_code;
+
                 symbols[symbol_code] = {
-                    display_name: symbol.display_name || symbol_code,
+                    display_name: display_name,
                     pip_size: `${symbol.pip || symbol.pip_size || 0}`.length - 2,
                     is_active: !symbol.is_trading_suspended && symbol.exchange_is_open,
                 };
