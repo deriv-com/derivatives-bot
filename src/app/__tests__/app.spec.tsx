@@ -33,6 +33,15 @@ jest.mock('@/components/layout', () => () => <div data-testid='layout'>Layout</d
 
 jest.mock('@/hooks/useStore', () => ({
     StoreProvider: ({ children }: { children: React.ReactNode }) => <div data-testid='store-provider'>{children}</div>,
+    useStore: jest.fn(() => ({
+        run_panel: {
+            is_running: false,
+        },
+        ui: {
+            show_prompt: false,
+            setPromptHandler: jest.fn(),
+        },
+    })),
 }));
 
 // eslint-disable-next-line react/display-name
