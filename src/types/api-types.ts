@@ -181,8 +181,6 @@ import {
     ServerConfigResponse,
     ServerListRequest,
     ServerListResponse,
-    ServerStatusRequest,
-    ServerStatusResponse,
     ServerTimeRequest,
     ServerTimeResponse,
     SetAccountCurrencyRequest,
@@ -828,10 +826,6 @@ type TSocketEndpoints = {
     website_config: {
         request: ServerConfigRequest;
         response: ServerConfigResponse;
-    };
-    website_status: {
-        request: ServerStatusRequest;
-        response: ServerStatusResponse;
     };
 };
 

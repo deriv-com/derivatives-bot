@@ -19,7 +19,6 @@ type TShowError = {
 
 type TAccounts = {
     residence?: string;
-    landing_company_shortcode?: string;
 };
 
 export const showDigitalOptionsUnavailableError = (
@@ -43,8 +42,5 @@ export const showDigitalOptionsUnavailableError = (
 };
 
 export const isEuResidenceWithOnlyVRTC = (accounts: TAccounts[]) => {
-    return (
-        accounts?.length === 1 &&
-        accounts.every(acc => isEuCountry(acc.residence ?? '') && acc.landing_company_shortcode === 'virtual')
-    );
+    return accounts?.length === 1 && accounts.every(acc => isEuCountry(acc.residence ?? ''));
 };

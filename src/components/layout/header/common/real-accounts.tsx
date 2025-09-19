@@ -20,7 +20,7 @@ const RealAccounts = ({
     oAuthLogout,
     loginid,
     is_logging_out,
-    upgradeable_landing_companies,
+
     residence,
 }: TRealAccounts) => {
     const hasNonEuAccounts = modifiedCRAccountList && modifiedCRAccountList?.length > 0;

@@ -1,46 +1,10 @@
-import { flow } from 'mobx';
 import { ActiveSymbols } from '@deriv/api-types';
-import { getInitialLanguage, localize } from '@deriv-com/translations';
 import { WS } from '../../services';
-import { redirectToLogin } from '../login';
 import { LocalStore } from '../storage';
-
-type TResidenceList = {
-    residence_list: {
-        disabled?: string;
-        phone_idd?: null | string;
-        selected?: string;
-        text?: string;
-        tin_format?: string[];
-        value?: string;
-    }[];
-};
 
 type TIsSymbolOpen = {
     exchange_is_open: 0 | 1;
 };
-
-export const showUnavailableLocationError = flow(function* (showError, is_logged_in) {
-    const website_status = yield WS.wait('website_status');
-    const residence_list: TResidenceList = yield WS.residenceList();
-
-    const clients_country_code = website_status.website_status.clients_country;
-    const clients_country_text = (
-        residence_list.residence_list.find(obj_country => obj_country.value === clients_country_code) || {}
-    ).text;
-
-    const header = clients_country_text
-        ? localize('Sorry, this app is unavailable in {{clients_country}}.', { clients_country: clients_country_text })
-        : localize('Sorry, this app is unavailable in your current location.');
-
-    showError({
-        message: localize('If you have an account, log in to continue.'),
-        header,
-        redirect_label: localize('Log in'),
-        redirectOnClick: () => redirectToLogin(is_logged_in, getInitialLanguage()),
-        should_show_refresh: false,
-    });
-});
 
 // eslint-disable-next-line default-param-last
 export const isMarketClosed = (active_symbols: ActiveSymbols = [], symbol: string) => {

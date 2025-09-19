@@ -52,7 +52,7 @@ export type TRealAccounts = TNoNonEuAccounts & {
     oAuthLogout: () => void;
     loginid?: string;
     is_logging_out: boolean;
-    upgradeable_landing_companies?: string | null;
+
     residence?: string;
 };
 export type TEuAccounts = TNoNonEuAccounts & {
