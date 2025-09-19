@@ -5,6 +5,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import ChunkLoader from '@/components/loader/chunk-loader';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { crypto_currencies_display_order, fiat_currencies_display_order } from '@/components/shared';
+import { useLocalStorageSync } from '@/hooks/useLocalStorageSync';
 import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
@@ -49,6 +50,9 @@ const router = createBrowserRouter(
 );
 
 function App() {
+    // Initialize localStorage sync hook to handle session token changes from other tabs
+    useLocalStorageSync();
+
     React.useEffect(() => {
         // Use the invalid token handler hook to automatically retrigger OIDC authentication
         // when an invalid token is detected and the cookie logged state is true

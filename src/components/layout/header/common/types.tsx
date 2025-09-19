@@ -32,8 +32,6 @@ export type TDemoAccounts = {
     switchAccount: (loginId: number) => void;
     isVirtual: boolean;
     activeLoginId?: string;
-    oAuthLogout: () => void;
-    is_logging_out: boolean;
 };
 
 export type TNoNonEuAccounts = {
@@ -49,9 +47,6 @@ export type TRealAccounts = TNoNonEuAccounts & {
     modifiedCRAccountList: TModifiedAccount[];
     modifiedMFAccountList: TModifiedAccount[];
     switchAccount: (loginId: number) => void;
-    oAuthLogout: () => void;
-    loginid?: string;
-    is_logging_out: boolean;
     upgradeable_landing_companies?: string | null;
     residence?: string;
 };
@@ -67,12 +62,5 @@ export type TNonEUAccounts = TNoNonEuAccounts & {
     modifiedCRAccountList: TModifiedAccount[];
     modifiedMFAccountList?: TModifiedAccount[];
     switchAccount: (loginId: number) => void;
-    residence?: string;
-};
-
-export type TAccountSwitcherFooter = {
-    oAuthLogout: () => void;
-    loginid?: string;
-    is_logging_out: boolean;
     residence?: string;
 };
