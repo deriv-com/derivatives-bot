@@ -20,7 +20,6 @@ type TClientInformation = {
     last_name?: string;
     preferred_language?: string | null;
     user_id?: number | string;
-    landing_company_shortcode?: string;
 };
 const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ children }) => {
     const currentDomain = useMemo(() => '.' + window.location.hostname.split('.').slice(-2).join('.'), []);
@@ -80,10 +79,6 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
         if (client && !isAuthorizing && !appInitialization.current) {
             if (!api_base?.api) return;
             appInitialization.current = true;
-
-            api_base.api?.websiteStatus().then((res: TSocketResponseData<'website_status'>) => {
-                client.setWebsiteStatus(res.website_status);
-            });
 
             // Update server time every 10 seconds
             timeInterval.current = setInterval(() => {
@@ -157,7 +152,6 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
                     'user_id' in api_base.account_info
                         ? (api_base.account_info as { user_id: number }).user_id
                         : null) || activeLoginid,
-                landing_company_shortcode: '',
             };
 
             Cookies.set('client_information', JSON.stringify(client_information), {

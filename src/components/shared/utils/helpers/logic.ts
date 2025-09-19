@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { AccountListResponse, TickSpotData, WebsiteStatus } from '@deriv/api-types';
+import { AccountListResponse, TickSpotData } from '@deriv/api-types';
 import { getSupportedContracts } from '../constants/contract';
 import { isAccumulatorContract, isOpen, isUserSold } from '../contract';
 import { TContractInfo, TContractStore } from '../contract/contract-types';
@@ -73,17 +73,6 @@ export const getEndTime = (contract_info: TContractInfo) => {
 
 export const getBuyPrice = (contract_store: TContractStore) => {
     return contract_store.contract_info.buy_price;
-};
-
-/**
- * Checks if the server is currently down or updating.
- *
- * @param {WebsiteStatusResponse} response - The response object containing the status of the website.
- * @returns {boolean} True if the website status is 'down' or 'updating', false otherwise.
- */
-export const checkServerMaintenance = (website_status: WebsiteStatus | undefined | null) => {
-    const { site_status = '' } = website_status || {};
-    return site_status === 'down' || site_status === 'updating';
 };
 
 export const isContractSupportedAndStarted = (symbol: string, contract_info?: TContractInfo) =>

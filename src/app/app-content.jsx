@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { ToastContainer } from 'react-toastify';
 import AuthLoadingWrapper from '@/components/auth-loading-wrapper';
 import useLiveChat from '@/components/chat/useLiveChat';
-import { BOT_RESTRICTED_COUNTRIES_LIST } from '@/components/layout/header/utils';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import { getUrlBase } from '@/components/shared';
 import TncStatusUpdateModal from '@/components/tnc-status-update-modal';
@@ -18,7 +17,6 @@ import { useStore } from '@/hooks/useStore';
 import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import useTrackjs from '@/hooks/useTrackjs';
 import initDatadog from '@/utils/datadog';
-import initHotjar from '@/utils/hotjar';
 import { setSmartChartsPublicPath } from '@deriv-com/derivatives-charts';
 import { ThemeProvider } from '@deriv-com/quill-ui';
 import { localize } from '@deriv-com/translations';
@@ -34,10 +32,9 @@ import '../components/bot-notification/bot-notification.scss';
 const AppContent = observer(() => {
     const [is_api_initialized, setIsApiInitialized] = React.useState(false);
     const [is_loading, setIsLoading] = React.useState(true);
-    const [is_eu_error_loading, setIsEuErrorLoading] = React.useState(true);
+
     const store = useStore();
     const { app, transactions, common, client } = store;
-    const { showDigitalOptionsMaltainvestError } = app;
     const { is_dark_mode_on } = useThemeSwitcher();
 
     const { recovered_transactions, recoverPendingContracts } = transactions;
@@ -55,7 +52,6 @@ const AppContent = observer(() => {
         is_client_store_initialized: client?.is_logged_in ? true : !!client,
         is_logged_in: client?.is_logged_in,
         loginid: client?.loginid,
-        landing_company_shortcode: client?.landing_company_shortcode,
         currency: client?.currency,
         residence: client?.residence,
         email: '',
@@ -83,37 +79,6 @@ const AppContent = observer(() => {
         html?.setAttribute('lang', current_language.toLowerCase());
         html?.setAttribute('dir', current_language.toLowerCase() === 'ar' ? 'rtl' : 'ltr');
     }, [current_language, html]);
-
-    // Check for EU client error early
-    const is_eu_country = client?.is_eu_country;
-    const clients_logged_out_country_code = client?.clients_country;
-    const clients_logged_in_country_code = '';
-    const is_client_logged_in = client?.is_logged_in;
-
-    useEffect(() => {
-        const bot_restricted_countries = BOT_RESTRICTED_COUNTRIES_LIST();
-
-        if (!client.is_logged_in) {
-            // For logged out users
-            if (clients_logged_out_country_code) {
-                const is_restricted = !!bot_restricted_countries[clients_logged_out_country_code];
-                setIsEuErrorLoading(client.is_eu_country && is_restricted);
-            }
-        } else {
-            // For logged in users
-            if (clients_logged_in_country_code) {
-                const is_restricted = !!bot_restricted_countries[clients_logged_in_country_code];
-                setIsEuErrorLoading(is_restricted);
-            }
-        }
-    }, [
-        is_eu_country,
-        clients_logged_out_country_code,
-        clients_logged_in_country_code,
-        is_client_logged_in,
-        client.is_eu_country,
-        client.is_logged_in,
-    ]);
 
     const handleMessage = React.useCallback(
         ({ data }) => {
@@ -149,11 +114,6 @@ const AppContent = observer(() => {
             }
         };
     }, [is_api_initialized, client.is_logged_in, client.loginid, handleMessage, connectionStatus]);
-
-    React.useEffect(() => {
-        showDigitalOptionsMaltainvestError(client, common);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [client.is_options_blocked, client.clients_country]);
 
     const init = () => {
         ServerTime.init(common);
@@ -199,25 +159,21 @@ const AppContent = observer(() => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [is_api_initialized]);
 
-    // use is_landing_company_loaded to know got details of accounts to identify should show an error or not
     React.useEffect(() => {
-        if (client.is_logged_in && client.is_landing_company_loaded && is_api_initialized) {
+        if (client.is_logged_in && is_api_initialized) {
             changeActiveSymbolLoadingState();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [client.is_landing_company_loaded, is_api_initialized, client.loginid]);
+    }, [is_api_initialized, client.loginid]);
 
     useEffect(() => {
         initDatadog(true);
-        if (client) {
-            initHotjar(client);
-        }
-    }, [client]);
+    }, []);
 
     if (common?.error) return null;
 
     return is_loading ? (
-        <ChunkLoader message={is_eu_error_loading ? '' : localize('Initializing Deriv Bot account...')} />
+        <ChunkLoader message={localize('Initializing Deriv Bot account...')} />
     ) : (
         <AuthLoadingWrapper>
             <ThemeProvider theme={is_dark_mode_on ? 'dark' : 'light'}>

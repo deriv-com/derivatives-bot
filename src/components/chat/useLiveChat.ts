@@ -7,7 +7,6 @@ type TLiveChatClientInformation = {
     is_client_store_initialized: boolean;
     is_logged_in: boolean;
     loginid?: string;
-    landing_company_shortcode?: string;
     currency?: string;
     residence?: string;
     email?: string;
@@ -18,7 +17,6 @@ type TLiveChatClientInformation = {
 const useLiveChat = (client_information: TLiveChatClientInformation) => {
     const {
         is_client_store_initialized,
-        landing_company_shortcode = ' ',
         currency = ' ',
         email = ' ',
         is_logged_in = ' ',
@@ -58,7 +56,6 @@ const useLiveChat = (client_information: TLiveChatClientInformation) => {
                     utm_medium: utm_medium || ' ',
                     utm_campaign: utm_campaign || ' ',
                     loginid: is_logged_in ? loginid : ' ',
-                    landing_company_shortcode: is_logged_in ? landing_company_shortcode : ' ',
                     currency: is_logged_in ? currency : ' ',
                     residence: is_logged_in ? residence : ' ',
                     email: is_logged_in ? email : ' ',
@@ -80,7 +77,6 @@ const useLiveChat = (client_information: TLiveChatClientInformation) => {
         should_disable_livechat,
         loginid,
         is_logged_in,
-        landing_company_shortcode,
         is_client_store_initialized,
         currency,
         first_name,

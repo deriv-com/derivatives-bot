@@ -43,13 +43,7 @@ export type TNoNonEuAccounts = {
     is_low_risk_country: boolean;
     residence?: string;
 };
-export type TRealAccounts = TNoNonEuAccounts & {
-    modifiedCRAccountList: TModifiedAccount[];
-    modifiedMFAccountList: TModifiedAccount[];
-    switchAccount: (loginId: number) => void;
-    upgradeable_landing_companies?: string | null;
-    residence?: string;
-};
+
 export type TEuAccounts = TNoNonEuAccounts & {
     modifiedMFAccountList: TModifiedAccount[];
     switchAccount: (loginId: number) => void;
