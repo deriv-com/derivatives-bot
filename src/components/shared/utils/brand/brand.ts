@@ -1,15 +1,5 @@
 import config_data from '../../../../../brand.config.json';
 
-type TLandingCompany = {
-    fx: string;
-    malta: string;
-    maltainvest: string;
-    mx: string;
-    samoa: string;
-    svg: string;
-    v: string;
-};
-
 type TPlatform = {
     name: string;
     icon: string;
@@ -45,10 +35,6 @@ const isDomainAllowed = (domain_name: string) => {
     // This regex will match any official deriv production and testing domain names.
     // Allowed deriv domains: localhost, binary.sx, binary.com, deriv.com, deriv.be, deriv.me and their subdomains.
     return /^(((.*)\.)?(localhost:8444|pages.dev|binary\.(sx|com)|deriv.(com|me|be|dev)))$/.test(domain_name);
-};
-
-export const getLegalEntityName = (landing_company: keyof TLandingCompany) => {
-    return config_data.legal_entities[landing_company];
 };
 
 export const getBrandWebsiteName = () => {

@@ -800,7 +800,6 @@ export const isMarketClosed = (active_symbols = [], symbol) => {
         : false;
 };
 
-//landing_company_shortcode = 'svg'
 export const getAccountLimits = (currency = 'AUD', selected_market) => {
     // Return the currency config for the selected market
     const currency_config = ACCOUNT_LIMITS[selected_market];

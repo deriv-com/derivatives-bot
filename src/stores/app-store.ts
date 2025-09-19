@@ -1,9 +1,7 @@
 import { action, makeObservable, reaction } from 'mobx';
-import { standalone_routes } from '@/components/shared';
 import { api_base, ApiHelpers, DBot, runIrreversibleEvents } from '@/external/bot-skeleton';
 import { setCurrency } from '@/external/bot-skeleton/scratch/utils';
 import { TApiHelpersStore } from '@/types/stores.types';
-import { localize } from '@deriv-com/translations';
 import RootStore from './root-store';
 
 export default class AppStore {
@@ -36,25 +34,6 @@ export default class AppStore {
         this.api_helpers_store = null;
         this.timer = null;
     }
-
-    getErrorForNonEuClients = () => ({
-        text: localize(
-            'Unfortunately, this trading platform is not available for EU Deriv account. Please switch to a non-EU account to continue trading.'
-        ),
-        title: localize('Deriv Bot is unavailable for this account'),
-        link: localize('Switch to another account'),
-    });
-
-    getErrorForEuClients = (is_logged_in = false, country: string | undefined = undefined) => {
-        return {
-            text: ' ',
-            title: is_logged_in
-                ? localize(`Deriv Bot is not available for ${country || 'EU'} clients`)
-                : localize(`Deriv Bot is unavailable in ${country || 'the EU'}`),
-            link: is_logged_in ? localize("Back to Trader's Hub") : localize('Refresh'),
-            route: standalone_routes.traders_hub,
-        };
-    };
 
     onMount = async () => {
         const { blockly_store, run_panel } = this.root_store;

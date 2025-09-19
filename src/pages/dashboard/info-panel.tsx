@@ -4,7 +4,6 @@ import { observer } from 'mobx-react-lite';
 import Modal from '@/components/shared_ui/modal';
 import Text from '@/components/shared_ui/text';
 import { DBOT_TABS } from '@/constants/bot-contents';
-import useIsTNCNeeded from '@/hooks/useIsTNCNeeded';
 import { useStore } from '@/hooks/useStore';
 import { LegacyClose1pxIcon } from '@deriv/quill-icons/Legacy';
 import { useDevice } from '@deriv-com/ui';
@@ -13,7 +12,7 @@ import { SIDEBAR_INTRO } from './constants';
 const InfoPanel = observer(() => {
     const { isDesktop } = useDevice();
     const { dashboard } = useStore();
-    const is_tnc_needed = useIsTNCNeeded();
+
     const [is_tour_open, setIsTourOpen] = React.useState(false);
 
     const {
@@ -41,16 +40,12 @@ const InfoPanel = observer(() => {
     };
 
     React.useEffect(() => {
-        if (is_tnc_needed) {
-            setIsTourOpen(false);
+        if (is_info_panel_visible) {
+            setIsTourOpen(true);
         } else {
-            if (is_info_panel_visible) {
-                setIsTourOpen(true);
-            } else {
-                setIsTourOpen(false);
-            }
+            setIsTourOpen(false);
         }
-    }, [is_tnc_needed, is_info_panel_visible]);
+    }, [is_info_panel_visible]);
 
     const renderInfo = () => (
         <div className='db-info-panel'>

@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import { isEmptyObject } from '@/components/shared';
-import { isEuCountry, isMultipliersOnly, isOptionsBlocked } from '@/components/shared/common/utility';
+import { isMultipliersOnly, isOptionsBlocked } from '@/components/shared/common/utility';
 import { removeCookies } from '@/components/shared/utils/storage/storage';
 import { api_base, observer } from '@/external/bot-skeleton';
 import {
@@ -148,8 +148,8 @@ export default class ClientStore {
     }
 
     get is_eu_or_multipliers_only() {
-        // Check whether account is multipliers only and if the account is from eu countries
-        return !this.is_multipliers_only ? !isEuCountry(this.residence) : !this.is_multipliers_only;
+        // Always return false - EU restrictions now handled by backend
+        return false;
     }
 
     get is_virtual() {
