@@ -168,8 +168,8 @@ export const ACTIVE_SYMBOLS = [
         pip: 0.01,
     },
     {
-        symbol: 'OTC_SPX500',
-        underlying_symbol: 'OTC_SPX500',
+        symbol: 'OTC_SPC',
+        underlying_symbol: 'OTC_SPC',
         display_name: 'US 500',
         market: 'indices',
         submarket: 'american_indices',
@@ -281,6 +281,9 @@ export const MARKET_MAPPINGS = {
         ['europe_OTC', 'European Indices'],
         ['asia_oceania_OTC', 'Asian Indices'],
         ['americas_OTC', 'American Indices'],
+        ['european_OTC', 'European Indices'],
+        ['asia_OTC', 'Asian Indices'],
+        ['american_OTC', 'American Indices'],
         ['otc_indices', 'OTC Indices'],
         ['us_indices', 'US Indices'],
         ['stock_indices', 'Stock Indices'],
@@ -332,11 +335,14 @@ export const SUBMARKET_OPTIONS = {
 // Symbol Options by Submarket
 export const SYMBOL_OPTIONS = {
     random_index: [
-        ['Volatility 10 Index', '1HZ10V'],
-        ['Volatility 25 Index', '1HZ25V'],
-        ['Volatility 50 Index', '1HZ50V'],
-        ['Volatility 75 Index', '1HZ75V'],
-        ['Volatility 100 Index', '1HZ100V'],
+        ['Volatility 10 (1s) Index', '1HZ10V'],
+        ['Volatility 15 (1s) Index', '1HZ15V'],
+        ['Volatility 25 (1s) Index', '1HZ25V'],
+        ['Volatility 30 (1s) Index', '1HZ30V'],
+        ['Volatility 50 (1s) Index', '1HZ50V'],
+        ['Volatility 75 (1s) Index', '1HZ75V'],
+        ['Volatility 90 (1s) Index', '1HZ90V'],
+        ['Volatility 100 (1s) Index', '1HZ100V'],
     ],
     major_pairs: [
         ['EUR/USD', 'frxEURUSD'],
@@ -355,10 +361,34 @@ export const SYMBOL_OPTIONS = {
     ],
     otc_index: [
         ['Wall Street 30', 'OTC_DJI'],
-        ['US 500', 'OTC_SPX'],
+        ['US 500', 'OTC_SPC'],
         ['US Tech 100', 'OTC_NDX'],
         ['UK 100', 'OTC_FTSE'],
         ['Germany 40', 'OTC_GDAXI'],
+        ['Euro 50', 'OTC_SX5E'],
+        ['Australia 200', 'OTC_AS51'],
+        ['Japan 225', 'OTC_N225'],
+    ],
+    american_indices: [
+        ['Wall Street 30', 'OTC_DJI'],
+        ['US 500', 'OTC_SPC'],
+        ['US Tech 100', 'OTC_NDX'],
+    ],
+    european_indices: [
+        ['UK 100', 'OTC_FTSE'],
+        ['Germany 40', 'OTC_GDAXI'],
+        ['Euro 50', 'OTC_SX5E'],
+    ],
+    asian_indices: [
+        ['Australia 200', 'OTC_AS51'],
+        ['Japan 225', 'OTC_N225'],
+    ],
+    metals: [
+        ['Gold/USD', 'frxXAUUSD'],
+        ['Silver/USD', 'frxXAGUSD'],
+        ['Palladium/USD', 'FRXXPDUSD'],
+        ['Platinum/USD', 'FRXXPTUSD'],
+        ['Gold Basket', 'WLDXAU'],
     ],
 };
 

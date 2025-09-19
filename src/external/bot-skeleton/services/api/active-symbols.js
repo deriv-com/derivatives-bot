@@ -1,6 +1,11 @@
 /* eslint-disable no-confusing-arrow */
 import { localize } from '@deriv-com/translations';
-import { MARKET_OPTIONS, SUBMARKET_OPTIONS, SYMBOL_OPTIONS } from '../../../../components/shared/utils/common-data';
+import {
+    MARKET_MAPPINGS,
+    MARKET_OPTIONS,
+    SUBMARKET_OPTIONS,
+    SYMBOL_OPTIONS,
+} from '../../../../components/shared/utils/common-data';
 import { config } from '../../constants/config';
 import PendingPromise from '../../utils/pending-promise';
 import { api_base } from './api-base';
@@ -14,6 +19,13 @@ export default class ActiveSymbols {
         this.is_initialised = false;
         this.processed_symbols = {};
         this.trading_times = trading_times;
+    }
+
+    clearCache() {
+        this.active_symbols = [];
+        this.processed_symbols = {};
+        this.is_initialised = false;
+        this.init_promise = new PendingPromise();
     }
 
     async retrieveActiveSymbols(is_forced_update = false) {
@@ -83,8 +95,12 @@ export default class ActiveSymbols {
             const { submarkets } = processed_symbols[symbol_market];
 
             if (!isExistingValue(submarkets, symbol_submarket)) {
+                // Use our custom submarket display name mapping, fallback to API display name, then submarket code
+                const custom_display_name = MARKET_MAPPINGS.SUBMARKET_DISPLAY_NAMES.get(symbol_submarket);
+                const display_name = custom_display_name || symbol.submarket_display_name || symbol_submarket;
+
                 submarkets[symbol_submarket] = {
-                    display_name: symbol.submarket_display_name || symbol_submarket,
+                    display_name: display_name,
                     symbols: {},
                 };
             }
@@ -158,7 +174,45 @@ export default class ActiveSymbols {
                 const submarket = submarkets[submarket_name];
                 const { symbols } = submarket;
 
-                Object.keys(symbols).forEach(symbol_name => {
+                // Get symbol keys and sort them properly for volatility indices
+                const symbol_keys = Object.keys(symbols);
+
+                // Custom sorting for volatility indices to ensure correct numerical order
+                const isVolatilitySubmarket =
+                    submarket_name === 'random_index' ||
+                    submarket.display_name === 'Continuous Indices' ||
+                    submarket.display_name?.includes('Volatility') ||
+                    submarket_name?.includes('volatility');
+
+                if (isVolatilitySubmarket) {
+                    symbol_keys.sort((a, b) => {
+                        // Extract numeric values from volatility indices (1HZ10V, 1HZ25V, etc.)
+                        const getVolatilityNumber = symbol => {
+                            // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
+                            const hzMatch = symbol.match(/1HZ(\d+)V/);
+                            if (hzMatch) return parseInt(hzMatch[1], 10);
+
+                            // Check for R_ format (R_10, R_25, etc.) as fallback
+                            const rMatch = symbol.match(/R_(\d+)/);
+                            if (rMatch) return parseInt(rMatch[1], 10);
+
+                            return 0;
+                        };
+
+                        const aNum = getVolatilityNumber(a);
+                        const bNum = getVolatilityNumber(b);
+
+                        // If both are volatility indices, sort by number
+                        if (aNum > 0 && bNum > 0) {
+                            return aNum - bNum;
+                        }
+
+                        // Otherwise, use alphabetical sorting
+                        return a.localeCompare(b);
+                    });
+                }
+
+                symbol_keys.forEach(symbol_name => {
                     if (DISABLED.SYMBOLS.includes(symbol_name)) return;
                     const symbol = symbols[symbol_name];
                     symbols_for_bot.push({

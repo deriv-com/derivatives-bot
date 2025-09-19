@@ -308,7 +308,7 @@ export const config = () => ({
         },
     },
     default_file_name: localize('Untitled Bot'),
-    DISABLED_SYMBOLS: ['frxGBPNOK', 'frxUSDNOK', 'frxUSDNEK', 'frxUSDSEK'],
+    DISABLED_SYMBOLS: ['frxGBPNOK', 'frxUSDNOK', 'frxUSDNEK', 'frxUSDSEK', 'OTC_IBEX35'],
     DISABLED_SUBMARKETS: ['energy'],
     QUICK_STRATEGY: {
         DISABLED: {

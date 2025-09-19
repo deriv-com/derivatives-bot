@@ -67,14 +67,45 @@ class TradingTimesService {
                             {
                                 name: 'Continuous Indices',
                                 symbols: [
-                                    { symbol: 'R_10', display_name: 'Volatility 10 Index', underlying_symbol: 'R_10' },
-                                    { symbol: 'R_25', display_name: 'Volatility 25 Index', underlying_symbol: 'R_25' },
-                                    { symbol: 'R_50', display_name: 'Volatility 50 Index', underlying_symbol: 'R_50' },
-                                    { symbol: 'R_75', display_name: 'Volatility 75 Index', underlying_symbol: 'R_75' },
                                     {
-                                        symbol: 'R_100',
-                                        display_name: 'Volatility 100 Index',
-                                        underlying_symbol: 'R_100',
+                                        symbol: '1HZ10V',
+                                        display_name: 'Volatility 10 (1s) Index',
+                                        underlying_symbol: '1HZ10V',
+                                    },
+                                    {
+                                        symbol: '1HZ15V',
+                                        display_name: 'Volatility 15 (1s) Index',
+                                        underlying_symbol: '1HZ15V',
+                                    },
+                                    {
+                                        symbol: '1HZ25V',
+                                        display_name: 'Volatility 25 (1s) Index',
+                                        underlying_symbol: '1HZ25V',
+                                    },
+                                    {
+                                        symbol: '1HZ30V',
+                                        display_name: 'Volatility 30 (1s) Index',
+                                        underlying_symbol: '1HZ30V',
+                                    },
+                                    {
+                                        symbol: '1HZ50V',
+                                        display_name: 'Volatility 50 (1s) Index',
+                                        underlying_symbol: '1HZ50V',
+                                    },
+                                    {
+                                        symbol: '1HZ75V',
+                                        display_name: 'Volatility 75 (1s) Index',
+                                        underlying_symbol: '1HZ75V',
+                                    },
+                                    {
+                                        symbol: '1HZ90V',
+                                        display_name: 'Volatility 90 (1s) Index',
+                                        underlying_symbol: '1HZ90V',
+                                    },
+                                    {
+                                        symbol: '1HZ100V',
+                                        display_name: 'Volatility 100 (1s) Index',
+                                        underlying_symbol: '1HZ100V',
                                     },
                                 ],
                             },
@@ -131,7 +162,8 @@ class TradingTimesService {
                                 name: 'American Indices',
                                 symbols: [
                                     { symbol: 'OTC_DJI', display_name: 'Wall Street 30', underlying_symbol: 'OTC_DJI' },
-                                    { symbol: 'OTC_SPX500', display_name: 'US 500', underlying_symbol: 'OTC_SPX500' },
+                                    { symbol: 'OTC_SPC', display_name: 'US 500', underlying_symbol: 'OTC_SPC' },
+                                    { symbol: 'OTC_NDX', display_name: 'US Tech 100', underlying_symbol: 'OTC_NDX' },
                                 ],
                             },
                             {
@@ -140,7 +172,6 @@ class TradingTimesService {
                                     { symbol: 'OTC_FTSE', display_name: 'UK 100', underlying_symbol: 'OTC_FTSE' },
                                     { symbol: 'OTC_GDAXI', display_name: 'Germany 40', underlying_symbol: 'OTC_GDAXI' },
                                     { symbol: 'OTC_SX5E', display_name: 'Euro 50', underlying_symbol: 'OTC_SX5E' },
-                                    { symbol: 'OTC_IBEX35', display_name: 'Spain 35', underlying_symbol: 'OTC_IBEX35' },
                                 ],
                             },
                             {
