@@ -2,7 +2,6 @@ import React from 'react';
 import { Icon } from '@/utils/tmp/dummy';
 import { getBaseTraderHubUrl } from '@/utils/traders-hub-redirect';
 import { Localize, localize } from '@deriv-com/translations';
-import AccountSwitcherFooter from './account-swticher-footer';
 import EuAccounts from './eu-accounts';
 import NoNonEuAccounts from './no-non-eu-accounts';
 import NonEUAccounts from './non-eu-accounts';
@@ -17,9 +16,6 @@ const RealAccounts = ({
     isVirtual,
     tabs_labels,
     is_low_risk_country,
-    oAuthLogout,
-    loginid,
-    is_logging_out,
     upgradeable_landing_companies,
     residence,
 }: TRealAccounts) => {
@@ -95,13 +91,6 @@ const RealAccounts = ({
                     <AccountSwitcherDivider />
                 </>
             )}
-            <AccountSwitcherFooter
-                oAuthLogout={oAuthLogout}
-                loginid={loginid}
-                is_logging_out={is_logging_out}
-                residence={residence}
-                type='real'
-            />
         </>
     );
 };

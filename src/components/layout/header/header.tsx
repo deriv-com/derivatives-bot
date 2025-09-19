@@ -34,7 +34,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const currency = getCurrency?.();
     const { localize } = useTranslations();
 
-    const { isSingleLoggingIn } = useOauth2();
+    const { isSingleLoggingIn, oAuthLogout } = useOauth2({ handleLogout: async () => client?.logout(), client });
 
     // Check if there's a session token in localStorage - if so, we should show loading until auth is complete
     const hasSessionToken = typeof window !== 'undefined' && !!localStorage.getItem('session_token');
@@ -50,9 +50,12 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
             return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
         } else if (activeLoginid && isAuthorized) {
             return (
-                <>
+                <div className='auth-actions'>
                     <AccountSwitcher activeAccount={activeAccount} />
-                </>
+                    <Button tertiary disabled={client?.is_logging_out} onClick={oAuthLogout}>
+                        <Localize i18n_default_text='Log out' />
+                    </Button>
+                </div>
             );
         } else {
             return (
@@ -82,6 +85,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         localize,
         activeAccount,
         is_virtual,
+        oAuthLogout,
     ]);
 
     if (client?.should_hide_header) return null;
