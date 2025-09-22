@@ -153,7 +153,7 @@ class ChartAPI {
         filtered_symbols.push(...required_1s_symbols);
 
         // Sort volatility indices to ensure proper order
-        filtered_symbols = this.sortVolatilityIndices(filtered_symbols);
+        // filtered_symbols = this.sortVolatilityIndices(filtered_symbols);
 
         return filtered_symbols;
     };
@@ -196,63 +196,63 @@ class ChartAPI {
      * @param {Array} symbols - Array of symbols to sort
      * @returns {Array} Sorted symbols array
      */
-    sortVolatilityIndices = symbols => {
-        // Define the exact order for volatility indices
-        const VOLATILITY_ORDER = [
-            '1HZ10V', // Volatility 10 (1s) Index
-            'R_10', // Volatility 10 Index
-            '1HZ15V', // Volatility 15 (1s) Index
-            '1HZ25V', // Volatility 25 (1s) Index
-            'R_25', // Volatility 25 Index
-            '1HZ30V', // Volatility 30 (1s) Index
-            '1HZ50V', // Volatility 50 (1s) Index
-            'R_50', // Volatility 50 Index
-            '1HZ75V', // Volatility 75 (1s) Index
-            'R_75', // Volatility 75 Index
-            '1HZ90V', // Volatility 90 (1s) Index
-            '1HZ100V', // Volatility 100 (1s) Index
-            'R_100', // Volatility 100 Index
-        ];
+    // sortVolatilityIndices = symbols => {
+    //     // Define the exact order for volatility indices
+    //     const VOLATILITY_ORDER = [
+    //         '1HZ10V', // Volatility 10 (1s) Index
+    //         'R_10', // Volatility 10 Index
+    //         '1HZ15V', // Volatility 15 (1s) Index
+    //         '1HZ25V', // Volatility 25 (1s) Index
+    //         'R_25', // Volatility 25 Index
+    //         '1HZ30V', // Volatility 30 (1s) Index
+    //         '1HZ50V', // Volatility 50 (1s) Index
+    //         'R_50', // Volatility 50 Index
+    //         '1HZ75V', // Volatility 75 (1s) Index
+    //         'R_75', // Volatility 75 Index
+    //         '1HZ90V', // Volatility 90 (1s) Index
+    //         '1HZ100V', // Volatility 100 (1s) Index
+    //         'R_100', // Volatility 100 Index
+    //     ];
 
-        // Separate volatility and non-volatility symbols
-        const volatility_symbols = [];
-        const other_symbols = [];
+    //     // Separate volatility and non-volatility symbols
+    //     const volatility_symbols = [];
+    //     const other_symbols = [];
 
-        symbols.forEach(symbol => {
-            const symbol_code = symbol.underlying_symbol || symbol.symbol;
-            const display_name = (symbol.display_name || '').toLowerCase();
+    //     symbols.forEach(symbol => {
+    //         const symbol_code = symbol.underlying_symbol || symbol.symbol;
+    //         const display_name = (symbol.display_name || '').toLowerCase();
 
-            if (VOLATILITY_ORDER.includes(symbol_code) || display_name.includes('volatility')) {
-                volatility_symbols.push(symbol);
-            } else {
-                other_symbols.push(symbol);
-            }
-        });
+    //         if (VOLATILITY_ORDER.includes(symbol_code) || display_name.includes('volatility')) {
+    //             volatility_symbols.push(symbol);
+    //         } else {
+    //             other_symbols.push(symbol);
+    //         }
+    //     });
 
-        // Sort volatility symbols according to the predefined order
-        volatility_symbols.sort((a, b) => {
-            const symbol_a = a.underlying_symbol || a.symbol;
-            const symbol_b = b.underlying_symbol || b.symbol;
+    //     // Sort volatility symbols according to the predefined order
+    //     volatility_symbols.sort((a, b) => {
+    //         const symbol_a = a.underlying_symbol || a.symbol;
+    //         const symbol_b = b.underlying_symbol || b.symbol;
 
-            const index_a = VOLATILITY_ORDER.indexOf(symbol_a);
-            const index_b = VOLATILITY_ORDER.indexOf(symbol_b);
+    //         const index_a = VOLATILITY_ORDER.indexOf(symbol_a);
+    //         const index_b = VOLATILITY_ORDER.indexOf(symbol_b);
 
-            // If both symbols are in the order array, sort by their position
-            if (index_a !== -1 && index_b !== -1) {
-                return index_a - index_b;
-            }
+    //         // If both symbols are in the order array, sort by their position
+    //         if (index_a !== -1 && index_b !== -1) {
+    //             return index_a - index_b;
+    //         }
 
-            // If only one is in the order array, prioritize it
-            if (index_a !== -1) return -1;
-            if (index_b !== -1) return 1;
+    //         // If only one is in the order array, prioritize it
+    //         if (index_a !== -1) return -1;
+    //         if (index_b !== -1) return 1;
 
-            // If neither is in the order array, sort alphabetically
-            return (a.display_name || '').localeCompare(b.display_name || '');
-        });
+    //         // If neither is in the order array, sort alphabetically
+    //         return (a.display_name || '').localeCompare(b.display_name || '');
+    //     });
 
-        // Return symbols with volatility indices properly sorted
-        return [...other_symbols, ...volatility_symbols];
-    };
+    //     // Return symbols with volatility indices properly sorted
+    //     return [...other_symbols, ...volatility_symbols];
+    // };
 }
 
 const chart_api = new ChartAPI();
