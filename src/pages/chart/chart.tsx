@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { api_base } from '@/external/bot-skeleton';
 import chart_api from '@/external/bot-skeleton/services/api/chart-api';
 import { useStore } from '@/hooks/useStore';
 import {
@@ -84,9 +85,189 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         if (!symbol) updateSymbol();
     }, [symbol, updateSymbol]);
 
-    const requestAPI = (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
-        return chart_api.api.send(req);
+    const [forceChartRefresh, setForceChartRefresh] = useState(0);
+
+    useEffect(() => {
+        // FORCE INJECT 1s volatility indices directly into api_base.active_symbols
+        if (api_base.active_symbols && Array.isArray(api_base.active_symbols)) {
+            let symbols = [...api_base.active_symbols];
+
+            // Check if our symbols are already present
+            const existing_1s_symbols = symbols.filter((s: any) =>
+                ['1HZ15V', '1HZ30V', '1HZ90V'].includes(s.symbol || s.underlying_symbol)
+            );
+
+            if (existing_1s_symbols.length < 3) {
+                // Remove Spain 35 and any existing instances of our symbols
+                symbols = symbols.filter((symbol: any) => {
+                    const symbol_code = symbol.symbol || symbol.underlying_symbol;
+                    return symbol_code !== 'OTC_IBEX35' && !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
+                });
+
+                // Force add our 1s volatility indices
+                const required_1s_symbols = [
+                    {
+                        symbol: '1HZ15V',
+                        underlying_symbol: '1HZ15V',
+                        display_name: 'Volatility 15 (1s) Index',
+                        market: 'synthetic_index',
+                        market_display_name: 'Derived',
+                        submarket: 'random_index',
+                        submarket_display_name: 'Continuous Indices',
+                        pip: 0.001,
+                        pip_size: 0.001,
+                        exchange_is_open: true,
+                        is_trading_suspended: false,
+                    },
+                    {
+                        symbol: '1HZ30V',
+                        underlying_symbol: '1HZ30V',
+                        display_name: 'Volatility 30 (1s) Index',
+                        market: 'synthetic_index',
+                        market_display_name: 'Derived',
+                        submarket: 'random_index',
+                        submarket_display_name: 'Continuous Indices',
+                        pip: 0.001,
+                        pip_size: 0.001,
+                        exchange_is_open: true,
+                        is_trading_suspended: false,
+                    },
+                    {
+                        symbol: '1HZ90V',
+                        underlying_symbol: '1HZ90V',
+                        display_name: 'Volatility 90 (1s) Index',
+                        market: 'synthetic_index',
+                        market_display_name: 'Derived',
+                        submarket: 'random_index',
+                        submarket_display_name: 'Continuous Indices',
+                        pip: 0.001,
+                        pip_size: 0.001,
+                        exchange_is_open: true,
+                        is_trading_suspended: false,
+                    },
+                ];
+
+                // Add our symbols
+                symbols.push(...required_1s_symbols);
+
+                // Replace the global api_base.active_symbols
+                api_base.active_symbols = symbols;
+
+                // Force chart to refresh by triggering a re-render
+                setTimeout(() => {
+                    setForceChartRefresh(prev => prev + 1);
+                }, 100);
+            }
+        }
+    }, [symbol]);
+
+    const requestAPI = async (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
+        const response = await chart_api.api.send(req);
+
+        // Only modify active_symbols responses to keep it simple and avoid breaking the chart
+        if (req && (req as ActiveSymbolsRequest).active_symbols && response && response.active_symbols) {
+            let symbols = [...response.active_symbols];
+
+            // Remove Spain 35 from chart
+            symbols = symbols.filter(symbol => {
+                const symbol_code = symbol.symbol || symbol.underlying_symbol;
+                return symbol_code !== 'OTC_IBEX35';
+            });
+
+            // Force add our 1s volatility indices with sorting prefixes
+            const required_1s_symbols = [
+                {
+                    symbol: '1HZ15V',
+                    underlying_symbol: '1HZ15V',
+                    display_name: 'Volatility 15 (1s) Index',
+                    market: 'synthetic_index',
+                    market_display_name: 'Derived',
+                    submarket: 'random_index',
+                    submarket_display_name: 'Continuous Indices',
+                    pip: 0.001,
+                    pip_size: 0.001,
+                    exchange_is_open: true,
+                    is_trading_suspended: false,
+                },
+                {
+                    symbol: '1HZ30V',
+                    underlying_symbol: '1HZ30V',
+                    display_name: 'Volatility 30 (1s) Index',
+                    market: 'synthetic_index',
+                    market_display_name: 'Derived',
+                    submarket: 'random_index',
+                    submarket_display_name: 'Continuous Indices',
+                    pip: 0.001,
+                    pip_size: 0.001,
+                    exchange_is_open: true,
+                    is_trading_suspended: false,
+                },
+                {
+                    symbol: '1HZ90V',
+                    underlying_symbol: '1HZ90V',
+                    display_name: 'Volatility 90 (1s) Index',
+                    market: 'synthetic_index',
+                    market_display_name: 'Derived',
+                    submarket: 'random_index',
+                    submarket_display_name: 'Continuous Indices',
+                    pip: 0.001,
+                    pip_size: 0.001,
+                    exchange_is_open: true,
+                    is_trading_suspended: false,
+                },
+            ];
+
+            // Apply alphabetical sorting prefixes to force correct order
+            // Since SmartChart uses alphabetical sorting internally, we need to make our desired order alphabetical
+            const volatilityOrderMap: Record<string, string> = {
+                'Volatility 10 (1s) Index': '01a_Volatility 10 (1s) Index',
+                'Volatility 10 Index': '01b_Volatility 10 Index',
+                'Volatility 15 (1s) Index': '02a_Volatility 15 (1s) Index',
+                'Volatility 25 (1s) Index': '03a_Volatility 25 (1s) Index',
+                'Volatility 25 Index': '03b_Volatility 25 Index',
+                'Volatility 30 (1s) Index': '04a_Volatility 30 (1s) Index',
+                'Volatility 50 (1s) Index': '05a_Volatility 50 (1s) Index',
+                'Volatility 50 Index': '05b_Volatility 50 Index',
+                'Volatility 75 (1s) Index': '06a_Volatility 75 (1s) Index',
+                'Volatility 75 Index': '06b_Volatility 75 Index',
+                'Volatility 90 (1s) Index': '07a_Volatility 90 (1s) Index',
+                'Volatility 100 (1s) Index': '08a_Volatility 100 (1s) Index',
+                'Volatility 100 Index': '08b_Volatility 100 Index',
+            };
+
+            // Apply sorting prefixes to volatility indices
+            symbols.forEach((symbol: any) => {
+                if (symbol.display_name && volatilityOrderMap[symbol.display_name]) {
+                    symbol.original_display_name = symbol.display_name;
+                    symbol.display_name = volatilityOrderMap[symbol.display_name];
+                }
+            });
+
+            // Remove any existing instances first to avoid duplicates
+            symbols = symbols.filter(symbol => {
+                const symbol_code = symbol.symbol || symbol.underlying_symbol;
+                return !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
+            });
+
+            // Add our 1s volatility indices
+            symbols.push(...required_1s_symbols);
+
+            const modified_response = {
+                ...response,
+                active_symbols: symbols,
+            };
+
+            // Force update the global api_base.active_symbols as well to ensure consistency
+            if (api_base.active_symbols) {
+                api_base.active_symbols = symbols;
+            }
+
+            return modified_response;
+        }
+
+        return response;
     };
+
     const requestForgetStream = (subscription_id: string) => {
         subscription_id && chart_api.api.forget(subscription_id);
     };
@@ -123,7 +304,8 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
             dir='ltr'
         >
             <SmartChart
-                id='dbot'
+                id={`dbot-${forceChartRefresh}`}
+                key={`chart-${forceChartRefresh}`}
                 barriers={barriers}
                 showLastDigitStats={show_digits_stats}
                 chartControlsWidgets={null}
@@ -154,7 +336,73 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
                 symbol={symbol}
                 topWidgets={() => <ChartTitle onChange={onSymbolChange} />}
                 isConnectionOpened={is_connection_opened}
-                getMarketsOrder={getMarketsOrder}
+                getMarketsOrder={active_symbols => {
+                    // Check if our 1s volatility indices are present
+                    const volatility_1s_present =
+                        active_symbols?.filter((s: any) =>
+                            ['1HZ15V', '1HZ30V', '1HZ90V'].includes(s.symbol || s.underlying_symbol)
+                        ) || [];
+
+                    // If our symbols are missing, force add them here
+                    if (active_symbols && volatility_1s_present.length < 3) {
+                        const required_1s_symbols = [
+                            {
+                                symbol: '1HZ15V',
+                                underlying_symbol: '1HZ15V',
+                                display_name: 'Volatility 15 (1s) Index',
+                                market: 'synthetic_index',
+                                market_display_name: 'Derived',
+                                submarket: 'random_index',
+                                submarket_display_name: 'Continuous Indices',
+                                pip: 0.001,
+                                pip_size: 0.001,
+                                exchange_is_open: true,
+                                is_trading_suspended: false,
+                            },
+                            {
+                                symbol: '1HZ30V',
+                                underlying_symbol: '1HZ30V',
+                                display_name: 'Volatility 30 (1s) Index',
+                                market: 'synthetic_index',
+                                market_display_name: 'Derived',
+                                submarket: 'random_index',
+                                submarket_display_name: 'Continuous Indices',
+                                pip: 0.001,
+                                pip_size: 0.001,
+                                exchange_is_open: true,
+                                is_trading_suspended: false,
+                            },
+                            {
+                                symbol: '1HZ90V',
+                                underlying_symbol: '1HZ90V',
+                                display_name: 'Volatility 90 (1s) Index',
+                                market: 'synthetic_index',
+                                market_display_name: 'Derived',
+                                submarket: 'random_index',
+                                submarket_display_name: 'Continuous Indices',
+                                pip: 0.001,
+                                pip_size: 0.001,
+                                exchange_is_open: true,
+                                is_trading_suspended: false,
+                            },
+                        ];
+
+                        // Remove Spain 35 and any existing instances of our symbols
+                        const modified_symbols = active_symbols.filter((symbol: any) => {
+                            const symbol_code = symbol.symbol || symbol.underlying_symbol;
+                            return (
+                                symbol_code !== 'OTC_IBEX35' && !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code)
+                            );
+                        });
+
+                        // Add our 1s volatility indices
+                        modified_symbols.push(...required_1s_symbols);
+
+                        return getMarketsOrder(modified_symbols);
+                    }
+
+                    return getMarketsOrder(active_symbols);
+                }}
                 isLive
                 leftMargin={80}
             />
