@@ -135,6 +135,9 @@ export default class TradingTimes {
                 });
             });
 
+            // Inject additional 1s volatility indices that may not be in the API response
+            this.injectAdditionalTradingTimes();
+
             // If no trading times were processed, use fallback
             if (Object.keys(this.trading_times).length === 0) {
                 this.setTradingTimes();
@@ -143,6 +146,23 @@ export default class TradingTimes {
             this.setTradingTimes();
             return;
         }
+    }
+
+    injectAdditionalTradingTimes() {
+        // Additional 1s volatility indices to inject if not present in trading times response
+        const additionalSymbols = ['1HZ15V', '1HZ30V', '1HZ90V'];
+
+        additionalSymbols.forEach(symbol => {
+            if (!this.trading_times[symbol]) {
+                // Add trading times for 1s volatility indices (they are open 24/7)
+                this.trading_times[symbol] = {
+                    is_open_all_day: true,
+                    is_closed_all_day: false,
+                    times: undefined,
+                    is_opened: true, // Always open for volatility indices
+                };
+            }
+        });
     }
 
     setTradingTimes() {
