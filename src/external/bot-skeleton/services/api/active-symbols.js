@@ -46,9 +46,6 @@ export default class ActiveSymbols {
             this.active_symbols = api_base?.active_symbols ?? [];
         }
 
-        // Inject additional 1s volatility indices that may not be in the API response
-        this.injectAdditionalSymbols();
-
         this.processed_symbols = this.processActiveSymbols();
 
         // Also create chart-specific processed symbols
@@ -70,63 +67,6 @@ export default class ActiveSymbols {
 
         this.init_promise.resolve();
         return this.active_symbols;
-    }
-
-    injectAdditionalSymbols() {
-        // Additional 1s volatility indices to inject if not present in API response
-        const additionalSymbols = [
-            {
-                symbol: '1HZ15V',
-                underlying_symbol: '1HZ15V',
-                display_name: 'Volatility 15 (1s) Index',
-                market: 'synthetic_index',
-                market_display_name: 'Derived',
-                submarket: 'random_index',
-                submarket_display_name: 'Continuous Indices',
-                pip: 0.001,
-                pip_size: 0.001,
-                exchange_is_open: true,
-                is_trading_suspended: false,
-            },
-            {
-                symbol: '1HZ30V',
-                underlying_symbol: '1HZ30V',
-                display_name: 'Volatility 30 (1s) Index',
-                market: 'synthetic_index',
-                market_display_name: 'Derived',
-                submarket: 'random_index',
-                submarket_display_name: 'Continuous Indices',
-                pip: 0.001,
-                pip_size: 0.001,
-                exchange_is_open: true,
-                is_trading_suspended: false,
-            },
-            {
-                symbol: '1HZ90V',
-                underlying_symbol: '1HZ90V',
-                display_name: 'Volatility 90 (1s) Index',
-                market: 'synthetic_index',
-                market_display_name: 'Derived',
-                submarket: 'random_index',
-                submarket_display_name: 'Continuous Indices',
-                pip: 0.001,
-                pip_size: 0.001,
-                exchange_is_open: true,
-                is_trading_suspended: false,
-            },
-        ];
-
-        // Check if symbols already exist and add them if they don't
-        additionalSymbols.forEach(newSymbol => {
-            const exists = this.active_symbols.some(existingSymbol => {
-                const symbol_code = existingSymbol.underlying_symbol || existingSymbol.symbol;
-                return symbol_code === newSymbol.symbol;
-            });
-
-            if (!exists) {
-                this.active_symbols.push(newSymbol);
-            }
-        });
     }
 
     processActiveSymbols() {
