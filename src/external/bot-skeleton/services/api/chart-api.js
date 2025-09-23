@@ -1,4 +1,3 @@
-import { api_base } from './api-base';
 import { generateDerivApiInstance } from './appId';
 
 class ChartAPI {
@@ -19,10 +18,10 @@ class ChartAPI {
             this.api?.connection.addEventListener('close', this.onsocketclose.bind(this));
 
             // Intercept the send method to filter active_symbols responses for chart
-            this.interceptApiCalls();
+            // this.interceptApiCalls();
 
             // Force inject symbols after a short delay to ensure api_base is ready
-            this.forceInjectSymbols();
+            // this.forceInjectSymbols();
         }
         this.getTime();
     };
@@ -41,155 +40,155 @@ class ChartAPI {
         }
     };
 
-    /**
-     * Intercept API calls to filter active_symbols responses specifically for chart
-     */
-    interceptApiCalls = () => {
-        if (!this.api || !this.api.send) {
-            return;
-        }
+    // /**
+    //  * Intercept API calls to filter active_symbols responses specifically for chart
+    //  */
+    // interceptApiCalls = () => {
+    //     if (!this.api || !this.api.send) {
+    //         return;
+    //     }
 
-        // Store the original send method
-        const originalSend = this.api.send.bind(this.api);
+    //     // Store the original send method
+    //     const originalSend = this.api.send.bind(this.api);
 
-        // Override the send method
-        this.api.send = async request => {
-            const response = await originalSend(request);
+    //     // Override the send method
+    //     this.api.send = async request => {
+    //         const response = await originalSend(request);
 
-            const hasActiveSymbolsResponse =
-                response && response.active_symbols && Array.isArray(response.active_symbols);
+    //         const hasActiveSymbolsResponse =
+    //             response && response.active_symbols && Array.isArray(response.active_symbols);
 
-            // If this is an active_symbols request, filter the response for chart
-            if (hasActiveSymbolsResponse) {
-                // Create chart-specific filtered symbols without modifying the original response
-                this.chart_active_symbols = this.getFilteredActiveSymbolsForChart(response.active_symbols);
+    //         // If this is an active_symbols request, filter the response for chart
+    //         if (hasActiveSymbolsResponse) {
+    //             // Create chart-specific filtered symbols without modifying the original response
+    //             this.chart_active_symbols = this.getFilteredActiveSymbolsForChart(response.active_symbols);
 
-                const modified_response = {
-                    ...response,
-                    active_symbols: this.chart_active_symbols,
-                };
+    //             const modified_response = {
+    //                 ...response,
+    //                 active_symbols: this.chart_active_symbols,
+    //             };
 
-                return modified_response;
-            }
+    //             return modified_response;
+    //         }
 
-            return response;
-        };
-    };
+    //         return response;
+    //     };
+    // };
 
-    /**
-     * Get filtered active symbols specifically for chart usage
-     * Removes chart-specific exclusions and ensures new 1s volatility indices are included
-     * @param {Array} original_symbols - Original active symbols from API
-     * @returns {Array} Filtered active symbols for chart
-     */
-    getFilteredActiveSymbolsForChart = original_symbols => {
-        if (!original_symbols || !Array.isArray(original_symbols)) {
-            return [];
-        }
+    // /**
+    //  * Get filtered active symbols specifically for chart usage
+    //  * Removes chart-specific exclusions and ensures new 1s volatility indices are included
+    //  * @param {Array} original_symbols - Original active symbols from API
+    //  * @returns {Array} Filtered active symbols for chart
+    //  */
+    // getFilteredActiveSymbolsForChart = original_symbols => {
+    //     if (!original_symbols || !Array.isArray(original_symbols)) {
+    //         return [];
+    //     }
 
-        // Chart-specific symbol exclusions
-        const CHART_EXCLUDED_SYMBOLS = ['OTC_IBEX35']; // Spain 35
+    //     // Chart-specific symbol exclusions
+    //     const CHART_EXCLUDED_SYMBOLS = ['OTC_IBEX35']; // Spain 35
 
-        // Create a copy of symbols to avoid modifying the original
-        let filtered_symbols = [...original_symbols];
+    //     // Create a copy of symbols to avoid modifying the original
+    //     let filtered_symbols = [...original_symbols];
 
-        // Filter out excluded symbols for chart
-        filtered_symbols = filtered_symbols.filter(symbol => {
-            const symbol_code = symbol.underlying_symbol || symbol.symbol;
-            const should_exclude = CHART_EXCLUDED_SYMBOLS.includes(symbol_code);
-            return !should_exclude;
-        });
+    //     // Filter out excluded symbols for chart
+    //     filtered_symbols = filtered_symbols.filter(symbol => {
+    //         const symbol_code = symbol.underlying_symbol || symbol.symbol;
+    //         const should_exclude = CHART_EXCLUDED_SYMBOLS.includes(symbol_code);
+    //         return !should_exclude;
+    //     });
 
-        // Force add our 1s volatility indices
-        const required_1s_symbols = [
-            {
-                symbol: '1HZ15V',
-                underlying_symbol: '1HZ15V',
-                display_name: 'Volatility 15 (1s) Index',
-                market: 'synthetic_index',
-                market_display_name: 'Derived',
-                submarket: 'random_index',
-                submarket_display_name: 'Continuous Indices',
-                pip: 0.001,
-                pip_size: 0.001,
-                exchange_is_open: true,
-                is_trading_suspended: false,
-            },
-            {
-                symbol: '1HZ30V',
-                underlying_symbol: '1HZ30V',
-                display_name: 'Volatility 30 (1s) Index',
-                market: 'synthetic_index',
-                market_display_name: 'Derived',
-                submarket: 'random_index',
-                submarket_display_name: 'Continuous Indices',
-                pip: 0.001,
-                pip_size: 0.001,
-                exchange_is_open: true,
-                is_trading_suspended: false,
-            },
-            {
-                symbol: '1HZ90V',
-                underlying_symbol: '1HZ90V',
-                display_name: 'Volatility 90 (1s) Index',
-                market: 'synthetic_index',
-                market_display_name: 'Derived',
-                submarket: 'random_index',
-                submarket_display_name: 'Continuous Indices',
-                pip: 0.001,
-                pip_size: 0.001,
-                exchange_is_open: true,
-                is_trading_suspended: false,
-            },
-        ];
+    //     // Force add our 1s volatility indices
+    //     const required_1s_symbols = [
+    //         {
+    //             symbol: '1HZ15V',
+    //             underlying_symbol: '1HZ15V',
+    //             display_name: 'Volatility 15 (1s) Index',
+    //             market: 'synthetic_index',
+    //             market_display_name: 'Derived',
+    //             submarket: 'random_index',
+    //             submarket_display_name: 'Continuous Indices',
+    //             pip: 0.001,
+    //             pip_size: 0.001,
+    //             exchange_is_open: true,
+    //             is_trading_suspended: false,
+    //         },
+    //         {
+    //             symbol: '1HZ30V',
+    //             underlying_symbol: '1HZ30V',
+    //             display_name: 'Volatility 30 (1s) Index',
+    //             market: 'synthetic_index',
+    //             market_display_name: 'Derived',
+    //             submarket: 'random_index',
+    //             submarket_display_name: 'Continuous Indices',
+    //             pip: 0.001,
+    //             pip_size: 0.001,
+    //             exchange_is_open: true,
+    //             is_trading_suspended: false,
+    //         },
+    //         {
+    //             symbol: '1HZ90V',
+    //             underlying_symbol: '1HZ90V',
+    //             display_name: 'Volatility 90 (1s) Index',
+    //             market: 'synthetic_index',
+    //             market_display_name: 'Derived',
+    //             submarket: 'random_index',
+    //             submarket_display_name: 'Continuous Indices',
+    //             pip: 0.001,
+    //             pip_size: 0.001,
+    //             exchange_is_open: true,
+    //             is_trading_suspended: false,
+    //         },
+    //     ];
 
-        // Remove any existing instances first to avoid duplicates
-        filtered_symbols = filtered_symbols.filter(symbol => {
-            const symbol_code = symbol.underlying_symbol || symbol.symbol;
-            return !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
-        });
+    //     // Remove any existing instances first to avoid duplicates
+    //     filtered_symbols = filtered_symbols.filter(symbol => {
+    //         const symbol_code = symbol.underlying_symbol || symbol.symbol;
+    //         return !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
+    //     });
 
-        // Force add our 1s volatility indices
-        filtered_symbols.push(...required_1s_symbols);
+    //     // Force add our 1s volatility indices
+    //     filtered_symbols.push(...required_1s_symbols);
 
-        // Sort volatility indices to ensure proper order
-        filtered_symbols = this.sortVolatilityIndices(filtered_symbols);
+    //     // Sort volatility indices to ensure proper order
+    //     // filtered_symbols = this.sortVolatilityIndices(filtered_symbols);
 
-        return filtered_symbols;
-    };
+    //     return filtered_symbols;
+    // };
 
-    /**
-     * Force inject symbols directly into the chart API
-     */
-    forceInjectSymbols = () => {
-        // Wait a bit for api_base to be available
-        setTimeout(() => {
-            if (api_base && api_base.active_symbols) {
-                // Get filtered symbols for chart
-                const filtered_symbols = this.getFilteredActiveSymbolsForChart(api_base.active_symbols);
+    // /**
+    //  * Force inject symbols directly into the chart API
+    //  */
+    // forceInjectSymbols = () => {
+    //     // Wait a bit for api_base to be available
+    //     setTimeout(() => {
+    //         if (api_base && api_base.active_symbols) {
+    //             // Get filtered symbols for chart
+    //             const filtered_symbols = this.getFilteredActiveSymbolsForChart(api_base.active_symbols);
 
-                // Store the original symbols if not already stored
-                if (!this.original_active_symbols) {
-                    this.original_active_symbols = [...api_base.active_symbols];
-                }
+    //             // Store the original symbols if not already stored
+    //             if (!this.original_active_symbols) {
+    //                 this.original_active_symbols = [...api_base.active_symbols];
+    //             }
 
-                // Replace api_base.active_symbols with filtered symbols for chart
-                api_base.active_symbols = filtered_symbols;
-                this.chart_active_symbols = filtered_symbols;
-            } else {
-                // Try again after a longer delay
-                setTimeout(() => this.forceInjectSymbols(), 2000);
-            }
-        }, 1000);
-    };
+    //             // Replace api_base.active_symbols with filtered symbols for chart
+    //             api_base.active_symbols = filtered_symbols;
+    //             this.chart_active_symbols = filtered_symbols;
+    //         } else {
+    //             // Try again after a longer delay
+    //             setTimeout(() => this.forceInjectSymbols(), 2000);
+    //         }
+    //     }, 1000);
+    // };
 
-    /**
-     * Get chart-specific active symbols (for external access if needed)
-     * @returns {Array} Chart-specific filtered active symbols
-     */
-    getActiveSymbolsForChart = () => {
-        return this.chart_active_symbols || [];
-    };
+    // /**
+    //  * Get chart-specific active symbols (for external access if needed)
+    //  * @returns {Array} Chart-specific filtered active symbols
+    //  */
+    // getActiveSymbolsForChart = () => {
+    //     return this.chart_active_symbols || [];
+    // };
 
     /**
      * Sort volatility indices to ensure proper display order
