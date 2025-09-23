@@ -6,6 +6,7 @@ import { TContractInfo } from '@/components/summary/summary-card.types';
 import { popover_zindex } from '@/constants/z-indexes';
 import { getContractTypeName } from '@/external/bot-skeleton';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
+import { getSymbolDisplayNameSync } from '@/utils/symbol-display-name';
 import { LegacyRadioOffIcon, LegacyRadioOnIcon } from '@deriv/quill-icons';
 import { Localize, localize } from '@deriv-com/translations';
 import { MarketIcon } from '../market/market-icon';
@@ -180,7 +181,12 @@ const Transaction = ({ contract, active_transaction_id, onClickTransaction }: TT
                                         type={(contract as any).underlying_symbol || (contract as any).underlying}
                                     />
                                 }
-                                title={contract.display_name || ''}
+                                title={
+                                    contract.display_name ||
+                                    getSymbolDisplayNameSync(
+                                        (contract as any).underlying_symbol || (contract as any).underlying || ''
+                                    )
+                                }
                             />
                         ) : (
                             <TransactionIconLoader />

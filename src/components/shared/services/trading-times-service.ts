@@ -68,6 +68,31 @@ class TradingTimesService {
                                 name: 'Continuous Indices',
                                 symbols: [
                                     {
+                                        symbol: 'R_10',
+                                        display_name: 'Volatility 10 Index',
+                                        underlying_symbol: 'R_10',
+                                    },
+                                    {
+                                        symbol: 'R_25',
+                                        display_name: 'Volatility 25 Index',
+                                        underlying_symbol: 'R_25',
+                                    },
+                                    {
+                                        symbol: 'R_50',
+                                        display_name: 'Volatility 50 Index',
+                                        underlying_symbol: 'R_50',
+                                    },
+                                    {
+                                        symbol: 'R_75',
+                                        display_name: 'Volatility 75 Index',
+                                        underlying_symbol: 'R_75',
+                                    },
+                                    {
+                                        symbol: 'R_100',
+                                        display_name: 'Volatility 100 Index',
+                                        underlying_symbol: 'R_100',
+                                    },
+                                    {
                                         symbol: '1HZ10V',
                                         display_name: 'Volatility 10 (1s) Index',
                                         underlying_symbol: '1HZ10V',

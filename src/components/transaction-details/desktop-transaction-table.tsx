@@ -4,6 +4,7 @@ import ContentLoader from 'react-content-loader';
 import { transaction_elements } from '@/constants/transactions';
 import { getContractTypeName } from '@/external/bot-skeleton';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
+import { getSymbolDisplayNameSync } from '@/utils/symbol-display-name';
 import { MarketIcon } from '../market/market-icon';
 import { convertDateFormat } from '../shared';
 import Popover from '../shared_ui/popover';
@@ -95,7 +96,10 @@ export default function DesktopTransactionTable({
                                 <TableCell
                                     label={
                                         <IconWrapper
-                                            message={data?.display_name}
+                                            message={
+                                                data?.display_name ||
+                                                getSymbolDisplayNameSync(data?.underlying_symbol || '')
+                                            }
                                             icon={<MarketIcon type={data?.underlying_symbol} size='sm' />}
                                         />
                                     }

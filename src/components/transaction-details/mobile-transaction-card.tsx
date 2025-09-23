@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import ContentLoader from 'react-content-loader';
 import { getContractTypeName } from '@/external/bot-skeleton';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
+import { getSymbolDisplayNameSync } from '@/utils/symbol-display-name';
 import { localize } from '@deriv-com/translations';
 import { MarketIcon } from '../market/market-icon';
 import { convertDateFormat } from '../shared';
@@ -78,7 +79,10 @@ export default function MobileTransactionCards({ transaction }: { transaction: T
                     label={
                         <div className={`${PARENT_CLASS}__icon-wrapper`}>
                             <IconContainer
-                                message={transaction?.display_name}
+                                message={
+                                    transaction?.display_name ||
+                                    getSymbolDisplayNameSync(transaction?.underlying_symbol || '')
+                                }
                                 icon={<MarketIcon type={transaction?.underlying_symbol} size='md' />}
                             />
                             <IconContainer
