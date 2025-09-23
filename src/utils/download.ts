@@ -2,16 +2,32 @@ import { LogTypes } from '@/external/bot-skeleton';
 import { localize } from '@deriv-com/translations';
 
 export type TTransaction = {
-    display_name: string;
-    transaction_ids: { buy: string; sell: string };
-    barrier: string;
-    date_start: string;
-    entry_spot: string;
-    entry_tick_time: string;
-    exit_spot: string;
-    exit_tick_time: string;
-    buy_price: string;
-    profit: string;
+    display_name?: string;
+    underlying_symbol?: string;
+    transaction_ids?: { buy: string; sell: string };
+    barrier?: string;
+    date_start?: string;
+    purchase_time?: string;
+    entry_spot?: string;
+    entry_tick_time?: string;
+    entry_spot_time?: string;
+    exit_spot?: string;
+    exit_tick_time?: string;
+    exit_spot_time?: string;
+    buy_price?: string | number;
+    profit?: string | number;
+    // Additional fields from new API
+    contract_id?: number;
+    contract_type?: string;
+    currency?: string;
+    current_spot?: string;
+    is_completed?: boolean;
+    is_sold?: boolean;
+    longcode?: string;
+    payout?: string | number;
+    shortcode?: string;
+    status?: string;
+    tick_count?: number;
 };
 
 export type TLogTypes = Readonly<{
