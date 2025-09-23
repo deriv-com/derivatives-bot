@@ -137,56 +137,58 @@ export default class ChartStore {
         const has_synthetic_index = !!active_symbols.find(s => s.market === synthetic_index);
 
         // Define the exact order we want for volatility indices (Bot Builder UI pattern)
-        const VOLATILITY_ORDER = [
-            'Volatility 10 (1s) Index',
-            'Volatility 10 Index',
-            'Volatility 15 (1s) Index',
-            'Volatility 25 (1s) Index',
-            'Volatility 25 Index',
-            'Volatility 30 (1s) Index',
-            'Volatility 50 (1s) Index',
-            'Volatility 50 Index',
-            'Volatility 75 (1s) Index',
-            'Volatility 75 Index',
-            'Volatility 90 (1s) Index',
-            'Volatility 100 (1s) Index',
-            'Volatility 100 Index',
-        ];
+        // const VOLATILITY_ORDER = [
+        //     'Volatility 10 (1s) Index',
+        //     'Volatility 10 Index',
+        //     'Volatility 15 (1s) Index',
+        //     'Volatility 25 (1s) Index',
+        //     'Volatility 25 Index',
+        //     'Volatility 30 (1s) Index',
+        //     'Volatility 50 (1s) Index',
+        //     'Volatility 50 Index',
+        //     'Volatility 75 (1s) Index',
+        //     'Volatility 75 Index',
+        //     'Volatility 90 (1s) Index',
+        //     'Volatility 100 (1s) Index',
+        //     'Volatility 100 Index',
+        // ];
 
-        return active_symbols
-            .slice()
-            .sort((a, b) => {
-                const aDisplayName = a.display_name || '';
-                const bDisplayName = b.display_name || '';
+        return (
+            active_symbols
+                // .slice()
+                // .sort((a, b) => {
+                //     const aDisplayName = a.display_name || '';
+                //     const bDisplayName = b.display_name || '';
 
-                // Check if both are volatility indices
-                const aIsVolatility = VOLATILITY_ORDER.includes(aDisplayName);
-                const bIsVolatility = VOLATILITY_ORDER.includes(bDisplayName);
+                //     // Check if both are volatility indices
+                //     const aIsVolatility = VOLATILITY_ORDER.includes(aDisplayName);
+                //     const bIsVolatility = VOLATILITY_ORDER.includes(bDisplayName);
 
-                if (aIsVolatility && bIsVolatility) {
-                    // Both are volatility indices, sort by predefined order
-                    const aIndex = VOLATILITY_ORDER.indexOf(aDisplayName);
-                    const bIndex = VOLATILITY_ORDER.indexOf(bDisplayName);
-                    return aIndex - bIndex;
-                } else if (aIsVolatility && !bIsVolatility) {
-                    // a is volatility, b is not - volatility indices come first in their section
-                    return -1;
-                } else if (!aIsVolatility && bIsVolatility) {
-                    // b is volatility, a is not - volatility indices come first in their section
-                    return 1;
-                } else {
-                    // Neither is volatility, use alphabetical sorting
-                    return aDisplayName.localeCompare(bDisplayName);
-                }
-            })
-            .map(s => s.market)
-            .reduce(
-                (arr, market) => {
-                    if (arr.indexOf(market) === -1) arr.push(market);
-                    return arr;
-                },
-                has_synthetic_index ? [synthetic_index] : []
-            );
+                //     if (aIsVolatility && bIsVolatility) {
+                //         // Both are volatility indices, sort by predefined order
+                //         const aIndex = VOLATILITY_ORDER.indexOf(aDisplayName);
+                //         const bIndex = VOLATILITY_ORDER.indexOf(bDisplayName);
+                //         return aIndex - bIndex;
+                //     } else if (aIsVolatility && !bIsVolatility) {
+                //         // a is volatility, b is not - volatility indices come first in their section
+                //         return -1;
+                //     } else if (!aIsVolatility && bIsVolatility) {
+                //         // b is volatility, a is not - volatility indices come first in their section
+                //         return 1;
+                //     } else {
+                //         // Neither is volatility, use alphabetical sorting
+                //         return aDisplayName.localeCompare(bDisplayName);
+                //     }
+                // })
+                .map(s => s.market)
+                .reduce(
+                    (arr, market) => {
+                        if (arr.indexOf(market) === -1) arr.push(market);
+                        return arr;
+                    },
+                    has_synthetic_index ? [synthetic_index] : []
+                )
+        );
     };
 
     // /**

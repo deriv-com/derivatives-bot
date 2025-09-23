@@ -188,39 +188,39 @@ export default class ActiveSymbols {
                 const symbol_keys = Object.keys(symbols);
 
                 // Custom sorting for volatility indices to ensure correct numerical order
-                const isVolatilitySubmarket =
-                    submarket_name === 'random_index' ||
-                    submarket.display_name === 'Continuous Indices' ||
-                    submarket.display_name?.includes('Volatility') ||
-                    submarket_name?.includes('volatility');
+                // const isVolatilitySubmarket =
+                //     submarket_name === 'random_index' ||
+                //     submarket.display_name === 'Continuous Indices' ||
+                //     submarket.display_name?.includes('Volatility') ||
+                //     submarket_name?.includes('volatility');
 
-                if (isVolatilitySubmarket) {
-                    symbol_keys.sort((a, b) => {
-                        // Extract numeric values from volatility indices (1HZ10V, 1HZ25V, etc.)
-                        const getVolatilityNumber = symbol => {
-                            // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
-                            const hzMatch = symbol.match(/1HZ(\d+)V/);
-                            if (hzMatch) return parseInt(hzMatch[1], 10);
+                // if (isVolatilitySubmarket) {
+                //     symbol_keys.sort((a, b) => {
+                //         // Extract numeric values from volatility indices (1HZ10V, 1HZ25V, etc.)
+                //         const getVolatilityNumber = symbol => {
+                //             // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
+                //             const hzMatch = symbol.match(/1HZ(\d+)V/);
+                //             if (hzMatch) return parseInt(hzMatch[1], 10);
 
-                            // Check for R_ format (R_10, R_25, etc.) as fallback
-                            const rMatch = symbol.match(/R_(\d+)/);
-                            if (rMatch) return parseInt(rMatch[1], 10);
+                //             // Check for R_ format (R_10, R_25, etc.) as fallback
+                //             const rMatch = symbol.match(/R_(\d+)/);
+                //             if (rMatch) return parseInt(rMatch[1], 10);
 
-                            return 0;
-                        };
+                //             return 0;
+                //         };
 
-                        const aNum = getVolatilityNumber(a);
-                        const bNum = getVolatilityNumber(b);
+                //         const aNum = getVolatilityNumber(a);
+                //         const bNum = getVolatilityNumber(b);
 
-                        // If both are volatility indices, sort by number
-                        if (aNum > 0 && bNum > 0) {
-                            return aNum - bNum;
-                        }
+                //         // If both are volatility indices, sort by number
+                //         if (aNum > 0 && bNum > 0) {
+                //             return aNum - bNum;
+                //         }
 
-                        // Otherwise, use alphabetical sorting
-                        return a.localeCompare(b);
-                    });
-                }
+                //         // Otherwise, use alphabetical sorting
+                //         return a.localeCompare(b);
+                //     });
+                // }
 
                 symbol_keys.forEach(symbol_name => {
                     if (DISABLED.SYMBOLS.includes(symbol_name)) return;
@@ -387,39 +387,39 @@ export default class ActiveSymbols {
                     const symbol_keys = Object.keys(symbols);
 
                     // Custom sorting for volatility indices to ensure correct numerical order
-                    const isVolatilitySubmarket =
-                        submarket_name === 'random_index' ||
-                        submarket_obj.display_name === 'Continuous Indices' ||
-                        submarket_obj.display_name?.includes('Volatility') ||
-                        submarket_name?.includes('volatility');
+                    // const isVolatilitySubmarket =
+                    //     submarket_name === 'random_index' ||
+                    //     submarket_obj.display_name === 'Continuous Indices' ||
+                    //     submarket_obj.display_name?.includes('Volatility') ||
+                    //     submarket_name?.includes('volatility');
 
-                    if (isVolatilitySubmarket) {
-                        symbol_keys.sort((a, b) => {
-                            // Extract numeric values from volatility indices (1HZ10V, 1HZ25V, etc.)
-                            const getVolatilityNumber = symbol => {
-                                // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
-                                const hzMatch = symbol.match(/1HZ(\d+)V/);
-                                if (hzMatch) return parseInt(hzMatch[1], 10);
+                    // if (isVolatilitySubmarket) {
+                    //     symbol_keys.sort((a, b) => {
+                    //         // Extract numeric values from volatility indices (1HZ10V, 1HZ25V, etc.)
+                    //         const getVolatilityNumber = symbol => {
+                    //             // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
+                    //             const hzMatch = symbol.match(/1HZ(\d+)V/);
+                    //             if (hzMatch) return parseInt(hzMatch[1], 10);
 
-                                // Check for R_ format (R_10, R_25, etc.) as fallback
-                                const rMatch = symbol.match(/R_(\d+)/);
-                                if (rMatch) return parseInt(rMatch[1], 10);
+                    //             // Check for R_ format (R_10, R_25, etc.) as fallback
+                    //             const rMatch = symbol.match(/R_(\d+)/);
+                    //             if (rMatch) return parseInt(rMatch[1], 10);
 
-                                return 0;
-                            };
+                    //             return 0;
+                    //         };
 
-                            const aNum = getVolatilityNumber(a);
-                            const bNum = getVolatilityNumber(b);
+                    //         const aNum = getVolatilityNumber(a);
+                    //         const bNum = getVolatilityNumber(b);
 
-                            // If both are volatility indices, sort by number
-                            if (aNum > 0 && bNum > 0) {
-                                return aNum - bNum;
-                            }
+                    //         // If both are volatility indices, sort by number
+                    //         if (aNum > 0 && bNum > 0) {
+                    //             return aNum - bNum;
+                    //         }
 
-                            // Otherwise, use alphabetical sorting
-                            return a.localeCompare(b);
-                        });
-                    }
+                    //         // Otherwise, use alphabetical sorting
+                    //         return a.localeCompare(b);
+                    //     });
+                    // }
 
                     symbol_keys.forEach(symbol_name => {
                         const { display_name } = symbols[symbol_name];
@@ -438,63 +438,63 @@ export default class ActiveSymbols {
             const fallback_options = SYMBOL_OPTIONS[submarket] || [['Default Symbol', 'DEFAULT']];
 
             // Apply the same sorting logic to fallback options for volatility indices
-            if (submarket === 'random_index') {
-                return fallback_options.sort((a, b) => {
-                    const getVolatilityNumber = symbol => {
-                        // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
-                        const hzMatch = symbol[1].match(/1HZ(\d+)V/);
-                        if (hzMatch) return parseInt(hzMatch[1], 10);
+            // if (submarket === 'random_index') {
+            //     return fallback_options.sort((a, b) => {
+            //         const getVolatilityNumber = symbol => {
+            //             // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
+            //             const hzMatch = symbol[1].match(/1HZ(\d+)V/);
+            //             if (hzMatch) return parseInt(hzMatch[1], 10);
 
-                        // Check for R_ format (R_10, R_25, etc.) as fallback
-                        const rMatch = symbol[1].match(/R_(\d+)/);
-                        if (rMatch) return parseInt(rMatch[1], 10);
+            //             // Check for R_ format (R_10, R_25, etc.) as fallback
+            //             const rMatch = symbol[1].match(/R_(\d+)/);
+            //             if (rMatch) return parseInt(rMatch[1], 10);
 
-                        return 0;
-                    };
+            //             return 0;
+            //         };
 
-                    const aNum = getVolatilityNumber(a);
-                    const bNum = getVolatilityNumber(b);
+            //         const aNum = getVolatilityNumber(a);
+            //         const bNum = getVolatilityNumber(b);
 
-                    // If both are volatility indices, sort by number
-                    if (aNum > 0 && bNum > 0) {
-                        return aNum - bNum;
-                    }
+            //         // If both are volatility indices, sort by number
+            //         if (aNum > 0 && bNum > 0) {
+            //             return aNum - bNum;
+            //         }
 
-                    // Otherwise, use alphabetical sorting
-                    return a[0].localeCompare(b[0]);
-                });
-            }
+            //         // Otherwise, use alphabetical sorting
+            //         return a[0].localeCompare(b[0]);
+            //     });
+            // }
 
             return fallback_options;
         }
 
         // Apply custom sorting to the final symbol_options for volatility indices
-        if (submarket === 'random_index') {
-            symbol_options.sort((a, b) => {
-                const getVolatilityNumber = symbol => {
-                    // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
-                    const hzMatch = symbol[1].match(/1HZ(\d+)V/);
-                    if (hzMatch) return parseInt(hzMatch[1], 10);
+        // if (submarket === 'random_index') {
+        //     symbol_options.sort((a, b) => {
+        //         const getVolatilityNumber = symbol => {
+        //             // Check for 1HZ format (1HZ10V, 1HZ25V, 1HZ50V, etc.)
+        //             const hzMatch = symbol[1].match(/1HZ(\d+)V/);
+        //             if (hzMatch) return parseInt(hzMatch[1], 10);
 
-                    // Check for R_ format (R_10, R_25, etc.) as fallback
-                    const rMatch = symbol[1].match(/R_(\d+)/);
-                    if (rMatch) return parseInt(rMatch[1], 10);
+        //             // Check for R_ format (R_10, R_25, etc.) as fallback
+        //             const rMatch = symbol[1].match(/R_(\d+)/);
+        //             if (rMatch) return parseInt(rMatch[1], 10);
 
-                    return 0;
-                };
+        //             return 0;
+        //         };
 
-                const aNum = getVolatilityNumber(a);
-                const bNum = getVolatilityNumber(b);
+        //         const aNum = getVolatilityNumber(a);
+        //         const bNum = getVolatilityNumber(b);
 
-                // If both are volatility indices, sort by number
-                if (aNum > 0 && bNum > 0) {
-                    return aNum - bNum;
-                }
+        //         // If both are volatility indices, sort by number
+        //         if (aNum > 0 && bNum > 0) {
+        //             return aNum - bNum;
+        //         }
 
-                // Otherwise, use alphabetical sorting
-                return a[0].localeCompare(b[0]);
-            });
-        }
+        //         // Otherwise, use alphabetical sorting
+        //         return a[0].localeCompare(b[0]);
+        //     });
+        // }
 
         return this.sortDropdownOptions(symbol_options, this.isSymbolClosed);
     }
