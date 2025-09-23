@@ -49,7 +49,7 @@ export default class ActiveSymbols {
         this.processed_symbols = this.processActiveSymbols();
 
         // Also create chart-specific processed symbols
-        this.chart_processed_symbols = this.getProcessedSymbolsForChart();
+        // this.chart_processed_symbols = this.getProcessedSymbolsForChart();
 
         // TODO: fix need to look into it as the method is not present
         this.trading_times.onMarketOpenCloseChanged = changes => {
@@ -237,84 +237,84 @@ export default class ActiveSymbols {
         return symbols_for_bot;
     }
 
-    /**
-     * Get processed symbols specifically for chart usage
-     * Removes chart-specific exclusions and ensures new 1s volatility indices are present
-     * @returns {Object} Processed symbols for chart
-     */
-    getProcessedSymbolsForChart() {
-        // Start with the regular processed symbols
-        const chart_processed_symbols = JSON.parse(JSON.stringify(this.processed_symbols));
+    // /**
+    //  * Get processed symbols specifically for chart usage
+    //  * Removes chart-specific exclusions and ensures new 1s volatility indices are present
+    //  * @returns {Object} Processed symbols for chart
+    //  */
+    // getProcessedSymbolsForChart() {
+    //     // Start with the regular processed symbols
+    //     const chart_processed_symbols = JSON.parse(JSON.stringify(this.processed_symbols));
 
-        // Chart-specific symbol exclusions
-        const CHART_EXCLUDED_SYMBOLS = ['OTC_IBEX35']; // Spain 35
+    //     // Chart-specific symbol exclusions
+    //     const CHART_EXCLUDED_SYMBOLS = ['OTC_IBEX35']; // Spain 35
 
-        // Remove excluded symbols from chart processed symbols
-        Object.keys(chart_processed_symbols).forEach(market_name => {
-            const market = chart_processed_symbols[market_name];
-            const { submarkets } = market;
+    //     // Remove excluded symbols from chart processed symbols
+    //     Object.keys(chart_processed_symbols).forEach(market_name => {
+    //         const market = chart_processed_symbols[market_name];
+    //         const { submarkets } = market;
 
-            Object.keys(submarkets).forEach(submarket_name => {
-                const submarket = submarkets[submarket_name];
-                const { symbols } = submarket;
+    //         Object.keys(submarkets).forEach(submarket_name => {
+    //             const submarket = submarkets[submarket_name];
+    //             const { symbols } = submarket;
 
-                // Remove excluded symbols
-                CHART_EXCLUDED_SYMBOLS.forEach(excluded_symbol => {
-                    if (symbols[excluded_symbol]) {
-                        delete symbols[excluded_symbol];
-                    }
-                });
-            });
-        });
+    //             // Remove excluded symbols
+    //             CHART_EXCLUDED_SYMBOLS.forEach(excluded_symbol => {
+    //                 if (symbols[excluded_symbol]) {
+    //                     delete symbols[excluded_symbol];
+    //                 }
+    //             });
+    //         });
+    //     });
 
-        // Ensure new 1s volatility indices are present in chart processed symbols
-        const required_1s_symbols = ['1HZ15V', '1HZ30V', '1HZ90V'];
+    //     // Ensure new 1s volatility indices are present in chart processed symbols
+    //     const required_1s_symbols = ['1HZ15V', '1HZ30V', '1HZ90V'];
 
-        const symbol_configs = {
-            '1HZ15V': {
-                display_name: 'Volatility 15 (1s) Index',
-                pip_size: 3,
-                is_active: true,
-            },
-            '1HZ30V': {
-                display_name: 'Volatility 30 (1s) Index',
-                pip_size: 3,
-                is_active: true,
-            },
-            '1HZ90V': {
-                display_name: 'Volatility 90 (1s) Index',
-                pip_size: 3,
-                is_active: true,
-            },
-        };
+    //     const symbol_configs = {
+    //         '1HZ15V': {
+    //             display_name: 'Volatility 15 (1s) Index',
+    //             pip_size: 3,
+    //             is_active: true,
+    //         },
+    //         '1HZ30V': {
+    //             display_name: 'Volatility 30 (1s) Index',
+    //             pip_size: 3,
+    //             is_active: true,
+    //         },
+    //         '1HZ90V': {
+    //             display_name: 'Volatility 90 (1s) Index',
+    //             pip_size: 3,
+    //             is_active: true,
+    //         },
+    //     };
 
-        // Ensure synthetic_index market exists
-        if (!chart_processed_symbols['synthetic_index']) {
-            chart_processed_symbols['synthetic_index'] = {
-                display_name: 'Derived',
-                submarkets: {},
-            };
-        }
+    //     // Ensure synthetic_index market exists
+    //     if (!chart_processed_symbols['synthetic_index']) {
+    //         chart_processed_symbols['synthetic_index'] = {
+    //             display_name: 'Derived',
+    //             submarkets: {},
+    //         };
+    //     }
 
-        // Ensure random_index submarket exists
-        if (!chart_processed_symbols['synthetic_index'].submarkets['random_index']) {
-            chart_processed_symbols['synthetic_index'].submarkets['random_index'] = {
-                display_name: 'Continuous Indices',
-                symbols: {},
-            };
-        }
+    //     // Ensure random_index submarket exists
+    //     if (!chart_processed_symbols['synthetic_index'].submarkets['random_index']) {
+    //         chart_processed_symbols['synthetic_index'].submarkets['random_index'] = {
+    //             display_name: 'Continuous Indices',
+    //             symbols: {},
+    //         };
+    //     }
 
-        // Add missing 1s volatility indices to chart processed symbols
-        const random_index_symbols = chart_processed_symbols['synthetic_index'].submarkets['random_index'].symbols;
+    //     // Add missing 1s volatility indices to chart processed symbols
+    //     const random_index_symbols = chart_processed_symbols['synthetic_index'].submarkets['random_index'].symbols;
 
-        required_1s_symbols.forEach(symbol_code => {
-            if (!random_index_symbols[symbol_code]) {
-                random_index_symbols[symbol_code] = symbol_configs[symbol_code];
-            }
-        });
+    //     required_1s_symbols.forEach(symbol_code => {
+    //         if (!random_index_symbols[symbol_code]) {
+    //             random_index_symbols[symbol_code] = symbol_configs[symbol_code];
+    //         }
+    //     });
 
-        return chart_processed_symbols;
-    }
+    //     return chart_processed_symbols;
+    // }
 
     getMarketDropdownOptions() {
         const market_options = [];

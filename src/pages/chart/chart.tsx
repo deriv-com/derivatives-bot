@@ -101,7 +101,8 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
                 // Remove Spain 35 and any existing instances of our symbols
                 symbols = symbols.filter((symbol: any) => {
                     const symbol_code = symbol.symbol || symbol.underlying_symbol;
-                    return symbol_code !== 'OTC_IBEX35' && !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
+                    // symbol_code !== 'OTC_IBEX35' &&
+                    return !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
                 });
 
                 // Force add our 1s volatility indices
@@ -169,10 +170,10 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
             let symbols = [...response.active_symbols];
 
             // Remove Spain 35 from chart
-            symbols = symbols.filter(symbol => {
-                const symbol_code = symbol.symbol || symbol.underlying_symbol;
-                return symbol_code !== 'OTC_IBEX35';
-            });
+            // symbols = symbols.filter(symbol => {
+            //     const symbol_code = symbol.symbol || symbol.underlying_symbol;
+            //     return symbol_code !== 'OTC_IBEX35';
+            // });
 
             // Force add our 1s volatility indices with sorting prefixes
             const required_1s_symbols = [
@@ -390,9 +391,8 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
                         // Remove Spain 35 and any existing instances of our symbols
                         const modified_symbols = active_symbols.filter((symbol: any) => {
                             const symbol_code = symbol.symbol || symbol.underlying_symbol;
-                            return (
-                                symbol_code !== 'OTC_IBEX35' && !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code)
-                            );
+                            //symbol_code !== 'OTC_IBEX35' &&
+                            return !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
                         });
 
                         // Add our 1s volatility indices

@@ -191,86 +191,86 @@ export default class ChartStore {
         );
     };
 
-    /**
-     * Apply chart-specific symbol filtering
-     * @param {Array} symbols - Original active symbols
-     * @returns {Array} Filtered symbols for chart
-     */
-    getChartFilteredSymbols = (symbols: any[]) => {
-        if (!symbols || !Array.isArray(symbols)) {
-            return [];
-        }
+    // /**
+    //  * Apply chart-specific symbol filtering
+    //  * @param {Array} symbols - Original active symbols
+    //  * @returns {Array} Filtered symbols for chart
+    //  */
+    // getChartFilteredSymbols = (symbols: any[]) => {
+    //     if (!symbols || !Array.isArray(symbols)) {
+    //         return [];
+    //     }
 
-        // Chart-specific symbol exclusions
-        const CHART_EXCLUDED_SYMBOLS = ['OTC_IBEX35']; // Spain 35
+    //     // Chart-specific symbol exclusions
+    //     const CHART_EXCLUDED_SYMBOLS = ['OTC_IBEX35']; // Spain 35
 
-        // Create a copy and filter out excluded symbols
-        const filtered_symbols = symbols.filter(symbol => {
-            const symbol_code = symbol.underlying_symbol || symbol.symbol;
-            return !CHART_EXCLUDED_SYMBOLS.includes(symbol_code);
-        });
+    //     // Create a copy and filter out excluded symbols
+    //     const filtered_symbols = symbols.filter(symbol => {
+    //         const symbol_code = symbol.underlying_symbol || symbol.symbol;
+    //         return !CHART_EXCLUDED_SYMBOLS.includes(symbol_code);
+    //     });
 
-        // Ensure new 1s volatility indices are included for chart
-        const required_1s_symbols = ['1HZ15V', '1HZ30V', '1HZ90V'];
+    //     // Ensure new 1s volatility indices are included for chart
+    //     const required_1s_symbols = ['1HZ15V', '1HZ30V', '1HZ90V'];
 
-        required_1s_symbols.forEach(required_symbol => {
-            const exists = filtered_symbols.some(symbol => {
-                const symbol_code = symbol.underlying_symbol || symbol.symbol;
-                return symbol_code === required_symbol;
-            });
+    //     required_1s_symbols.forEach(required_symbol => {
+    //         const exists = filtered_symbols.some(symbol => {
+    //             const symbol_code = symbol.underlying_symbol || symbol.symbol;
+    //             return symbol_code === required_symbol;
+    //         });
 
-            if (!exists) {
-                // Add the missing 1s volatility index
-                const symbol_config: Record<string, any> = {
-                    '1HZ15V': {
-                        symbol: '1HZ15V',
-                        underlying_symbol: '1HZ15V',
-                        display_name: 'Volatility 15 (1s) Index',
-                        market: 'synthetic_index',
-                        market_display_name: 'Derived',
-                        submarket: 'random_index',
-                        submarket_display_name: 'Continuous Indices',
-                        pip: 0.001,
-                        pip_size: 0.001,
-                        exchange_is_open: true,
-                        is_trading_suspended: false,
-                    },
-                    '1HZ30V': {
-                        symbol: '1HZ30V',
-                        underlying_symbol: '1HZ30V',
-                        display_name: 'Volatility 30 (1s) Index',
-                        market: 'synthetic_index',
-                        market_display_name: 'Derived',
-                        submarket: 'random_index',
-                        submarket_display_name: 'Continuous Indices',
-                        pip: 0.001,
-                        pip_size: 0.001,
-                        exchange_is_open: true,
-                        is_trading_suspended: false,
-                    },
-                    '1HZ90V': {
-                        symbol: '1HZ90V',
-                        underlying_symbol: '1HZ90V',
-                        display_name: 'Volatility 90 (1s) Index',
-                        market: 'synthetic_index',
-                        market_display_name: 'Derived',
-                        submarket: 'random_index',
-                        submarket_display_name: 'Continuous Indices',
-                        pip: 0.001,
-                        pip_size: 0.001,
-                        exchange_is_open: true,
-                        is_trading_suspended: false,
-                    },
-                };
+    //         if (!exists) {
+    //             // Add the missing 1s volatility index
+    //             const symbol_config: Record<string, any> = {
+    //                 '1HZ15V': {
+    //                     symbol: '1HZ15V',
+    //                     underlying_symbol: '1HZ15V',
+    //                     display_name: 'Volatility 15 (1s) Index',
+    //                     market: 'synthetic_index',
+    //                     market_display_name: 'Derived',
+    //                     submarket: 'random_index',
+    //                     submarket_display_name: 'Continuous Indices',
+    //                     pip: 0.001,
+    //                     pip_size: 0.001,
+    //                     exchange_is_open: true,
+    //                     is_trading_suspended: false,
+    //                 },
+    //                 '1HZ30V': {
+    //                     symbol: '1HZ30V',
+    //                     underlying_symbol: '1HZ30V',
+    //                     display_name: 'Volatility 30 (1s) Index',
+    //                     market: 'synthetic_index',
+    //                     market_display_name: 'Derived',
+    //                     submarket: 'random_index',
+    //                     submarket_display_name: 'Continuous Indices',
+    //                     pip: 0.001,
+    //                     pip_size: 0.001,
+    //                     exchange_is_open: true,
+    //                     is_trading_suspended: false,
+    //                 },
+    //                 '1HZ90V': {
+    //                     symbol: '1HZ90V',
+    //                     underlying_symbol: '1HZ90V',
+    //                     display_name: 'Volatility 90 (1s) Index',
+    //                     market: 'synthetic_index',
+    //                     market_display_name: 'Derived',
+    //                     submarket: 'random_index',
+    //                     submarket_display_name: 'Continuous Indices',
+    //                     pip: 0.001,
+    //                     pip_size: 0.001,
+    //                     exchange_is_open: true,
+    //                     is_trading_suspended: false,
+    //                 },
+    //             };
 
-                if (symbol_config[required_symbol]) {
-                    filtered_symbols.push(symbol_config[required_symbol]);
-                }
-            }
-        });
+    //             if (symbol_config[required_symbol]) {
+    //                 filtered_symbols.push(symbol_config[required_symbol]);
+    //             }
+    //         }
+    //     });
 
-        return filtered_symbols;
-    };
+    //     return filtered_symbols;
+    // };
     setChartSubscriptionId = (chartSubscriptionId: string) => {
         this.chart_subscription_id = chartSubscriptionId;
     };
