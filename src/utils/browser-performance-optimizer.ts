@@ -86,12 +86,12 @@ class BrowserPerformanceOptimizer {
                 operation();
             }
 
-            // Browser-specific delays: Safari needs moderate, Firefox needs slight
+            // Browser-specific delays: Safari needs longer delays to prevent freezing
             let delay = 16; // Default for Chrome
             if (this.isSafari) {
-                delay = 25; // Reduced delay for Safari (was 50ms)
+                delay = 75; // Increased delay for Safari to prevent freezing
             } else if (this.isFirefox) {
-                delay = 20; // Reduced delay for Firefox (was 30ms)
+                delay = 20; // Keep Firefox delay moderate
             }
 
             setTimeout(processNext, delay);
@@ -100,9 +100,9 @@ class BrowserPerformanceOptimizer {
         // Start processing with initial delay for problematic browsers
         let initialDelay = 0;
         if (this.isSafari) {
-            initialDelay = 50; // Reduced initial delay for Safari (was 100ms)
+            initialDelay = 150; // Increased initial delay for Safari to prevent freezing
         } else if (this.isFirefox) {
-            initialDelay = 25; // Reduced initial delay for Firefox (was 50ms)
+            initialDelay = 25; // Keep Firefox delay moderate
         }
 
         setTimeout(processNext, initialDelay);
@@ -138,11 +138,11 @@ class BrowserPerformanceOptimizer {
      */
     public getDebounceDelay(): number {
         if (this.isSafari) {
-            return 400; // Reduced delay for Safari (was 750ms)
+            return 800; // Increased delay for Safari to prevent freezing
         } else if (this.isFirefox) {
-            return 250; // Reduced delay for Firefox (was 500ms)
+            return 250; // Keep Firefox delay moderate
         }
-        return 200; // Reduced default for Chrome and others (was 300ms)
+        return 200; // Keep Chrome delay responsive
     }
 
     /**
@@ -150,9 +150,9 @@ class BrowserPerformanceOptimizer {
      */
     public getThrottleDelay(): number {
         if (this.isSafari) {
-            return 50; // Reduced throttle for Safari (was 100ms)
+            return 120; // Increased throttle for Safari to prevent freezing
         } else if (this.isFirefox) {
-            return 25; // Reduced throttle for Firefox (was 50ms)
+            return 25; // Keep Firefox throttle moderate
         }
         return 16; // Default for Chrome and others (~60fps)
     }

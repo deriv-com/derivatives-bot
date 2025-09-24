@@ -37,7 +37,7 @@ const Toolbox = observer(() => {
     const toolbox_ref = React.useRef(ToolboxItems());
     const [is_open, setOpen] = React.useState(true);
     const [is_clicking, setIsClicking] = React.useState(false);
-    const debounceDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 300 : 150); // Reduced UI debounce
+    const debounceDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 600 : 150); // Increased Safari UI debounce
 
     React.useEffect(() => {
         onMount(toolbox_ref);

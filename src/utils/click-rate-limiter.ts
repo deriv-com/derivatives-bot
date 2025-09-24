@@ -6,7 +6,7 @@
 class ClickRateLimiter {
     private static instance: ClickRateLimiter;
     private clickTimestamps: number[] = [];
-    private readonly maxClicksPerSecond = 5; // Increased from 3 to 5 clicks per second
+    private readonly maxClicksPerSecond = 2; // Further reduced to 2 clicks per second for stronger Safari protection
     private readonly timeWindow = 1000; // 1 second
 
     private constructor() {}
