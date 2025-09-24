@@ -67,16 +67,27 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
 
         // Step Indices
         STPRNG: 'Step Index',
+        STPRNG1: 'Step Index 100',
         STPRNG2: 'Step Index 200',
         STPRNG3: 'Step Index 300',
         STPRNG4: 'Step Index 400',
         STPRNG5: 'Step Index 500',
 
-        // Crash/Boom
-        CRASH500: 'Crash 500 Index',
-        CRASH1000: 'Crash 1000 Index',
+        // Step Indices (alternative format)
+        stpRNG: 'Step Index',
+        stpRNG1: 'Step Index 100',
+        stpRNG2: 'Step Index 200',
+        stpRNG3: 'Step Index 300',
+        stpRNG4: 'Step Index 400',
+        stpRNG5: 'Step Index 500',
+
+        // Crash/Boom Indices
+        BOOM300N: 'Boom 300 Index',
         BOOM500: 'Boom 500 Index',
         BOOM1000: 'Boom 1000 Index',
+        CRASH300N: 'Crash 300 Index',
+        CRASH500: 'Crash 500 Index',
+        CRASH1000: 'Crash 1000 Index',
 
         // Jump Indices
         JD10: 'Jump 10 Index',
@@ -84,8 +95,40 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         JD50: 'Jump 50 Index',
         JD75: 'Jump 75 Index',
         JD100: 'Jump 100 Index',
+        JD150: 'Jump 150 Index',
+        JD200: 'Jump 200 Index',
 
         // Forex Major Pairs
+        FRXAUDCAD: 'AUD/CAD',
+        FRXAUDCHF: 'AUD/CHF',
+        FRXAUDJPY: 'AUD/JPY',
+        FRXAUDNZD: 'AUD/NZD',
+        FRXAUDPLN: 'AUD/PLN',
+        FRXAUDUSD: 'AUD/USD',
+        FRXBROUSD: 'Oil/USD',
+        FRXEURAUD: 'EUR/AUD',
+        FRXEURCAD: 'EUR/CAD',
+        FRXEURCHF: 'EUR/CHF',
+        FRXEURGBP: 'EUR/GBP',
+        FRXEURJPY: 'EUR/JPY',
+        FRXEURNZD: 'EUR/NZD',
+        FRXEURUSD: 'EUR/USD',
+        FRXGBPAUD: 'GBP/AUD',
+        FRXGBPCAD: 'GBP/CAD',
+        FRXGBPCHF: 'GBP/CHF',
+        FRXGBPJPY: 'GBP/JPY',
+        FRXGBPNOK: 'GBP/NOK',
+        FRXGBPUSD: 'GBP/USD',
+        FRXNZDJPY: 'NZD/JPY',
+        FRXNZDUSD: 'NZD/USD',
+        FRXUSDCAD: 'USD/CAD',
+        FRXUSDCHF: 'USD/CHF',
+        FRXUSDJPY: 'USD/JPY',
+        FRXUSDNOK: 'USD/NOK',
+        FRXUSDPLN: 'USD/PLN',
+        FRXUSDSEK: 'USD/SEK',
+
+        // Legacy format (lowercase)
         frxEURUSD: 'EUR/USD',
         frxGBPUSD: 'GBP/USD',
         frxUSDJPY: 'USD/JPY',
@@ -102,25 +145,54 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         WLDUSD: 'USD Basket',
 
         // Stock Indices
+        OTC_AEX: 'Netherlands 25',
+        OTC_AS51: 'Australia 200',
         OTC_DJI: 'Wall Street 30',
-        OTC_SPC: 'US 500',
-        OTC_NDX: 'US Tech 100',
+        OTC_FCHI: 'France 40',
         OTC_FTSE: 'UK 100',
         OTC_GDAXI: 'Germany 40',
-        OTC_SX5E: 'Euro 50',
-        OTC_AS51: 'Australia 200',
+        OTC_HSI: 'Hong Kong 50',
+        OTC_IBEX35: 'Spain 35',
         OTC_N225: 'Japan 225',
+        OTC_NDX: 'US Tech 100',
+        OTC_SPC: 'US 500',
+        OTC_SPX500: 'US 500',
+        OTC_SSMI: 'Swiss 20',
+        OTC_SX5E: 'Euro 50',
 
         // Cryptocurrencies
+        CRYBCHUSD: 'BCH/USD',
+        CRYBNBUSD: 'BNB/USD',
+        CRYBTCLTC: 'BTC/LTC',
+        CRYIOTUSD: 'IOT/USD',
+        CRYNEOUSD: 'NEO/USD',
+        CRYOMGUSD: 'OMG/USD',
+        CRYTRXUSD: 'TRX/USD',
+        CRYBTCETH: 'BTC/ETH',
+        CRYZECUSD: 'ZEC/USD',
+        CRYXMRUSD: 'ZMR/USD',
+        CRYXMLUSD: 'XLM/USD',
+        CRYXRPUSD: 'XRP/USD',
+        CRYBTCUSD: 'BTC/USD',
+        CRYDSHUSD: 'DSH/USD',
+        CRYETHUSD: 'ETH/USD',
+        CRYEOSUSD: 'EOS/USD',
+        CRYLTCUSD: 'LTC/USD',
+
+        // Legacy format (lowercase)
         cryBTCUSD: 'BTC/USD',
         cryETHUSD: 'ETH/USD',
 
         // Commodities
-        frxXAUUSD: 'Gold/USD',
-        frxXAGUSD: 'Silver/USD',
+        FRXXAGUSD: 'Silver/USD',
+        FRXXAUUSD: 'Gold/USD',
         FRXXPDUSD: 'Palladium/USD',
         FRXXPTUSD: 'Platinum/USD',
         WLDXAU: 'Gold Basket',
+
+        // Legacy format (lowercase)
+        frxXAUUSD: 'Gold/USD',
+        frxXAGUSD: 'Silver/USD',
     };
 
     return symbolMap[underlying_symbol] || underlying_symbol;
