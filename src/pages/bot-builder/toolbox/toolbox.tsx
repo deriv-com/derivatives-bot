@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import Text from '@/components/shared_ui/text';
 import { useStore } from '@/hooks/useStore';
+import { browserOptimizer } from '@/utils/browser-performance-optimizer';
+import { clickRateLimiter } from '@/utils/click-rate-limiter';
 import { LabelPairedChevronDownMdFillIcon } from '@deriv/quill-icons/LabelPaired';
 import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
@@ -34,6 +36,8 @@ const Toolbox = observer(() => {
 
     const toolbox_ref = React.useRef(ToolboxItems());
     const [is_open, setOpen] = React.useState(true);
+    const [is_clicking, setIsClicking] = React.useState(false);
+    const debounceDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 300 : 150); // Reduced UI debounce
 
     React.useEffect(() => {
         onMount(toolbox_ref);
@@ -109,10 +113,38 @@ const Toolbox = observer(() => {
                                                 <div
                                                     className='db-toolbox__item'
                                                     onClick={() => {
-                                                        // eslint-disable-next-line no-unused-expressions
-                                                        has_sub_category
-                                                            ? onToolboxItemExpand(index)
-                                                            : onToolboxItemClick(category);
+                                                        // Enhanced Safari-specific click handling with reduced UI lag
+                                                        if (is_clicking) return;
+
+                                                        // Only use rate limiter for Safari to prevent freezing
+                                                        if (
+                                                            browserOptimizer.isSafariBrowser() &&
+                                                            !clickRateLimiter.canClick()
+                                                        )
+                                                            return;
+
+                                                        setIsClicking(true);
+                                                        setTimeout(
+                                                            () => setIsClicking(false),
+                                                            debounceDelayRef.current
+                                                        );
+
+                                                        // Browser-specific operation queuing (only for Safari/Firefox)
+                                                        if (browserOptimizer.needsPerformanceOptimization()) {
+                                                            const operationId = `toolbox-ui-${category.getAttribute('id')}-${index}`;
+                                                            browserOptimizer.queueOperation(operationId, () => {
+                                                                // eslint-disable-next-line no-unused-expressions
+                                                                has_sub_category
+                                                                    ? onToolboxItemExpand(index)
+                                                                    : onToolboxItemClick(category);
+                                                            });
+                                                        } else {
+                                                            // Direct execution for Chrome and other optimized browsers
+                                                            // eslint-disable-next-line no-unused-expressions
+                                                            has_sub_category
+                                                                ? onToolboxItemExpand(index)
+                                                                : onToolboxItemClick(category);
+                                                        }
                                                     }}
                                                 >
                                                     <div className='db-toolbox__category-text'>
@@ -150,7 +182,37 @@ const Toolbox = observer(() => {
                                                                         }
                                                                     )}
                                                                     onClick={() => {
-                                                                        onToolboxItemClick(subCategory);
+                                                                        // Enhanced Safari-specific subcategory click handling with reduced UI lag
+                                                                        if (is_clicking) return;
+
+                                                                        // Only use rate limiter for Safari to prevent freezing
+                                                                        if (
+                                                                            browserOptimizer.isSafariBrowser() &&
+                                                                            !clickRateLimiter.canClick()
+                                                                        )
+                                                                            return;
+
+                                                                        setIsClicking(true);
+                                                                        setTimeout(
+                                                                            () => setIsClicking(false),
+                                                                            debounceDelayRef.current
+                                                                        );
+
+                                                                        // Browser-specific operation queuing (only for Safari/Firefox)
+                                                                        if (
+                                                                            browserOptimizer.needsPerformanceOptimization()
+                                                                        ) {
+                                                                            const operationId = `toolbox-sub-${subCategory.getAttribute('id')}`;
+                                                                            browserOptimizer.queueOperation(
+                                                                                operationId,
+                                                                                () => {
+                                                                                    onToolboxItemClick(subCategory);
+                                                                                }
+                                                                            );
+                                                                        } else {
+                                                                            // Direct execution for Chrome and other optimized browsers
+                                                                            onToolboxItemClick(subCategory);
+                                                                        }
                                                                     }}
                                                                 >
                                                                     <Text size='xxs'>

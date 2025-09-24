@@ -2,6 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/hooks/useStore';
+import { browserOptimizer } from '@/utils/browser-performance-optimizer';
+import { clickRateLimiter } from '@/utils/click-rate-limiter';
 import GTM from '@/utils/gtm';
 import { help_content_config } from '@/utils/help-content/help-content.config';
 import { LabelPairedCircleExclamationCaptionFillIcon } from '@deriv/quill-icons';
@@ -152,19 +154,35 @@ const FlyoutContent = (props: TFlyoutContent) => {
                                             `${node.getAttribute('className')}`
                                         )}
                                         onClick={button => {
-                                            const workspace = window.Blockly.derivWorkspace;
-                                            const button_cb = workspace.getButtonCallback(callback_key);
-                                            const callback = button_cb;
+                                            // Safari-specific rate limiting and operation queuing with reduced lag
+                                            if (browserOptimizer.isSafariBrowser() && !clickRateLimiter.canClick()) {
+                                                console.warn('Flyout button click rate limit exceeded');
+                                                return;
+                                            }
 
-                                            // Workaround for not having a flyout workspace.
-                                            // eslint-disable-next-line no-underscore-dangle
-                                            button.targetWorkspace_ = workspace;
-                                            button.getTargetWorkspace = () => {
+                                            const executeButtonCallback = () => {
+                                                const workspace = window.Blockly.derivWorkspace;
+                                                const button_cb = workspace.getButtonCallback(callback_key);
+                                                const callback = button_cb;
+
+                                                // Workaround for not having a flyout workspace.
                                                 // eslint-disable-next-line no-underscore-dangle
-                                                return button.targetWorkspace_;
+                                                button.targetWorkspace_ = workspace;
+                                                button.getTargetWorkspace = () => {
+                                                    // eslint-disable-next-line no-underscore-dangle
+                                                    return button.targetWorkspace_;
+                                                };
+
+                                                callback?.(button);
                                             };
 
-                                            callback?.(button);
+                                            // Only queue operations for Safari/Firefox, execute directly for Chrome
+                                            if (browserOptimizer.needsPerformanceOptimization()) {
+                                                const operationId = `flyout-button-${callback_key}-${callback_id}`;
+                                                browserOptimizer.queueOperation(operationId, executeButtonCallback);
+                                            } else {
+                                                executeButtonCallback();
+                                            }
                                         }}
                                     >
                                         {node.getAttribute('text')}

@@ -1,5 +1,7 @@
 import { action, makeObservable, observable, reaction } from 'mobx';
 import { scrollWorkspace } from '@/external/bot-skeleton';
+import { browserOptimizer } from '@/utils/browser-performance-optimizer';
+import { clickRateLimiter } from '@/utils/click-rate-limiter';
 import GTM from '@/utils/gtm';
 import { TStores } from '@deriv/stores/types';
 import { localize } from '@deriv-com/translations';
@@ -10,6 +12,10 @@ export default class ToolboxStore {
     core: TStores;
     disposeToolboxToggleReaction: (() => void) | undefined = undefined;
     typing_timer: ReturnType<typeof setTimeout> | undefined = undefined;
+    click_debounce_timer: ReturnType<typeof setTimeout> | undefined = undefined;
+    last_clicked_category: string | null = null;
+    workspace_adjust_timer: ReturnType<typeof setTimeout> | undefined = undefined;
+    is_adjusting_workspace = false;
     constructor(root_store: RootStore, core: TStores) {
         makeObservable(this, {
             is_toolbox_open: observable,
@@ -72,6 +78,19 @@ export default class ToolboxStore {
         if (typeof this.disposeToolboxToggleReaction === 'function') {
             this.disposeToolboxToggleReaction();
         }
+        // Clean up timers to prevent memory leaks
+        if (this.typing_timer) {
+            clearTimeout(this.typing_timer);
+            this.typing_timer = undefined;
+        }
+        if (this.click_debounce_timer) {
+            clearTimeout(this.click_debounce_timer);
+            this.click_debounce_timer = undefined;
+        }
+        if (this.workspace_adjust_timer) {
+            clearTimeout(this.workspace_adjust_timer);
+            this.workspace_adjust_timer = undefined;
+        }
     }
 
     setWorkspaceOptions() {
@@ -101,8 +120,27 @@ export default class ToolboxStore {
     }
     // eslint-disable-next-line class-methods-use-this
     adjustWorkspace() {
+        // Throttle workspace adjustments to prevent excessive calculations
+        if (this.is_adjusting_workspace) {
+            return;
+        }
+
+        if (this.workspace_adjust_timer) {
+            clearTimeout(this.workspace_adjust_timer);
+        }
+
+        // Browser-specific throttle delay (Safari/Firefox)
+        const throttleDelay = browserOptimizer.getThrottleDelay();
+
+        this.workspace_adjust_timer = setTimeout(() => {
+            this.performWorkspaceAdjustment();
+        }, throttleDelay);
+    }
+
+    private performWorkspaceAdjustment() {
         // NOTE: added this load modal open check to prevent scroll when load modal is open
         if (!this.is_workspace_scroll_adjusted && !this.root_store.load_modal.is_load_modal_open) {
+            this.is_adjusting_workspace = true;
             this.is_workspace_scroll_adjusted = true;
 
             setTimeout(() => {
@@ -129,6 +167,7 @@ export default class ToolboxStore {
                 }
 
                 this.is_workspace_scroll_adjusted = false;
+                this.is_adjusting_workspace = false;
             }, 300);
         }
     }
@@ -138,27 +177,100 @@ export default class ToolboxStore {
     }
 
     onToolboxItemClick(category: HTMLElement) {
-        const { flyout } = this.root_store;
+        // Global rate limiting to prevent Safari freezing
+        if (!clickRateLimiter.canClick()) {
+            console.warn('Click rate limit exceeded, ignoring click');
+            return;
+        }
+
         const category_id = category.getAttribute('id');
-        const flyout_content = this.getCategoryContents(category) as Element[];
 
-        flyout.setIsSearchFlyout(false);
+        // Browser-specific debounce delay (longer for Safari/Firefox)
+        const debounceDelay = browserOptimizer.getDebounceDelay();
 
-        if (flyout.selected_category?.getAttribute('id') === category_id) {
-            flyout.setVisibility(false);
-        } else {
-            flyout.setSelectedCategory(category);
-            flyout.setContents(flyout_content);
+        // More aggressive debouncing - prevent any clicks while timer is active
+        if (this.click_debounce_timer) {
+            return; // Ignore all clicks while timer is active
+        }
+
+        // Set Safari-appropriate debounce period
+        this.click_debounce_timer = setTimeout(() => {
+            this.click_debounce_timer = undefined;
+            this.last_clicked_category = null;
+        }, debounceDelay);
+
+        // Additional check for same category
+        if (this.last_clicked_category === category_id) {
+            return;
+        }
+
+        this.last_clicked_category = category_id;
+
+        // Browser-specific operation queuing (Safari/Firefox)
+        browserOptimizer.queueOperation(`toolbox-click-${category_id}`, () => {
+            this.performToolboxItemClick(category, category_id);
+        });
+    }
+
+    private performToolboxItemClick(category: HTMLElement, category_id: string | null) {
+        try {
+            const { flyout } = this.root_store;
+
+            // Check if flyout is already processing
+            if (flyout.is_loading) {
+                return;
+            }
+
+            flyout.is_loading = true;
+
+            const flyout_content = this.getCategoryContents(category) as Element[];
+
+            flyout.setIsSearchFlyout(false);
+
+            if (flyout.selected_category?.getAttribute('id') === category_id) {
+                flyout.setVisibility(false);
+            } else {
+                flyout.setSelectedCategory(category);
+                flyout.setContents(flyout_content);
+            }
+        } catch (error) {
+            console.warn('Error in toolbox item click:', error);
+        } finally {
+            // Reset loading state after a delay
+            setTimeout(() => {
+                this.root_store.flyout.is_loading = false;
+            }, 100);
         }
     }
 
     onToolboxItemExpand(index: number) {
-        if ((this.sub_category_index as number[]).includes(index)) {
-            const open_ids = this.sub_category_index.filter(open_id => open_id !== index);
-            this.sub_category_index = open_ids;
-        } else {
-            this.sub_category_index = [...this.sub_category_index, index];
+        // Global rate limiting to prevent Safari freezing
+        if (!clickRateLimiter.canClick()) {
+            console.warn('Click rate limit exceeded, ignoring expand');
+            return;
         }
+
+        // Prevent rapid expand/collapse operations
+        if (this.click_debounce_timer) {
+            return;
+        }
+
+        // Browser-specific debounce delay (Safari/Firefox)
+        const debounceDelay = browserOptimizer.getDebounceDelay();
+
+        this.click_debounce_timer = setTimeout(() => {
+            this.click_debounce_timer = undefined;
+        }, debounceDelay);
+
+        // Browser-specific DOM operation (Safari/Firefox)
+        browserOptimizer.safeDOMOperation(() => {
+            if ((this.sub_category_index as number[]).includes(index)) {
+                const open_ids = this.sub_category_index.filter(open_id => open_id !== index);
+                this.sub_category_index = open_ids;
+            } else {
+                this.sub_category_index = [...this.sub_category_index, index];
+            }
+        });
     }
 
     getCategoryContents = (category: HTMLElement): ChildNode[] => {
