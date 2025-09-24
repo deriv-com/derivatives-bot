@@ -37,7 +37,8 @@ const Toolbox = observer(() => {
     const toolbox_ref = React.useRef(ToolboxItems());
     const [is_open, setOpen] = React.useState(true);
     const [is_clicking, setIsClicking] = React.useState(false);
-    const debounceDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 600 : 150); // Increased Safari UI debounce
+    const [safari_blocked, setSafariBlocked] = React.useState(false);
+    const debounceDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 1500 : 150); // Even higher Safari UI debounce
 
     React.useEffect(() => {
         onMount(toolbox_ref);
@@ -113,6 +114,13 @@ const Toolbox = observer(() => {
                                                 <div
                                                     className='db-toolbox__item'
                                                     onClick={() => {
+                                                        // Safari-specific: Block all operations if currently processing
+                                                        if (
+                                                            browserOptimizer.isSafariBrowser() &&
+                                                            (is_clicking || safari_blocked)
+                                                        )
+                                                            return;
+
                                                         // Enhanced Safari-specific click handling with reduced UI lag
                                                         if (is_clicking) return;
 
@@ -124,10 +132,16 @@ const Toolbox = observer(() => {
                                                             return;
 
                                                         setIsClicking(true);
-                                                        setTimeout(
-                                                            () => setIsClicking(false),
-                                                            debounceDelayRef.current
-                                                        );
+                                                        if (browserOptimizer.isSafariBrowser()) {
+                                                            setSafariBlocked(true);
+                                                        }
+
+                                                        setTimeout(() => {
+                                                            setIsClicking(false);
+                                                            if (browserOptimizer.isSafariBrowser()) {
+                                                                setSafariBlocked(false);
+                                                            }
+                                                        }, debounceDelayRef.current);
 
                                                         // Browser-specific operation queuing (only for Safari/Firefox)
                                                         if (browserOptimizer.needsPerformanceOptimization()) {
@@ -182,6 +196,13 @@ const Toolbox = observer(() => {
                                                                         }
                                                                     )}
                                                                     onClick={() => {
+                                                                        // Safari-specific: Block all operations if currently processing
+                                                                        if (
+                                                                            browserOptimizer.isSafariBrowser() &&
+                                                                            (is_clicking || safari_blocked)
+                                                                        )
+                                                                            return;
+
                                                                         // Enhanced Safari-specific subcategory click handling with reduced UI lag
                                                                         if (is_clicking) return;
 
@@ -193,10 +214,16 @@ const Toolbox = observer(() => {
                                                                             return;
 
                                                                         setIsClicking(true);
-                                                                        setTimeout(
-                                                                            () => setIsClicking(false),
-                                                                            debounceDelayRef.current
-                                                                        );
+                                                                        if (browserOptimizer.isSafariBrowser()) {
+                                                                            setSafariBlocked(true);
+                                                                        }
+
+                                                                        setTimeout(() => {
+                                                                            setIsClicking(false);
+                                                                            if (browserOptimizer.isSafariBrowser()) {
+                                                                                setSafariBlocked(false);
+                                                                            }
+                                                                        }, debounceDelayRef.current);
 
                                                                         // Browser-specific operation queuing (only for Safari/Firefox)
                                                                         if (

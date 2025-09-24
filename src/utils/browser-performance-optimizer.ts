@@ -11,6 +11,7 @@ class BrowserPerformanceOptimizer {
     private pendingOperations: Set<string> = new Set();
     private operationQueue: Array<() => void> = [];
     private isProcessingQueue = false;
+    private safariOperationBlocked = false;
 
     private constructor() {
         // Detect browsers that need performance optimizations
@@ -48,6 +49,11 @@ class BrowserPerformanceOptimizer {
             return;
         }
 
+        // Safari-specific: Block all operations if currently processing
+        if (this.isSafari && this.safariOperationBlocked) {
+            return;
+        }
+
         // Prevent duplicate operations
         if (this.pendingOperations.has(operationId)) {
             return;
@@ -75,9 +81,18 @@ class BrowserPerformanceOptimizer {
 
         this.isProcessingQueue = true;
 
+        // Safari-specific: Block new operations during processing
+        if (this.isSafari) {
+            this.safariOperationBlocked = true;
+        }
+
         const processNext = () => {
             if (this.operationQueue.length === 0) {
                 this.isProcessingQueue = false;
+                // Safari-specific: Unblock operations after processing complete
+                if (this.isSafari) {
+                    this.safariOperationBlocked = false;
+                }
                 return;
             }
 
@@ -86,10 +101,10 @@ class BrowserPerformanceOptimizer {
                 operation();
             }
 
-            // Browser-specific delays: Safari needs longer delays to prevent freezing
+            // Browser-specific delays: Safari needs much longer delays to prevent freezing
             let delay = 16; // Default for Chrome
             if (this.isSafari) {
-                delay = 75; // Increased delay for Safari to prevent freezing
+                delay = 200; // Even higher delay for Safari to prevent freezing
             } else if (this.isFirefox) {
                 delay = 20; // Keep Firefox delay moderate
             }
@@ -100,7 +115,7 @@ class BrowserPerformanceOptimizer {
         // Start processing with initial delay for problematic browsers
         let initialDelay = 0;
         if (this.isSafari) {
-            initialDelay = 150; // Increased initial delay for Safari to prevent freezing
+            initialDelay = 400; // Even higher initial delay for Safari to prevent freezing
         } else if (this.isFirefox) {
             initialDelay = 25; // Keep Firefox delay moderate
         }
@@ -131,6 +146,7 @@ class BrowserPerformanceOptimizer {
         this.operationQueue = [];
         this.pendingOperations.clear();
         this.isProcessingQueue = false;
+        this.safariOperationBlocked = false;
     }
 
     /**
@@ -138,7 +154,7 @@ class BrowserPerformanceOptimizer {
      */
     public getDebounceDelay(): number {
         if (this.isSafari) {
-            return 800; // Increased delay for Safari to prevent freezing
+            return 1200; // Much higher debounce delay for Safari to prevent freezing
         } else if (this.isFirefox) {
             return 250; // Keep Firefox delay moderate
         }
@@ -150,7 +166,7 @@ class BrowserPerformanceOptimizer {
      */
     public getThrottleDelay(): number {
         if (this.isSafari) {
-            return 120; // Increased throttle for Safari to prevent freezing
+            return 200; // Much higher throttle for Safari to prevent freezing
         } else if (this.isFirefox) {
             return 25; // Keep Firefox throttle moderate
         }
