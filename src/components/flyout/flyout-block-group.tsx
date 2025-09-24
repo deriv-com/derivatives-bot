@@ -1,4 +1,6 @@
 import classNames from 'classnames';
+import { browserOptimizer } from '@/utils/browser-performance-optimizer';
+import { clickRateLimiter } from '@/utils/click-rate-limiter';
 import { LabelPairedPlusLgFillIcon } from '@deriv/quill-icons/LabelPaired';
 import { Localize } from '@deriv-com/translations';
 import Button from '../shared_ui/button';
@@ -28,17 +30,33 @@ const FlyoutBlockGroup = ({ onInfoClick, block_node, is_active, should_hide_disp
                 has_effect
                 is_plus
                 onClick={() => {
-                    if (block_type === 'trade_definition') {
-                        const has_trade_definition = window.Blockly.derivWorkspace
-                            .getAllBlocks()
-                            .some(block => block.type === 'trade_definition');
-
-                        if (has_trade_definition) {
-                            window.Blockly.derivWorkspace.addBlockNode(null);
-                            return;
-                        }
+                    // Safari-specific rate limiting and operation queuing for block additions with reduced lag
+                    if (browserOptimizer.isSafariBrowser() && !clickRateLimiter.canClick()) {
+                        console.warn('Block add click rate limit exceeded');
+                        return;
                     }
-                    window.Blockly.derivWorkspace.addBlockNode(block_node);
+
+                    const executeBlockAdd = () => {
+                        if (block_type === 'trade_definition') {
+                            const has_trade_definition = window.Blockly.derivWorkspace
+                                .getAllBlocks()
+                                .some(block => block.type === 'trade_definition');
+
+                            if (has_trade_definition) {
+                                window.Blockly.derivWorkspace.addBlockNode(null);
+                                return;
+                            }
+                        }
+                        window.Blockly.derivWorkspace.addBlockNode(block_node);
+                    };
+
+                    // Only queue operations for Safari/Firefox, execute directly for Chrome
+                    if (browserOptimizer.needsPerformanceOptimization()) {
+                        const operationId = `flyout-add-block-${block_type}`;
+                        browserOptimizer.queueOperation(operationId, executeBlockAdd);
+                    } else {
+                        executeBlockAdd();
+                    }
                 }}
                 type='button'
             >
@@ -69,7 +87,23 @@ const FlyoutBlockGroup = ({ onInfoClick, block_node, is_active, should_hide_disp
                                 <a
                                     id={display_name.replace(/\s/gi, '-')}
                                     className='flyout__item-info'
-                                    onClick={onInfoClick}
+                                    onClick={() => {
+                                        // Safari-specific rate limiting for info clicks with reduced lag
+                                        if (browserOptimizer.isSafariBrowser() && !clickRateLimiter.canClick()) {
+                                            console.warn('Info click rate limit exceeded');
+                                            return;
+                                        }
+
+                                        // Only queue operations for Safari/Firefox, execute directly for Chrome
+                                        if (browserOptimizer.needsPerformanceOptimization()) {
+                                            const operationId = `flyout-info-${block_type}`;
+                                            browserOptimizer.queueOperation(operationId, () => {
+                                                onInfoClick();
+                                            });
+                                        } else {
+                                            onInfoClick();
+                                        }
+                                    }}
                                 >
                                     <Localize i18n_default_text='Learn more' />
                                 </a>

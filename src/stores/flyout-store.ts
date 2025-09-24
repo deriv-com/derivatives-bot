@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { action, computed, makeObservable, observable } from 'mobx';
 import { config } from '@/external/bot-skeleton';
+import { browserOptimizer } from '@/utils/browser-performance-optimizer';
 import GTM from '@/utils/gtm';
 import RootStore from './root-store';
 
@@ -45,6 +46,7 @@ export default class FlyoutStore implements IFlyoutStore {
     block_listeners = [];
     block_workspaces = [];
     flyout_min_width = 440;
+    flyout_width_timer: ReturnType<typeof setTimeout> | undefined = undefined;
     options = {
         renderer: 'zelos',
         media: 'assets/media/',
@@ -100,6 +102,16 @@ export default class FlyoutStore implements IFlyoutStore {
 
     onUnmount() {
         window.removeEventListener('click', this.onClickOutsideFlyout);
+        // Enhanced cleanup on unmount to prevent memory leaks
+        this.cleanupBlockWorkspaces();
+        this.flyout_content = [];
+        this.selected_category = null;
+
+        // Clean up flyout width timer
+        if (this.flyout_width_timer) {
+            clearTimeout(this.flyout_width_timer);
+            this.flyout_width_timer = undefined;
+        }
     }
 
     initFlyout() {
@@ -187,10 +199,8 @@ export default class FlyoutStore implements IFlyoutStore {
         const text_limit = 20;
         const processed_xml = xml_list;
 
-        this.block_listeners.forEach(listener => window.Blockly.browserEvents.unbind(listener));
-        this.block_workspaces.forEach(workspace => workspace.dispose());
-        this.block_listeners = [];
-        this.block_workspaces = [];
+        // Enhanced cleanup to prevent memory leaks
+        this.cleanupBlockWorkspaces();
 
         this.is_help_content = false;
         this.search_term = search_term.length > text_limit ? `${search_term.substring(0, text_limit)}...` : search_term;
@@ -204,6 +214,32 @@ export default class FlyoutStore implements IFlyoutStore {
         setTimeout(() => this.setFlyoutWidth(processed_xml), 50);
     }
 
+    private cleanupBlockWorkspaces() {
+        // More thorough cleanup of listeners and workspaces
+        try {
+            this.block_listeners.forEach(listener => {
+                if (listener && typeof window.Blockly.browserEvents.unbind === 'function') {
+                    window.Blockly.browserEvents.unbind(listener);
+                }
+            });
+        } catch (error) {
+            console.warn('Error cleaning up block listeners:', error);
+        }
+
+        try {
+            this.block_workspaces.forEach(workspace => {
+                if (workspace && typeof workspace.dispose === 'function') {
+                    workspace.dispose();
+                }
+            });
+        } catch (error) {
+            console.warn('Error disposing block workspaces:', error);
+        }
+
+        this.block_listeners = [];
+        this.block_workspaces = [];
+    }
+
     /**
      * Walks through xmlList and finds width of the longest block while setting
      * height and width (in workspace pixels) attributes on each of the block nodes.
@@ -211,24 +247,46 @@ export default class FlyoutStore implements IFlyoutStore {
      * @memberof FlyoutStore
      */
     setFlyoutWidth(xmlList: Element[]) {
-        let longest_block_width = 0;
+        // Throttle flyout width calculations to prevent excessive DOM operations
+        if (this.flyout_width_timer) {
+            clearTimeout(this.flyout_width_timer);
+        }
 
-        xmlList.forEach((node: Element) => {
-            const tag_name = node.tagName.toUpperCase();
+        // Browser-specific throttle delay (Safari/Firefox)
+        const throttleDelay = browserOptimizer.getThrottleDelay();
 
-            if (tag_name === window.Blockly.Xml.NODE_BLOCK) {
-                const block_hw = window.Blockly.Block.getDimensions(node);
+        this.flyout_width_timer = setTimeout(() => {
+            this.calculateFlyoutWidth(xmlList);
+        }, throttleDelay);
+    }
 
-                node.setAttribute('width', String(Math.ceil(block_hw.width * this.options.zoom.startScale)));
-                node.setAttribute('height', String(Math.ceil(block_hw.height * this.options.zoom.startScale)));
-                longest_block_width = Math.max(
-                    longest_block_width,
-                    Math.ceil(block_hw.width * this.options.zoom.startScale)
-                );
+    private calculateFlyoutWidth(xmlList: Element[]) {
+        // Browser-specific DOM operation wrapper (Safari/Firefox)
+        browserOptimizer.safeDOMOperation(() => {
+            let longest_block_width = 0;
+
+            try {
+                xmlList.forEach((node: Element) => {
+                    const tag_name = node.tagName.toUpperCase();
+
+                    if (tag_name === window.Blockly.Xml.NODE_BLOCK) {
+                        const block_hw = window.Blockly.Block.getDimensions(node);
+
+                        node.setAttribute('width', String(Math.ceil(block_hw.width * this.options.zoom.startScale)));
+                        node.setAttribute('height', String(Math.ceil(block_hw.height * this.options.zoom.startScale)));
+                        longest_block_width = Math.max(
+                            longest_block_width,
+                            Math.ceil(block_hw.width * this.options.zoom.startScale)
+                        );
+                    }
+                });
+
+                this.flyout_width = Math.max(this.flyout_min_width, longest_block_width + 65);
+            } catch (error) {
+                console.warn('Error calculating flyout width:', error);
+                this.flyout_width = this.flyout_min_width;
             }
         });
-
-        this.flyout_width = Math.max(this.flyout_min_width, longest_block_width + 65);
     }
 
     /**
