@@ -169,17 +169,46 @@ export const generateOAuthURL = () => {
         const hostname = brandConfig?.brand_hostname?.[environment];
 
         if (hostname) {
-            return `https://${hostname}/login`;
+            // Dynamically construct redirect URL based on current hostname + port
+            const currentHost = window.location.host; // includes port
+            const redirectUrl = currentHost.replace('bot', 'dtrader');
+
+            return `https://${hostname}/login?redirect=${redirectUrl}`;
         }
     } catch (error) {
         console.error('Error accessing brand config:', error);
     }
 
     // Fallback to hardcoded URLs if brand config fails
-    const hostname = window.location.hostname;
-    if (hostname.includes('staging')) {
-        return 'https://staging-home.deriv.com/dashboard/login';
+    const currentHost = window.location.host; // includes port
+    const redirectUrl = currentHost.replace('bot', 'dtrader');
+
+    if (currentHost.includes('staging')) {
+        return `https://staging-home.deriv.com/dashboard/login?redirect=${redirectUrl}`;
     } else {
-        return 'https://home.deriv.com/dashboard/login';
+        return `https://home.deriv.com/dashboard/login?redirect=${redirectUrl}`;
+    }
+};
+
+export const generateSignupURL = () => {
+    try {
+        // Use brand config for signup URLs
+        const environment = getCurrentEnvironment();
+        const hostname = brandConfig?.brand_hostname?.[environment];
+
+        if (hostname) {
+            return `https://${hostname}/signup`;
+        }
+    } catch (error) {
+        console.error('Error accessing brand config:', error);
+    }
+
+    // Fallback to hardcoded URLs if brand config fails
+    const currentHost = window.location.host; // includes port
+
+    if (currentHost.includes('staging')) {
+        return 'https://staging-home.deriv.com/dashboard/signup';
+    } else {
+        return 'https://home.deriv.com/dashboard/signup';
     }
 };

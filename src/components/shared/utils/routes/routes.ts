@@ -46,8 +46,8 @@ const domains: Record<Service, DomainConfig> = {
     derivDtrader: {
         staging: 'https://staging-dtrader.deriv.com',
         production: {
-            me: 'https://dtrader.deriv.me',
-            be: 'https://dtrader.deriv.be',
+            me: 'https://dtrader.deriv.com', // No .me domain yet, using .com
+            be: 'https://dtrader.deriv.com', // No .be domain yet, using .com
             com: 'https://dtrader.deriv.com',
         },
     },
@@ -104,7 +104,7 @@ export const standalone_routes = {
     traders_hub_lowcode: getDerivDomain('derivHub'),
     recent_transactions: `${getDerivDomain('derivHub')}/tradershub/redirect?action=redirect_to&redirect_to=wallet`,
     wallets_transfer: `${getDerivDomain('derivDtrader')}/wallet/account-transfer`,
-    signup: `${getDerivDomain('derivHub')}/tradershub/signup`,
+    signup: `${getDerivDomain('derivHome')}/dashboard/signup`,
     deriv_com: getDerivDomain('derivCom'),
     deriv_app: `${getDerivDomain('derivHome')}/dashboard/home`,
     endpoint: `${window.location.origin}/endpoint`,
