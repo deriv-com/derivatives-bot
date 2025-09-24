@@ -59,14 +59,14 @@ export const TRADING_TIMES = {
         frxXAGUSD: 'Silver/USD',
 
         // Indices
-        OTC_AS51: 'Australia 200 Index',
-        OTC_AUS200: 'Australia 200 Index',
-        OTC_DJI: 'Wall Street 30 Index',
-        OTC_SPC: 'US 500 Index',
-        OTC_NDX: 'US Tech 100 Index',
-        OTC_FTSE: 'UK 100 Index',
-        OTC_N225: 'Japan 225 Index',
-        OTC_HSI: 'Hong Kong 50 Index',
+        OTC_AS51: 'Australia 200',
+        OTC_AUS200: 'Australia 200',
+        OTC_DJI: 'Wall Street 30',
+        OTC_SPC: 'US 500',
+        OTC_NDX: 'US Tech 100',
+        OTC_FTSE: 'UK 100',
+        OTC_N225: 'Japan 225',
+        OTC_HSI: 'Hong Kong 50',
 
         // Commodities
         OTC_OIL_USD: 'Oil/USD',

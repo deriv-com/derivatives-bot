@@ -56,9 +56,21 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         '1HZ75V': 'Volatility 75 (1s) Index',
         '1HZ90V': 'Volatility 90 (1s) Index',
         '1HZ100V': 'Volatility 100 (1s) Index',
+        '1HZ150V': 'Volatility 150 (1s) Index',
+        '1HZ200V': 'Volatility 200 (1s) Index',
+        '1HZ250V': 'Volatility 250 (1s) Index',
+        '1HZ300V': 'Volatility 300 (1s) Index',
+
+        // Daily Reset Indices
+        RDBEAR: 'Bear Market Index',
+        RDBULL: 'Bull Market Index',
 
         // Step Indices
-        STEPINDICES: 'Step Index',
+        STPRNG: 'Step Index',
+        STPRNG2: 'Step Index 200',
+        STPRNG3: 'Step Index 300',
+        STPRNG4: 'Step Index 400',
+        STPRNG5: 'Step Index 500',
 
         // Crash/Boom
         CRASH500: 'Crash 500 Index',
