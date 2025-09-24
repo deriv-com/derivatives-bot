@@ -66,7 +66,7 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         RDBULL: 'Bull Market Index',
 
         // Step Indices
-        STPRNG: 'Step Index',
+        STPRNG: 'Step Index 100',
         STPRNG1: 'Step Index 100',
         STPRNG2: 'Step Index 200',
         STPRNG3: 'Step Index 300',
@@ -74,7 +74,7 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         STPRNG5: 'Step Index 500',
 
         // Step Indices (alternative format)
-        stpRNG: 'Step Index',
+        stpRNG: 'Step Index 100',
         stpRNG1: 'Step Index 100',
         stpRNG2: 'Step Index 200',
         stpRNG3: 'Step Index 300',
