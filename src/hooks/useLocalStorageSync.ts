@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from './useStore';
 
 /**
@@ -9,16 +9,33 @@ import { useStore } from './useStore';
  * - The 'storage' event only fires on other tabs/windows when localStorage is modified
  * - It does NOT fire on the tab that made the change
  * - This is perfect for detecting session token changes from other tabs
+ * - If bot is running, shows a modal instead of immediate reload
  * - Temporarily disables beforeunload prompt to avoid Chrome's native dialog
  *
  * Usage:
  * - Import and call this hook in your main App component
- * - When another tab changes the session_token, this tab will automatically refresh
+ * - When another tab changes the session_token, this tab will automatically refresh or show modal
  * - Changes made by the current tab will not trigger a refresh
  */
 export const useLocalStorageSync = () => {
     const isOwnChange = useRef(false);
     const store = useStore();
+    const [showAccountChangeModal, setShowAccountChangeModal] = useState(false);
+
+    const handleReload = () => {
+        // Temporarily disable prompt handler during refresh to prevent Chrome's native dialog
+        if (store?.ui?.setPromptHandler) {
+            store.ui.setPromptHandler(false);
+        }
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
+    };
+
+    const handleModalClose = () => {
+        setShowAccountChangeModal(false);
+    };
 
     useEffect(() => {
         const handleStorageChange = (event: StorageEvent) => {
@@ -28,31 +45,20 @@ export const useLocalStorageSync = () => {
             }
 
             // Log the change for debugging
-            console.log('🔄 Session token changed in another tab:', {
-                key: event.key,
-                oldValue: event.oldValue,
-                newValue: event.newValue,
-                storageArea: event.storageArea,
-                url: event.url,
-            });
+            console.log('🔄 Session token changed in another tab - checking if bot is running');
 
-            // Check if bot is running and temporarily disable prompt handler to prevent Chrome's native dialog
+            // Check if bot is running
             const isBotRunning = store?.run_panel?.is_running;
 
-            console.log('🔍 Bot running status:', isBotRunning);
-            console.log('🔍 UI show_prompt status:', store?.ui?.show_prompt);
-
-            // Temporarily disable prompt handler during refresh to prevent Chrome's native dialog
-            if (store?.ui?.setPromptHandler) {
-                console.log('🔇 Temporarily disabling prompt handler for refresh');
-                store.ui.setPromptHandler(false);
+            if (isBotRunning) {
+                // Show modal instead of immediate reload when bot is running
+                console.log('🚨 Bot is running - showing modal instead of reloading');
+                setShowAccountChangeModal(true);
+            } else {
+                // Reload immediately if bot is not running
+                console.log('⚡ Bot is not running - reloading immediately');
+                handleReload();
             }
-
-            // Add a small delay to ensure localStorage is fully updated
-            setTimeout(() => {
-                console.log('🔃 Refreshing page due to session token change from another tab...');
-                window.location.reload();
-            }, 100);
         };
 
         // Listen for localStorage changes from other tabs
@@ -64,7 +70,7 @@ export const useLocalStorageSync = () => {
             console.log('🔇 LocalStorage sync hook cleanup');
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, []);
+    }, [store?.run_panel?.is_running, store?.ui]);
 
     /**
      * Wrapper function to set session_token in localStorage
@@ -100,5 +106,8 @@ export const useLocalStorageSync = () => {
     return {
         setSessionToken,
         removeSessionToken,
+        showAccountChangeModal,
+        handleReload,
+        handleModalClose,
     };
 };
