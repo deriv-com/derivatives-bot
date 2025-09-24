@@ -105,9 +105,6 @@
         flex-direction: row;
         color: var(--text-general);
         user-select: none; // Prevent text selection on rapid clicks
-        user-select: none;
-        user-select: none;
-        user-select: none;
 
         &:hover {
             background-color: var(--general-hover);
