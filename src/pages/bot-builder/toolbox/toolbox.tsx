@@ -3,8 +3,6 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import Text from '@/components/shared_ui/text';
 import { useStore } from '@/hooks/useStore';
-import { browserOptimizer } from '@/utils/browser-performance-optimizer';
-import { clickRateLimiter } from '@/utils/click-rate-limiter';
 import { LabelPairedChevronDownMdFillIcon } from '@deriv/quill-icons/LabelPaired';
 import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
@@ -36,8 +34,7 @@ const Toolbox = observer(() => {
 
     const toolbox_ref = React.useRef(ToolboxItems());
     const [is_open, setOpen] = React.useState(true);
-    const [pending_selection, setPendingSelection] = React.useState<string | null>(null);
-    const throttleDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 300 : 50); // Reduced Safari delay for visual feedback
+    const [pending_selection] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         onMount(toolbox_ref);
@@ -115,44 +112,10 @@ const Toolbox = observer(() => {
                                                 <div
                                                     className='db-toolbox__item'
                                                     onClick={() => {
-                                                        const categoryId = category.getAttribute('id');
-
-                                                        // Prevent multiple pending selections
-                                                        if (pending_selection) return;
-
-                                                        // Immediate visual feedback - update background instantly
-                                                        setPendingSelection(categoryId);
-
-                                                        // Safari-specific: Use delayed execution for actual operation
-                                                        if (browserOptimizer.isSafariBrowser()) {
-                                                            // Only use rate limiter for Safari to prevent freezing
-                                                            if (!clickRateLimiter.canClick()) {
-                                                                setPendingSelection(null);
-                                                                return;
-                                                            }
-
-                                                            // Delayed execution for Safari with visual feedback
-                                                            setTimeout(() => {
-                                                                try {
-                                                                    // eslint-disable-next-line no-unused-expressions
-                                                                    has_sub_category
-                                                                        ? onToolboxItemExpand(index)
-                                                                        : onToolboxItemClick(category);
-                                                                } finally {
-                                                                    setPendingSelection(null);
-                                                                }
-                                                            }, throttleDelayRef.current);
-                                                        } else {
-                                                            // Direct execution for Chrome and other optimized browsers
-                                                            try {
-                                                                // eslint-disable-next-line no-unused-expressions
-                                                                has_sub_category
-                                                                    ? onToolboxItemExpand(index)
-                                                                    : onToolboxItemClick(category);
-                                                            } finally {
-                                                                setPendingSelection(null);
-                                                            }
-                                                        }
+                                                        // eslint-disable-next-line no-unused-expressions
+                                                        has_sub_category
+                                                            ? onToolboxItemExpand(index)
+                                                            : onToolboxItemClick(category);
                                                     }}
                                                 >
                                                     <div className='db-toolbox__category-text'>
@@ -193,39 +156,7 @@ const Toolbox = observer(() => {
                                                                         }
                                                                     )}
                                                                     onClick={() => {
-                                                                        const subCategoryId =
-                                                                            subCategory.getAttribute('id');
-
-                                                                        // Prevent multiple pending selections
-                                                                        if (pending_selection) return;
-
-                                                                        // Immediate visual feedback - update background instantly
-                                                                        setPendingSelection(subCategoryId);
-
-                                                                        // Safari-specific: Use delayed execution for actual operation
-                                                                        if (browserOptimizer.isSafariBrowser()) {
-                                                                            // Only use rate limiter for Safari to prevent freezing
-                                                                            if (!clickRateLimiter.canClick()) {
-                                                                                setPendingSelection(null);
-                                                                                return;
-                                                                            }
-
-                                                                            // Delayed execution for Safari with visual feedback
-                                                                            setTimeout(() => {
-                                                                                try {
-                                                                                    onToolboxItemClick(subCategory);
-                                                                                } finally {
-                                                                                    setPendingSelection(null);
-                                                                                }
-                                                                            }, throttleDelayRef.current);
-                                                                        } else {
-                                                                            // Direct execution for Chrome and other optimized browsers
-                                                                            try {
-                                                                                onToolboxItemClick(subCategory);
-                                                                            } finally {
-                                                                                setPendingSelection(null);
-                                                                            }
-                                                                        }
+                                                                        onToolboxItemClick(subCategory);
                                                                     }}
                                                                 >
                                                                     <Text size='xxs'>
