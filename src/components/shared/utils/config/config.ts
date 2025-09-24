@@ -169,9 +169,9 @@ export const generateOAuthURL = () => {
         const hostname = brandConfig?.brand_hostname?.[environment];
 
         if (hostname) {
-            // Dynamically construct redirect URL based on current hostname + port
+            // Use the current host as redirect URL (no replacement needed)
             const currentHost = window.location.host; // includes port
-            const redirectUrl = currentHost.replace('bot', 'dtrader');
+            const redirectUrl = currentHost;
 
             return `https://${hostname}/login?redirect=${redirectUrl}`;
         }
@@ -181,7 +181,7 @@ export const generateOAuthURL = () => {
 
     // Fallback to hardcoded URLs if brand config fails
     const currentHost = window.location.host; // includes port
-    const redirectUrl = currentHost.replace('bot', 'dtrader');
+    const redirectUrl = currentHost;
 
     if (currentHost.includes('staging')) {
         return `https://staging-home.deriv.com/dashboard/login?redirect=${redirectUrl}`;
