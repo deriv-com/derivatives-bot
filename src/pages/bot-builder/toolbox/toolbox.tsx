@@ -36,9 +36,8 @@ const Toolbox = observer(() => {
 
     const toolbox_ref = React.useRef(ToolboxItems());
     const [is_open, setOpen] = React.useState(true);
-    const [is_clicking, setIsClicking] = React.useState(false);
-    const [safari_blocked, setSafariBlocked] = React.useState(false);
-    const debounceDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 1500 : 150); // Even higher Safari UI debounce
+    const [pending_selection, setPendingSelection] = React.useState<string | null>(null);
+    const throttleDelayRef = React.useRef(browserOptimizer.isSafariBrowser() ? 300 : 50); // Reduced Safari delay for visual feedback
 
     React.useEffect(() => {
         onMount(toolbox_ref);
@@ -109,55 +108,50 @@ const Toolbox = observer(() => {
                                                 className={classNames('db-toolbox__row', {
                                                     'db-toolbox__row--active':
                                                         selected_category?.getAttribute('id') === category?.id,
+                                                    'db-toolbox__row--pending':
+                                                        pending_selection === category?.getAttribute('id'),
                                                 })}
                                             >
                                                 <div
                                                     className='db-toolbox__item'
                                                     onClick={() => {
-                                                        // Safari-specific: Block all operations if currently processing
-                                                        if (
-                                                            browserOptimizer.isSafariBrowser() &&
-                                                            (is_clicking || safari_blocked)
-                                                        )
-                                                            return;
+                                                        const categoryId = category.getAttribute('id');
 
-                                                        // Enhanced Safari-specific click handling with reduced UI lag
-                                                        if (is_clicking) return;
+                                                        // Prevent multiple pending selections
+                                                        if (pending_selection) return;
 
-                                                        // Only use rate limiter for Safari to prevent freezing
-                                                        if (
-                                                            browserOptimizer.isSafariBrowser() &&
-                                                            !clickRateLimiter.canClick()
-                                                        )
-                                                            return;
+                                                        // Immediate visual feedback - update background instantly
+                                                        setPendingSelection(categoryId);
 
-                                                        setIsClicking(true);
+                                                        // Safari-specific: Use delayed execution for actual operation
                                                         if (browserOptimizer.isSafariBrowser()) {
-                                                            setSafariBlocked(true);
-                                                        }
-
-                                                        setTimeout(() => {
-                                                            setIsClicking(false);
-                                                            if (browserOptimizer.isSafariBrowser()) {
-                                                                setSafariBlocked(false);
+                                                            // Only use rate limiter for Safari to prevent freezing
+                                                            if (!clickRateLimiter.canClick()) {
+                                                                setPendingSelection(null);
+                                                                return;
                                                             }
-                                                        }, debounceDelayRef.current);
 
-                                                        // Browser-specific operation queuing (only for Safari/Firefox)
-                                                        if (browserOptimizer.needsPerformanceOptimization()) {
-                                                            const operationId = `toolbox-ui-${category.getAttribute('id')}-${index}`;
-                                                            browserOptimizer.queueOperation(operationId, () => {
+                                                            // Delayed execution for Safari with visual feedback
+                                                            setTimeout(() => {
+                                                                try {
+                                                                    // eslint-disable-next-line no-unused-expressions
+                                                                    has_sub_category
+                                                                        ? onToolboxItemExpand(index)
+                                                                        : onToolboxItemClick(category);
+                                                                } finally {
+                                                                    setPendingSelection(null);
+                                                                }
+                                                            }, throttleDelayRef.current);
+                                                        } else {
+                                                            // Direct execution for Chrome and other optimized browsers
+                                                            try {
                                                                 // eslint-disable-next-line no-unused-expressions
                                                                 has_sub_category
                                                                     ? onToolboxItemExpand(index)
                                                                     : onToolboxItemClick(category);
-                                                            });
-                                                        } else {
-                                                            // Direct execution for Chrome and other optimized browsers
-                                                            // eslint-disable-next-line no-unused-expressions
-                                                            has_sub_category
-                                                                ? onToolboxItemExpand(index)
-                                                                : onToolboxItemClick(category);
+                                                            } finally {
+                                                                setPendingSelection(null);
+                                                            }
                                                         }
                                                     }}
                                                 >
@@ -193,52 +187,44 @@ const Toolbox = observer(() => {
                                                                                 selected_category?.getAttribute(
                                                                                     'id'
                                                                                 ) === subCategory?.id,
+                                                                            'db-toolbox__sub-category-row--pending':
+                                                                                pending_selection ===
+                                                                                subCategory?.getAttribute('id'),
                                                                         }
                                                                     )}
                                                                     onClick={() => {
-                                                                        // Safari-specific: Block all operations if currently processing
-                                                                        if (
-                                                                            browserOptimizer.isSafariBrowser() &&
-                                                                            (is_clicking || safari_blocked)
-                                                                        )
-                                                                            return;
+                                                                        const subCategoryId =
+                                                                            subCategory.getAttribute('id');
 
-                                                                        // Enhanced Safari-specific subcategory click handling with reduced UI lag
-                                                                        if (is_clicking) return;
+                                                                        // Prevent multiple pending selections
+                                                                        if (pending_selection) return;
 
-                                                                        // Only use rate limiter for Safari to prevent freezing
-                                                                        if (
-                                                                            browserOptimizer.isSafariBrowser() &&
-                                                                            !clickRateLimiter.canClick()
-                                                                        )
-                                                                            return;
+                                                                        // Immediate visual feedback - update background instantly
+                                                                        setPendingSelection(subCategoryId);
 
-                                                                        setIsClicking(true);
+                                                                        // Safari-specific: Use delayed execution for actual operation
                                                                         if (browserOptimizer.isSafariBrowser()) {
-                                                                            setSafariBlocked(true);
-                                                                        }
-
-                                                                        setTimeout(() => {
-                                                                            setIsClicking(false);
-                                                                            if (browserOptimizer.isSafariBrowser()) {
-                                                                                setSafariBlocked(false);
+                                                                            // Only use rate limiter for Safari to prevent freezing
+                                                                            if (!clickRateLimiter.canClick()) {
+                                                                                setPendingSelection(null);
+                                                                                return;
                                                                             }
-                                                                        }, debounceDelayRef.current);
 
-                                                                        // Browser-specific operation queuing (only for Safari/Firefox)
-                                                                        if (
-                                                                            browserOptimizer.needsPerformanceOptimization()
-                                                                        ) {
-                                                                            const operationId = `toolbox-sub-${subCategory.getAttribute('id')}`;
-                                                                            browserOptimizer.queueOperation(
-                                                                                operationId,
-                                                                                () => {
+                                                                            // Delayed execution for Safari with visual feedback
+                                                                            setTimeout(() => {
+                                                                                try {
                                                                                     onToolboxItemClick(subCategory);
+                                                                                } finally {
+                                                                                    setPendingSelection(null);
                                                                                 }
-                                                                            );
+                                                                            }, throttleDelayRef.current);
                                                                         } else {
                                                                             // Direct execution for Chrome and other optimized browsers
-                                                                            onToolboxItemClick(subCategory);
+                                                                            try {
+                                                                                onToolboxItemClick(subCategory);
+                                                                            } finally {
+                                                                                setPendingSelection(null);
+                                                                            }
                                                                         }
                                                                     }}
                                                                 >

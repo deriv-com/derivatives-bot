@@ -104,6 +104,10 @@
         display: flex;
         flex-direction: row;
         color: var(--text-general);
+        user-select: none; // Prevent text selection on rapid clicks
+        user-select: none;
+        user-select: none;
+        user-select: none;
 
         &:hover {
             background-color: var(--general-hover);
@@ -151,6 +155,10 @@
     &__row {
         cursor: pointer;
         border-top: 1px solid var(--general-section-6);
+        user-select: none; // Prevent text selection on rapid clicks
+        user-select: none;
+        user-select: none;
+        user-select: none;
 
         #{$toolbox}__category--selected {
             background-color: var(--general-active);
@@ -162,6 +170,11 @@
 
         &--active {
             background-color: var(--general-hover);
+        }
+
+        &--pending {
+            background-color: var(--general-active);
+            opacity: 0.8;
         }
     }
 
@@ -187,6 +200,11 @@
 
             &--active {
                 background-color: var(--general-hover);
+            }
+
+            &--pending {
+                background-color: var(--general-active);
+                opacity: 0.8;
             }
         }
     }

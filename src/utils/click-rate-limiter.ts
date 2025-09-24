@@ -1,42 +1,38 @@
 /**
- * Global click rate limiter to prevent Safari freezing issues
- * This utility helps prevent rapid successive clicks that can overwhelm the browse
+ * Global click throttler to prevent Safari freezing issues
+ * This utility uses throttling instead of debouncing for better Safari performance
  */
 
-class ClickRateLimiter {
-    private static instance: ClickRateLimiter;
-    private clickTimestamps: number[] = [];
-    private readonly maxClicksPerSecond = 1; // Maximum restriction: 1 click per second for strongest Safari protection
-    private readonly timeWindow = 1000; // 1 second
+class ClickThrottler {
+    private static instance: ClickThrottler;
+    private lastClickTime = 0;
+    private readonly throttleDelay = 500; // 500ms throttle for Safari protection
 
     private constructor() {}
 
-    public static getInstance(): ClickRateLimiter {
-        if (!ClickRateLimiter.instance) {
-            ClickRateLimiter.instance = new ClickRateLimiter();
+    public static getInstance(): ClickThrottler {
+        if (!ClickThrottler.instance) {
+            ClickThrottler.instance = new ClickThrottler();
         }
-        return ClickRateLimiter.instance;
+        return ClickThrottler.instance;
     }
 
     public canClick(): boolean {
         const now = Date.now();
 
-        // Remove timestamps older than the time window
-        this.clickTimestamps = this.clickTimestamps.filter(timestamp => now - timestamp < this.timeWindow);
-
-        // Check if we've exceeded the rate limit
-        if (this.clickTimestamps.length >= this.maxClicksPerSecond) {
+        // Check if enough time has passed since last click
+        if (now - this.lastClickTime < this.throttleDelay) {
             return false;
         }
 
-        // Record this click
-        this.clickTimestamps.push(now);
+        // Update last click time
+        this.lastClickTime = now;
         return true;
     }
 
     public reset(): void {
-        this.clickTimestamps = [];
+        this.lastClickTime = 0;
     }
 }
 
-export const clickRateLimiter = ClickRateLimiter.getInstance();
+export const clickRateLimiter = ClickThrottler.getInstance();
