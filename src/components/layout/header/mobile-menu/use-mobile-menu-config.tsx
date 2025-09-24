@@ -3,7 +3,12 @@ import { standalone_routes } from '@/components/shared';
 import useThemeSwitcher from '@/hooks/useThemeSwitcher';
 import RootStore from '@/stores/root-store';
 import { BrandDerivLogoCoralIcon } from '@deriv/quill-icons';
-import { LegacyHomeOldIcon, LegacyReportsIcon, LegacyTheme1pxIcon } from '@deriv/quill-icons/Legacy';
+import {
+    LegacyHomeOldIcon,
+    LegacyLogout1pxIcon,
+    LegacyReportsIcon,
+    LegacyTheme1pxIcon,
+} from '@deriv/quill-icons/Legacy';
 import { useTranslations } from '@deriv-com/translations';
 import { ToggleSwitch } from '@deriv-com/ui';
 
@@ -23,7 +28,7 @@ type TMenuConfig = {
     isActive?: boolean;
 }[];
 
-const useMobileMenuConfig = (client?: RootStore['client']) => {
+const useMobileMenuConfig = (client?: RootStore['client'], onLogout?: () => void) => {
     const { localize } = useTranslations();
     const { is_dark_mode_on, toggleTheme } = useThemeSwitcher();
 
@@ -63,9 +68,18 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
                 },
             ].filter(Boolean) as TMenuConfig,
             [],
-            [],
+            [
+                client?.is_logged_in &&
+                    onLogout && {
+                        as: 'button',
+                        label: localize('Log out'),
+                        LeftComponent: LegacyLogout1pxIcon,
+                        onClick: onLogout,
+                        removeBorderBottom: true,
+                    },
+            ].filter(Boolean) as TMenuConfig,
         ],
-        [is_virtual, currency, is_logged_in, client_residence, client]
+        [is_virtual, currency, is_logged_in, client_residence, client, onLogout]
     );
 
     return {

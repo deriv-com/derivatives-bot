@@ -7,13 +7,14 @@ import useMobileMenuConfig from './use-mobile-menu-config';
 
 type TMenuContentProps = {
     onOpenSubmenu?: (submenu: string) => void;
+    onLogout?: () => void;
 };
 
-const MenuContent = observer(({ onOpenSubmenu }: TMenuContentProps) => {
+const MenuContent = observer(({ onOpenSubmenu, onLogout }: TMenuContentProps) => {
     const { isDesktop } = useDevice();
     const { client } = useStore();
     const textSize = isDesktop ? 'sm' : 'md';
-    const { config } = useMobileMenuConfig(client);
+    const { config } = useMobileMenuConfig(client, onLogout);
 
     return (
         <div className='mobile-menu__content'>
@@ -113,3 +114,4 @@ const MenuContent = observer(({ onOpenSubmenu }: TMenuContentProps) => {
 });
 
 export default MenuContent;
+// [/AI]
