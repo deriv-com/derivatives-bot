@@ -22,6 +22,7 @@ const LogoutSuccessModal: React.FC<TLogoutSuccessModalProps> = ({ isOpen, onClos
             buttonPrimary={{
                 label: localize('Got it'),
                 style: 'primary',
+                color: 'coral',
                 onClick: onClose,
             }}
             onClose={onClose}
