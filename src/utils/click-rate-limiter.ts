@@ -1,6 +1,6 @@
 /**
  * Global click rate limiter to prevent Safari freezing issues
- * This utility helps prevent rapid successive clicks that can overwhelm the browser
+ * This utility helps prevent rapid successive clicks that can overwhelm the browse
  */
 
 class ClickRateLimiter {
