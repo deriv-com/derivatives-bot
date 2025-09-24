@@ -44,19 +44,14 @@ export const useLocalStorageSync = () => {
                 return;
             }
 
-            // Log the change for debugging
-            console.log('🔄 Session token changed in another tab - checking if bot is running');
-
             // Check if bot is running
             const isBotRunning = store?.run_panel?.is_running;
 
             if (isBotRunning) {
                 // Show modal instead of immediate reload when bot is running
-                console.log('🚨 Bot is running - showing modal instead of reloading');
                 setShowAccountChangeModal(true);
             } else {
                 // Reload immediately if bot is not running
-                console.log('⚡ Bot is not running - reloading immediately');
                 handleReload();
             }
         };
@@ -64,10 +59,7 @@ export const useLocalStorageSync = () => {
         // Listen for localStorage changes from other tabs
         window.addEventListener('storage', handleStorageChange);
 
-        console.log('👂 LocalStorage sync hook initialized - listening for session_token changes from other tabs');
-
         return () => {
-            console.log('🔇 LocalStorage sync hook cleanup');
             window.removeEventListener('storage', handleStorageChange);
         };
     }, [store?.run_panel?.is_running, store?.ui]);
@@ -80,7 +72,6 @@ export const useLocalStorageSync = () => {
      */
     const setSessionToken = (token: string) => {
         isOwnChange.current = true;
-        console.log('💾 Setting session_token from current tab:', token.substring(0, 10) + '...');
         localStorage.setItem('session_token', token);
 
         // Reset the flag after a short delay
@@ -94,7 +85,6 @@ export const useLocalStorageSync = () => {
      */
     const removeSessionToken = () => {
         isOwnChange.current = true;
-        console.log('🗑️  Removing session_token from current tab');
         localStorage.removeItem('session_token');
 
         // Reset the flag after a short delay

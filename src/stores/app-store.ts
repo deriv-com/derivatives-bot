@@ -141,8 +141,6 @@ export default class AppStore {
                     ApiHelpers.setInstance(this.api_helpers_store);
                 }
 
-                this.showDigitalOptionsMaltainvestError();
-
                 const active_symbols = ApiHelpers?.instance?.active_symbols;
                 const contracts_for = ApiHelpers?.instance?.contracts_for;
 
