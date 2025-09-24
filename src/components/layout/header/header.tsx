@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import LogoutSuccessModal from '@/components/logout-success-modal';
 import { generateOAuthURL, standalone_routes } from '@/components/shared';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
@@ -39,6 +40,26 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     // Check if there's a session token in localStorage - if so, we should show loading until auth is complete
     const hasSessionToken = typeof window !== 'undefined' && !!localStorage.getItem('session_token');
 
+    // Logout success modal state
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+    // Show logout modal without actually logging out yet
+    const handleLogout = useCallback(() => {
+        setIsLogoutModalOpen(true);
+    }, []);
+
+    // Handle the actual logout when user clicks "Got it"
+    const handleConfirmLogout = useCallback(async () => {
+        setIsLogoutModalOpen(false);
+        try {
+            await oAuthLogout();
+        } catch (error) {
+            console.error('Logout failed:', error);
+            // Still try to logout even if there's an error
+            await oAuthLogout();
+        }
+    }, [oAuthLogout]);
+
     const renderAccountSection = useCallback(() => {
         if (
             isAuthenticating ||
@@ -52,7 +73,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
             return (
                 <div className='auth-actions'>
                     <AccountSwitcher activeAccount={activeAccount} />
-                    <Button tertiary disabled={client?.is_logging_out} onClick={oAuthLogout}>
+                    <Button tertiary disabled={client?.is_logging_out} onClick={handleLogout}>
                         <Localize i18n_default_text='Log out' />
                     </Button>
                 </div>
@@ -85,26 +106,29 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         localize,
         activeAccount,
         is_virtual,
-        oAuthLogout,
+        handleLogout,
     ]);
 
     if (client?.should_hide_header) return null;
 
     return (
-        <Header
-            className={clsx('app-header', {
-                'app-header--desktop': isDesktop,
-                'app-header--mobile': !isDesktop,
-            })}
-        >
-            <Wrapper variant='left'>
-                <AppLogo />
-                <MobileMenu />
-                {isDesktop && client?.is_logged_in && <MenuItems.TradershubLink />}
-                {isDesktop && <MenuItems />}
-            </Wrapper>
-            <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
-        </Header>
+        <>
+            <Header
+                className={clsx('app-header', {
+                    'app-header--desktop': isDesktop,
+                    'app-header--mobile': !isDesktop,
+                })}
+            >
+                <Wrapper variant='left'>
+                    <AppLogo />
+                    <MobileMenu />
+                    {isDesktop && client?.is_logged_in && <MenuItems.TradershubLink />}
+                    {isDesktop && <MenuItems />}
+                </Wrapper>
+                <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
+            </Header>
+            <LogoutSuccessModal isOpen={isLogoutModalOpen} onClose={handleConfirmLogout} />
+        </>
     );
 });
 
