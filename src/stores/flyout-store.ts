@@ -207,7 +207,9 @@ export default class FlyoutStore implements IFlyoutStore {
         this.flyout_content = xml_list;
 
         this.setFlyoutWidth(processed_xml);
-        this.setVisibility(true);
+
+        // Don't auto-show flyout here - let caller control visibility
+        // this.setVisibility(true);
 
         // apparently setFlyoutWidth doesn't calculate blocks dimentions until they're visible
         // using setTimeout is a workaround to solve this issue

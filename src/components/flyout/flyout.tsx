@@ -226,6 +226,7 @@ const Flyout = observer(() => {
 
     const total_result = Object.keys(flyout_content).length;
     const is_empty = total_result === 0;
+    const is_loading = selected_category && flyout_content.length === 0 && !is_search_flyout;
 
     return (
         is_visible && (
@@ -243,6 +244,12 @@ const Flyout = observer(() => {
                 )}
                 {is_help_content ? (
                     <HelpBase />
+                ) : is_loading ? (
+                    <div className='flyout__loading'>
+                        <Text as='h2' weight='bold' lineHeight='xs'>
+                            {localize('Loading...')}
+                        </Text>
+                    </div>
                 ) : (
                     <FlyoutContent
                         is_empty={is_empty}
