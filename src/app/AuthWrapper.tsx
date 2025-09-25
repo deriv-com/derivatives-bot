@@ -61,6 +61,9 @@ const setLocalStorageToken = async (
                         return;
                     }
                 } else {
+                    // Clean up any stale logout flags during successful auth
+                    localStorage.removeItem('show_logout_success_modal');
+
                     localStorage.setItem('client.country', authorize.country);
                     const firstId = authorize?.account_list[0]?.loginid;
                     const filteredTokens = loginInfo.filter(token => token.loginid === firstId);
@@ -71,6 +74,9 @@ const setLocalStorageToken = async (
                     }
                 }
             }
+
+            // Clean up any stale logout flags during successful auth (fallback path)
+            localStorage.removeItem('show_logout_success_modal');
 
             localStorage.setItem('authToken', loginInfo[0].token);
         } catch (error) {
