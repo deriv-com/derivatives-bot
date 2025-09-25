@@ -12,12 +12,13 @@ const LogoutSuccessModal: React.FC = () => {
         if (shouldShowModal === 'true') {
             setIsOpen(true);
         }
+        // Always clean up the flag, even if modal doesn't show
+        // This prevents stale flags from interfering with future logins
+        localStorage.removeItem('show_logout_success_modal');
     }, []);
 
     const handleClose = () => {
         setIsOpen(false);
-        // Remove the flag from localStorage
-        localStorage.removeItem('show_logout_success_modal');
     };
 
     if (!isOpen) return null;
@@ -25,6 +26,7 @@ const LogoutSuccessModal: React.FC = () => {
     return (
         <Modal
             show={isOpen}
+            type='auto'
             title={localize('Log out successful')}
             description={localize('To sign out everywhere, log out from Home and your other active platforms.')}
             showCloseButton={false}

@@ -32,6 +32,7 @@ const AccountChangeModal: React.FC<TAccountChangeModalProps> = ({ isOpen, onRelo
             description={localize(
                 'Your account has changed in another tab. Reloading will switch to the new account and stop the running bot in this tab.'
             )}
+            type='auto'
             height='hug-content'
             showCloseButton={false}
             showHandleBar={false}
