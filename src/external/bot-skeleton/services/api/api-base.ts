@@ -3,7 +3,6 @@ import CommonStore from '@/stores/common-store';
 import { TAuthData } from '@/types/api-types';
 import { clearAuthData } from '@/utils/auth-utils';
 import { setSessionToken } from '@/utils/session-token-utils';
-import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';
 import { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';
 import { observer as globalObserver } from '../../utils/observer';
@@ -112,8 +111,6 @@ class APIBase {
 
                 if (response?.error) {
                     console.error('Token exchange failed:', response.error);
-                    // Clear token and account_type from URL
-                    clearInvalidTokenParams();
                     // Emit InvalidToken event for invalid URL parameter tokens
                     globalObserver.emit('InvalidToken', { error: response.error });
                     setIsAuthorizing(false);
@@ -127,8 +124,6 @@ class APIBase {
                 }
             } catch (error) {
                 console.error('Error exchanging token:', error);
-                // Clear token and account_type from URL
-                clearInvalidTokenParams();
                 // Emit InvalidToken event for any token exchange errors
                 globalObserver.emit('InvalidToken', { error });
                 setIsAuthorizing(false);
@@ -230,8 +225,6 @@ class APIBase {
             const { authorize, error } = await this.api.authorize(this.token);
             if (error) {
                 if (error.code === 'InvalidToken') {
-                    // Clear token and account_type from URL
-                    clearInvalidTokenParams();
                     if (Cookies.get('logged_state') === 'true') {
                         globalObserver.emit('InvalidToken', { error });
                     } else {
