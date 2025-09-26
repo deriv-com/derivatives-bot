@@ -6,7 +6,7 @@ export const AppLogo = () => {
     const { isDesktop } = useDevice();
 
     if (!isDesktop) return null;
-    return (
-        <DerivLogo className='app-header__logo' href={standalone_routes.deriv_com} target='_blank' variant='wallets' />
-    );
+
+    // Always go to the new home dashboard, regardless of login state
+    return <DerivLogo className='app-header__logo' href={standalone_routes.deriv_app} variant='wallets' />;
 };

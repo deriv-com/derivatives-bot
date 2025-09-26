@@ -1,6 +1,5 @@
 import { standalone_routes } from '@/components/shared';
 import { useFirebaseCountriesConfig } from '@/hooks/firebase/useFirebaseCountriesConfig';
-import useStoreWalletAccountsList from '@/hooks/useStoreWalletAccountsList';
 import { handleTraderHubRedirect } from '@/utils/traders-hub-redirect';
 import { Localize, localize } from '@deriv-com/translations';
 import { AccountSwitcher as UIAccountSwitcher, Button } from '@deriv-com/ui';
@@ -12,7 +11,6 @@ type TNoNonEuAccountsWithResidence = TNoNonEuAccounts & {
 };
 
 const NoNonEuAccounts = ({ isVirtual, tabs_labels, is_low_risk_country, residence }: TNoNonEuAccountsWithResidence) => {
-    const { has_wallet = false } = useStoreWalletAccountsList() || {};
     const { hubEnabledCountryList } = useFirebaseCountriesConfig();
 
     // Check if the account is a demo account from both isVirtual prop and URL parameter
@@ -40,7 +38,7 @@ const NoNonEuAccounts = ({ isVirtual, tabs_labels, is_low_risk_country, residenc
                         // Get the redirect URL from handleTraderHubRedirect
                         const redirectParams = {
                             product_type: 'tradershub' as const,
-                            has_wallet,
+                            has_wallet: false,
                             is_virtual: is_demo,
                             residence,
                             hubEnabledCountryList,
