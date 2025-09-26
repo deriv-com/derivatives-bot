@@ -7,6 +7,7 @@ import { getAuthError, getDefaultError } from '@/components/shared/utils/constan
 import { generateDerivApiInstance } from '@/external/bot-skeleton/services/api/appId';
 import { observer as globalObserver } from '@/external/bot-skeleton/utils/observer';
 import { clearAuthData } from '@/utils/auth-utils';
+import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { localize } from '@deriv-com/translations';
 import { URLUtils } from '@deriv-com/utils';
 import App from './App';
@@ -106,7 +107,7 @@ export const AuthWrapper = () => {
     // Listen for InvalidToken events from URL parameter token exchange
     React.useEffect(() => {
         const handleInvalidToken = () => {
-            // Show error page for invalid URL parameter tokens
+            clearInvalidTokenParams();
             setTokenError(getAuthError().description);
             setIsAuthError(true);
             setIsAuthComplete(true);
