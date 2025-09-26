@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import {
+    removeSessionToken as removeSessionTokenUtil,
+    setSessionToken as setSessionTokenUtil,
+} from '@/utils/session-token-utils';
 import { useStore } from './useStore';
 
 /**
@@ -63,14 +67,14 @@ export const useLocalStorageSync = () => {
     }, [store?.run_panel?.is_running, store?.ui]);
 
     /**
-     * Wrapper function to set session_token in localStorage
+     * Wrapper function to set session_token in localStorage and cookies
      * This prevents the storage event from firing on the current tab
      *
      * @param token - The session token to store
      */
     const setSessionToken = (token: string) => {
         isOwnChange.current = true;
-        localStorage.setItem('session_token', token);
+        setSessionTokenUtil(token);
 
         // Reset the flag after a short delay
         setTimeout(() => {
@@ -79,11 +83,11 @@ export const useLocalStorageSync = () => {
     };
 
     /**
-     * Wrapper function to remove session_token from localStorage
+     * Wrapper function to remove session_token from localStorage and cookies
      */
     const removeSessionToken = () => {
         isOwnChange.current = true;
-        localStorage.removeItem('session_token');
+        removeSessionTokenUtil();
 
         // Reset the flag after a short delay
         setTimeout(() => {

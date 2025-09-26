@@ -7,6 +7,7 @@ import Text from '@/components/shared_ui/text';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import useStoreWalletAccountsList from '@/hooks/useStoreWalletAccountsList';
+import { setSessionToken } from '@/utils/session-token-utils';
 import { Analytics } from '@deriv-com/analytics';
 import { Localize } from '@deriv-com/translations';
 import './account-switcher-wallet-item.scss';
@@ -57,7 +58,7 @@ export const AccountSwitcherWalletItem = observer(
                 return;
             }
 
-            localStorage.setItem('session_token', token);
+            setSessionToken(token);
             localStorage.setItem('active_loginid', loginId.toString());
             const account_type =
                 loginId
