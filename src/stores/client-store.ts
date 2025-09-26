@@ -266,22 +266,13 @@ export default class ClientStore {
             });
         }
 
-        const resolveNavigation = () => {
-            if (window.history.length > 1) {
-                history.back();
-            } else {
-                window.location.replace('/');
-            }
-        };
         return api_base?.api
             ?.logout()
             .then(() => {
-                resolveNavigation();
                 return Promise.resolve();
             })
             .catch((error: Error) => {
                 console.error('test Logout failed:', error);
-                resolveNavigation();
                 return Promise.reject(error);
             });
     };

@@ -9,6 +9,7 @@ import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import { TSocketResponseData } from '@/types/api-types';
+import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { useTranslations } from '@deriv-com/translations';
 
 type TClientInformation = {
@@ -105,6 +106,8 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
                 error?.code === 'DisabledClient' ||
                 error?.code === 'InvalidToken'
             ) {
+                // Clear all URL query parameters for these auth errors
+                clearInvalidTokenParams();
                 await oAuthLogout();
             }
 
