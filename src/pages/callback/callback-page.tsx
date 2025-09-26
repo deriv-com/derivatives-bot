@@ -3,6 +3,7 @@ import { crypto_currencies_display_order, fiat_currencies_display_order } from '
 import { generateDerivApiInstance } from '@/external/bot-skeleton/services/api/appId';
 import { observer as globalObserver } from '@/external/bot-skeleton/utils/observer';
 import { clearAuthData } from '@/utils/auth-utils';
+import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { Callback } from '@deriv-com/auth-client';
 import { Button } from '@deriv-com/ui';
 
@@ -67,7 +68,8 @@ const CallbackPage = () => {
                     if (error) {
                         // Check if the error is due to an invalid token
                         if (error.code === 'InvalidToken') {
-                            // Set is_token_set to true to prevent the app from getting stuck in loading state
+                            // Clear URL query parameters and set is_token_set to true to prevent the app from getting stuck in loading state
+                            clearInvalidTokenParams();
                             is_token_set = true;
 
                             // Emit the InvalidToken event for handling by the application
