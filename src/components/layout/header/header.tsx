@@ -113,8 +113,8 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                 })}
             >
                 <Wrapper variant='left'>
-                    <AppLogo />
                     <MobileMenu onLogout={handleLogout} />
+                    <AppLogo />
                     {isDesktop && <MenuItems />}
                 </Wrapper>
                 <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
