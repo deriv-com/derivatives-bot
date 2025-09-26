@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import CommonStore from '@/stores/common-store';
 import { TAuthData } from '@/types/api-types';
 import { clearAuthData } from '@/utils/auth-utils';
+import { setSessionToken } from '@/utils/session-token-utils';
 import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';
 import { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';
 import { observer as globalObserver } from '../../utils/observer';
@@ -118,7 +119,8 @@ class APIBase {
 
                 if (response?.get_session_token?.token) {
                     const sessionToken = response.get_session_token.token;
-                    localStorage.setItem('session_token', sessionToken);
+                    const expires = response.get_session_token.expires;
+                    setSessionToken(sessionToken, expires);
                 }
             } catch (error) {
                 console.error('Error exchanging token:', error);
