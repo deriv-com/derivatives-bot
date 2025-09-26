@@ -31,17 +31,20 @@ const MenuContent = observer(({ onOpenSubmenu, onLogout }: TMenuContentProps) =>
                             key={index}
                         >
                             {item.map(
-                                ({
-                                    LeftComponent,
-                                    RightComponent,
-                                    as,
-                                    href,
-                                    label,
-                                    onClick,
-                                    submenu,
-                                    target,
-                                    isActive,
-                                }) => {
+                                (
+                                    {
+                                        LeftComponent,
+                                        RightComponent,
+                                        as,
+                                        href,
+                                        label,
+                                        onClick,
+                                        submenu,
+                                        target,
+                                        isActive,
+                                    },
+                                    itemIndex
+                                ) => {
                                     const is_deriv_logo = label === 'Deriv.com';
                                     if (as === 'a') {
                                         return (
@@ -53,7 +56,7 @@ const MenuContent = observer(({ onOpenSubmenu, onLogout }: TMenuContentProps) =>
                                                 })}
                                                 disableHover
                                                 href={href}
-                                                key={label}
+                                                key={`${index}-${itemIndex}-${label}`}
                                                 leftComponent={
                                                     <LeftComponent
                                                         className='mobile-menu__content__items--right-margin'
@@ -75,7 +78,7 @@ const MenuContent = observer(({ onOpenSubmenu, onLogout }: TMenuContentProps) =>
                                                 'mobile-menu__content__items__item--active': isActive,
                                             })}
                                             disableHover
-                                            key={label}
+                                            key={`${index}-${itemIndex}-${label}`}
                                             leftComponent={
                                                 <LeftComponent
                                                     className='mobile-menu__content__items--right-margin'
@@ -114,4 +117,3 @@ const MenuContent = observer(({ onOpenSubmenu, onLogout }: TMenuContentProps) =>
 });
 
 export default MenuContent;
-// [/AI]
