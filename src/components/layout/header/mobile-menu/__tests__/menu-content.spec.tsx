@@ -32,7 +32,7 @@ describe('MenuContent Component', () => {
     it('renders MenuItem components correctly', () => {
         render(<MenuContent />, { wrapper });
         expect(screen.getByText(/Reports/)).toBeInTheDocument();
-        expect(screen.getByText(/Deriv.com/)).toBeInTheDocument();
+        expect(screen.getByText(/Dark theme/)).toBeInTheDocument();
     });
 
     it('adjusts text size for mobile devices', () => {
