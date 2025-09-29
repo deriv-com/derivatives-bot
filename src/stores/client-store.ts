@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable } from 'mobx';
 import { isEmptyObject } from '@/components/shared';
 import { isMultipliersOnly, isOptionsBlocked } from '@/components/shared/common/utility';
 import { removeCookies } from '@/components/shared/utils/storage/storage';
-import { api_base, observer } from '@/external/bot-skeleton';
+import { observer } from '@/external/bot-skeleton';
 import {
     authData$,
     setAccountList,
@@ -25,6 +25,7 @@ export default class ClientStore {
     accounts: Record<string, TAuthData['account_list'][number]> = {};
     all_accounts_balance: Balance | null = null;
     is_logging_out = false;
+    show_logout_success_modal = false;
 
     private authDataSubscription: { unsubscribe: () => void } | null = null;
     private root_store: RootStore;
@@ -91,6 +92,7 @@ export default class ClientStore {
             is_logged_in: observable,
             loginid: observable,
             is_logging_out: observable,
+            show_logout_success_modal: observable,
             active_accounts: computed,
             is_bot_allowed: computed,
 
@@ -112,6 +114,7 @@ export default class ClientStore {
             setIsLoggedIn: action,
             setIsLoggingOut: action,
             setLoginId: action,
+            setShowLogoutSuccessModal: action,
 
             is_trading_experience_incomplete: computed,
             is_cr_account: computed,
@@ -226,6 +229,10 @@ export default class ClientStore {
         this.is_logging_out = is_logging_out;
     };
 
+    setShowLogoutSuccessModal = (show_logout_success_modal: boolean) => {
+        this.show_logout_success_modal = show_logout_success_modal;
+    };
+
     logout = async () => {
         // reset all the states
         this.account_list = [];
@@ -266,24 +273,8 @@ export default class ClientStore {
             });
         }
 
-        const resolveNavigation = () => {
-            if (window.history.length > 1) {
-                history.back();
-            } else {
-                window.location.replace('/');
-            }
-        };
-        return api_base?.api
-            ?.logout()
-            .then(() => {
-                resolveNavigation();
-                return Promise.resolve();
-            })
-            .catch((error: Error) => {
-                console.error('test Logout failed:', error);
-                resolveNavigation();
-                return Promise.reject(error);
-            });
+        // Show logout success modal after logout is complete
+        this.setShowLogoutSuccessModal(true);
     };
 
     destroy() {
