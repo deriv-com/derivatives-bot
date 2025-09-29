@@ -1,4 +1,3 @@
-// [AI] - Replaced generateReportsUrl with generic generateUrlWithRedirect
 import React from 'react';
 import { standalone_routes } from '@/components/shared';
 import Dialog from '@/components/shared_ui/dialog';
@@ -6,7 +5,6 @@ import StaticUrl from '@/components/shared_ui/static-url';
 import Text from '@/components/shared_ui/text';
 import { generateUrlWithRedirect } from '@/utils/url-redirect-utils';
 import { Localize, localize } from '@deriv-com/translations';
-// [/AI]
 
 export type TStopBotModalContent = {
     is_running: boolean;
