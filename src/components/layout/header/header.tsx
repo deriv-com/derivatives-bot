@@ -36,9 +36,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
 
     const { isSingleLoggingIn, oAuthLogout } = useOauth2({ handleLogout: async () => client?.logout(), client });
 
-    // Check if there's a session token in localStorage - if so, we should show loading until auth is complete
-    const hasSessionToken = typeof window !== 'undefined' && !!localStorage.getItem('session_token');
-
     const handleLogout = useCallback(async () => {
         try {
             await oAuthLogout();
@@ -50,13 +47,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     }, [oAuthLogout]);
 
     const renderAccountSection = useCallback(() => {
-        if (
-            isAuthenticating ||
-            isAuthorizing ||
-            isSingleLoggingIn ||
-            (activeLoginid && !isAuthorized) ||
-            (hasSessionToken && !isAuthorized && !activeLoginid)
-        ) {
+        if (isAuthenticating || isAuthorizing || isSingleLoggingIn || (activeLoginid && !isAuthorized)) {
             return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
         } else if (activeLoginid && isAuthorized) {
             return (
@@ -90,7 +81,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         isDesktop,
         activeLoginid,
         isAuthorized,
-        hasSessionToken,
         standalone_routes,
         client,
         currency,
