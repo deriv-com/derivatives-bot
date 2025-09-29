@@ -15,7 +15,7 @@ export const generateUrlWithRedirect = (baseUrl: string): string => {
         // Add account_type parameter if it exists in localStorage
         const accountType = localStorage.getItem('account_type');
         if (accountType) {
-            url.searchParams.set('account_type', accountType); // [AI] Changed from 'account' to 'account_type'
+            url.searchParams.set('account_type', accountType);
         }
 
         return url.toString();
