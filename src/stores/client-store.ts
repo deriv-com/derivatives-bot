@@ -10,7 +10,11 @@ import {
     setIsAuthorized,
 } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import type { TAuthData } from '@/types/api-types';
-import { getSessionToken, removeAccountType, removeSessionToken, setSessionToken } from '@/utils/session-token-utils';
+import {
+    getFromLocalStorageOrCookie,
+    removeFromLocalStorageAndCookie,
+    setLocalStorageAndCookie,
+} from '@/utils/session-token-utils';
 import type { Balance } from '@deriv/api-types';
 import { Analytics } from '@deriv-com/analytics';
 import type RootStore from './root-store';
@@ -42,16 +46,16 @@ export default class ClientStore {
 
     storeSessionToken(token: string) {
         if (token) {
-            setSessionToken(token);
+            setLocalStorageAndCookie('session_token', token);
         }
     }
 
     getSessionToken(): string | null {
-        return getSessionToken();
+        return getFromLocalStorageOrCookie('session_token');
     }
 
     clearSessionToken() {
-        removeSessionToken();
+        removeFromLocalStorageAndCookie('session_token');
     }
 
     onAuthorizeEvent = (data: {
@@ -247,8 +251,8 @@ export default class ClientStore {
 
         localStorage.removeItem('active_loginid');
         localStorage.removeItem('accountsList');
-        removeSessionToken(); // Also clears from cookies
-        removeAccountType(); // Also clears from cookies
+        removeFromLocalStorageAndCookie('session_token'); // Also clears from cookies
+        removeFromLocalStorageAndCookie('account_type'); // Also clears from cookies
         localStorage.removeItem('authToken');
         localStorage.removeItem('clientAccounts');
         removeCookies('client_information');

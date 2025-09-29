@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-    removeSessionToken as removeSessionTokenUtil,
-    setSessionToken as setSessionTokenUtil,
-} from '@/utils/session-token-utils';
+import { removeFromLocalStorageAndCookie, setLocalStorageAndCookie } from '@/utils/session-token-utils';
 import { useStore } from './useStore';
 
 /**
@@ -74,7 +71,7 @@ export const useLocalStorageSync = () => {
      */
     const setSessionToken = (token: string) => {
         isOwnChange.current = true;
-        setSessionTokenUtil(token);
+        setLocalStorageAndCookie('session_token', token);
 
         // Reset the flag after a short delay
         setTimeout(() => {
@@ -87,7 +84,7 @@ export const useLocalStorageSync = () => {
      */
     const removeSessionToken = () => {
         isOwnChange.current = true;
-        removeSessionTokenUtil();
+        removeFromLocalStorageAndCookie('session_token');
 
         // Reset the flag after a short delay
         setTimeout(() => {

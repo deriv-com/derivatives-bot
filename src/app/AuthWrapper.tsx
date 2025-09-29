@@ -7,7 +7,9 @@ import { getAuthError, getDefaultError } from '@/components/shared/utils/constan
 import { generateDerivApiInstance } from '@/external/bot-skeleton/services/api/appId';
 import { observer as globalObserver } from '@/external/bot-skeleton/utils/observer';
 import { clearAuthData } from '@/utils/auth-utils';
-import { setAccountType } from '@/utils/session-token-utils';
+// [AI] - Using generic utilities directly instead of wrapper functions
+import { setLocalStorageAndCookie } from '@/utils/session-token-utils';
+// [/AI]
 import { localize } from '@deriv-com/translations';
 import { URLUtils } from '@deriv-com/utils';
 import App from './App';
@@ -26,7 +28,7 @@ const setLocalStorageToken = async (
 
     // Only save account_type when BOTH token and account_type are present
     if (token && accountType) {
-        setAccountType(accountType);
+        setLocalStorageAndCookie('account_type', accountType);
     }
     // If no token or account_type, don't save anything - will fallback to demo server
 

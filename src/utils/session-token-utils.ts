@@ -14,14 +14,15 @@ const getWildcardDomain = (): string => {
 };
 
 /**
- * Set session token in both localStorage and cookies
- * @param token - The session token to store
- * @param expires - Optional ISO 8601 expiry date string from API
+ * Generic function to set a value in both localStorage and cookies
+ * @param key - The key to store the value under
+ * @param value - The value to store
+ * @param expires - Optional ISO 8601 expiry date string
  */
-export const setSessionToken = (token: string, expires?: string): void => {
+export const setLocalStorageAndCookie = (key: string, value: string, expires?: string): void => {
     try {
         // Store in localStorage for backward compatibility and local tab sync
-        localStorage.setItem('session_token', token);
+        localStorage.setItem(key, value);
 
         // Store in cookies for cross-app synchronization
         const domain = getWildcardDomain();
@@ -31,117 +32,55 @@ export const setSessionToken = (token: string, expires?: string): void => {
             sameSite: 'Lax',
         };
 
-        // Use API expiry if provided, otherwise no expiration (like localStorage)
+        // Use expiry if provided
         if (expires) {
             cookieOptions.expires = new Date(expires);
         }
 
-        Cookies.set('session_token', token, cookieOptions);
+        Cookies.set(key, value, cookieOptions);
     } catch (error) {
-        console.error('Error setting session token:', error);
+        console.error(`Error setting ${key}:`, error);
     }
 };
 
 /**
- * Get session token from localStorage (primary) or cookies (fallback)
- * @returns The session token or null if not found
+ * Generic function to get a value from localStorage (primary) or cookies (fallback)
+ * @param key - The key to retrieve the value for
+ * @returns The value or null if not found
  */
-export const getSessionToken = (): string | null => {
+export const getFromLocalStorageOrCookie = (key: string): string | null => {
     try {
         // Try localStorage first for better performance
-        const localToken = localStorage.getItem('session_token');
-        if (localToken) {
-            return localToken;
+        const localValue = localStorage.getItem(key);
+        if (localValue) {
+            return localValue;
         }
 
         // Fallback to cookies if localStorage is empty
-        const cookieToken = Cookies.get('session_token');
-        return cookieToken || null;
+        const cookieValue = Cookies.get(key);
+        return cookieValue || null;
     } catch (error) {
-        console.error('Error getting session token:', error);
+        console.error(`Error getting ${key}:`, error);
         return null;
     }
 };
 
 /**
- * Remove session token from both localStorage and cookies
+ * Generic function to remove a value from both localStorage and cookies
+ * @param key - The key to remove
  */
-export const removeSessionToken = (): void => {
+export const removeFromLocalStorageAndCookie = (key: string): void => {
     try {
         // Remove from localStorage
-        localStorage.removeItem('session_token');
+        localStorage.removeItem(key);
 
         // Remove from cookies
         const domain = getWildcardDomain();
-        Cookies.remove('session_token', { domain: domain });
+        Cookies.remove(key, { domain: domain });
 
         // Also try removing without domain for cleanup
-        Cookies.remove('session_token');
+        Cookies.remove(key);
     } catch (error) {
-        console.error('Error removing session token:', error);
-    }
-};
-
-/**
- * Set account type in both localStorage and cookies
- * @param accountType - The account type to store ('demo' or 'real')
- */
-export const setAccountType = (accountType: string): void => {
-    try {
-        // Store in localStorage for backward compatibility and local tab sync
-        localStorage.setItem('account_type', accountType);
-
-        // Store in cookies for cross-app synchronization
-        const domain = getWildcardDomain();
-        const cookieOptions: Cookies.CookieAttributes = {
-            domain: domain,
-            secure: window.location.protocol === 'https:',
-            sameSite: 'Lax',
-            // No expiration for account_type - persist like localStorage
-        };
-
-        Cookies.set('account_type', accountType, cookieOptions);
-    } catch (error) {
-        console.error('Error setting account type:', error);
-    }
-};
-
-/**
- * Get account type from localStorage (primary) or cookies (fallback)
- * @returns The account type or null if not found
- */
-export const getAccountType = (): string | null => {
-    try {
-        // Try localStorage first for better performance
-        const localAccountType = localStorage.getItem('account_type');
-        if (localAccountType) {
-            return localAccountType;
-        }
-
-        // Fallback to cookies if localStorage is empty
-        const cookieAccountType = Cookies.get('account_type');
-        return cookieAccountType || null;
-    } catch (error) {
-        console.error('Error getting account type:', error);
-        return null;
-    }
-};
-
-/**
- * Remove account type from both localStorage and cookies
- */
-export const removeAccountType = (): void => {
-    try {
-        // Remove from localStorage
-        localStorage.removeItem('account_type');
-
-        // Remove from cookies
-        const domain = getWildcardDomain();
-        Cookies.remove('account_type', { domain: domain });
-
-        // Also try removing without domain for cleanup
-        Cookies.remove('account_type');
-    } catch (error) {
-        console.error('Error removing account type:', error);
+        console.error(`Error removing ${key}:`, error);
     }
 };

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { CurrencyIcon } from '@/components/currency/currency-icon';
 import { addComma, getDecimalPlaces } from '@/components/shared';
 import { useApiBase } from '@/hooks/useApiBase';
-import { getAccountType } from '@/utils/session-token-utils';
+import { getFromLocalStorageOrCookie } from '@/utils/session-token-utils';
 import { Balance } from '@deriv/api-types';
 import { localize } from '@deriv-com/translations';
 
@@ -28,7 +28,7 @@ const useActiveAccount = ({
 
         // Check if account should be treated as virtual/demo
         // Use account_type from localStorage/cookies as the source of truth for demo vs real
-        const savedAccountType = getAccountType();
+        const savedAccountType = getFromLocalStorageOrCookie('account_type');
         const isVirtual = Boolean(activeAccount?.is_virtual) || savedAccountType === 'demo';
 
         return {

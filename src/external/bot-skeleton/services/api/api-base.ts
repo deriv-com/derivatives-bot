@@ -2,7 +2,9 @@ import Cookies from 'js-cookie';
 import CommonStore from '@/stores/common-store';
 import { TAuthData } from '@/types/api-types';
 import { clearAuthData } from '@/utils/auth-utils';
-import { setAccountType, setSessionToken } from '@/utils/session-token-utils';
+// [AI] - Using generic utilities directly instead of wrapper functions
+import { setLocalStorageAndCookie } from '@/utils/session-token-utils';
+// [/AI]
 import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';
 import { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';
@@ -90,7 +92,7 @@ class APIBase {
 
         // Only save account_type when BOTH token and account_type are present
         if (oneTimeToken && accountType) {
-            setAccountType(accountType);
+            setLocalStorageAndCookie('account_type', accountType);
         }
         // If no token or account_type, don't save anything - will fallback to demo server
 
@@ -122,7 +124,7 @@ class APIBase {
                 if (response?.get_session_token?.token) {
                     const sessionToken = response.get_session_token.token;
                     const expires = response.get_session_token.expires;
-                    setSessionToken(sessionToken, expires);
+                    setLocalStorageAndCookie('session_token', sessionToken, expires);
                 }
             } catch (error) {
                 console.error('Error exchanging token:', error);
