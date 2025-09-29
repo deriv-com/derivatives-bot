@@ -40,9 +40,7 @@ export const getMarketInformation = (shortcode: string): TMarketInfo => {
         underlying: '',
     };
 
-    // [AI]
     const pattern = /^([A-Z]+)_((1HZ[0-9-V]+)|((CRASH|BOOM)\d+[A-Z]?)|(OTC_[A-Z0-9]+)|R_[\d]{2,3}|[A-Z]+)/;
-    // [/AI]
     const extracted = pattern.exec(shortcode);
     if (extracted !== null) {
         market_info.category = extracted[1].toLowerCase();
