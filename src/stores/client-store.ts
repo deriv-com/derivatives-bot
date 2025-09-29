@@ -10,7 +10,7 @@ import {
     setIsAuthorized,
 } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import type { TAuthData } from '@/types/api-types';
-import { getSessionToken, removeSessionToken, setSessionToken } from '@/utils/session-token-utils';
+import { getSessionToken, removeAccountType, removeSessionToken, setSessionToken } from '@/utils/session-token-utils';
 import type { Balance } from '@deriv/api-types';
 import { Analytics } from '@deriv-com/analytics';
 import type RootStore from './root-store';
@@ -248,6 +248,7 @@ export default class ClientStore {
         localStorage.removeItem('active_loginid');
         localStorage.removeItem('accountsList');
         removeSessionToken(); // Also clears from cookies
+        removeAccountType(); // Also clears from cookies
         localStorage.removeItem('authToken');
         localStorage.removeItem('clientAccounts');
         removeCookies('client_information');
