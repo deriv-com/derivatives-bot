@@ -50,7 +50,13 @@ const MobileMenu = ({ onLogout }: TMobileMenuProps) => {
                             <ReportsSubmenu />
                         </>
                     ) : (
-                        <MenuContent onOpenSubmenu={openSubmenu} onLogout={onLogout} />
+                        <MenuContent
+                            onOpenSubmenu={openSubmenu}
+                            onLogout={() => {
+                                closeDrawer();
+                                onLogout?.();
+                            }}
+                        />
                     )}
                 </Drawer.Content>
 

@@ -41,8 +41,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
 
     const handleLogout = useCallback(async () => {
         try {
-            // Set flag in localStorage to show modal after logout redirect
-            localStorage.setItem('show_logout_success_modal', 'true');
             await oAuthLogout();
         } catch (error) {
             console.error('Logout failed:', error);

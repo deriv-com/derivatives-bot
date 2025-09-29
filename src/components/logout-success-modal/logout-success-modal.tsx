@@ -1,31 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '@/hooks/useStore';
 import { Modal } from '@deriv-com/quill-ui-next';
 import { useTranslations } from '@deriv-com/translations';
 
-const LogoutSuccessModal: React.FC = () => {
+const LogoutSuccessModal: React.FC = observer(() => {
     const { localize } = useTranslations();
-    const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(() => {
-        // Check localStorage for logout success flag
-        const shouldShowModal = localStorage.getItem('show_logout_success_modal');
-        if (shouldShowModal === 'true') {
-            setIsOpen(true);
-        }
-        // Always clean up the flag, even if modal doesn't show
-        // This prevents stale flags from interfering with future logins
-        localStorage.removeItem('show_logout_success_modal');
-    }, []);
+    const { client } = useStore();
 
     const handleClose = () => {
-        setIsOpen(false);
+        client.setShowLogoutSuccessModal(false);
     };
 
-    if (!isOpen) return null;
+    if (!client.show_logout_success_modal) return null;
 
     return (
         <Modal
-            show={isOpen}
+            show={client.show_logout_success_modal}
             type='auto'
             title={localize('Log out successful')}
             description={localize('To sign out everywhere, log out from Home and your other active platforms.')}
@@ -41,6 +32,6 @@ const LogoutSuccessModal: React.FC = () => {
             onClose={handleClose}
         />
     );
-};
+});
 
 export default LogoutSuccessModal;
