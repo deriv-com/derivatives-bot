@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { generateReportsUrl, standalone_routes } from '@/components/shared';
+import { standalone_routes } from '@/components/shared';
+import { generateUrlWithRedirect } from '@/utils/url-redirect-utils';
 import { LegacyHomeNewIcon as TradershubLogo, LegacyReportsIcon as ReportsLogo } from '@deriv/quill-icons/Legacy';
 import {
     DerivProductBrandLightDerivBotLogoWordmarkIcon as DerivBotLogo,
@@ -73,7 +74,7 @@ export const TRADERS_HUB_LINK_CONFIG = {
 export const MenuItems: MenuItemsConfig[] = [
     {
         as: 'a',
-        href: generateReportsUrl(),
+        href: generateUrlWithRedirect(standalone_routes.positions),
         icon: <ReportsLogo iconSize='xs' />,
         label: localize('Reports'),
     },
