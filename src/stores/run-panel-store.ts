@@ -148,16 +148,8 @@ export default class RunPanelStore {
             const contract_type = getSelectedTradeType();
             const baseUrl = `${standalone_routes.positions}?contract_type_bots=${contract_type}`;
 
-            const getQueryParams = new URLSearchParams(window.location.search);
-            const account = getQueryParams.get('account') || sessionStorage.getItem('query_param_currency') || '';
-
-            let finalUrl = baseUrl;
-            if (account) {
-                finalUrl += `&account=${account}`;
-            }
-
-            // Use generateUrlWithRedirect to add redirect parameter back to current page
-            const urlWithRedirect = generateUrlWithRedirect(finalUrl);
+            // Use generateUrlWithRedirect to add redirect parameter and account_type from localStorage
+            const urlWithRedirect = generateUrlWithRedirect(baseUrl);
             window.location.assign(urlWithRedirect);
         };
 

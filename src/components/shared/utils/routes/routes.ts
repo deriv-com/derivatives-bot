@@ -114,15 +114,26 @@ export const standalone_routes = {
 };
 
 /**
- * Generate reports URL with current page as redirect parameter
- * @returns Reports URL with redirect to current page
+ * Generate reports URL with current page as redirect parameter and account_type if available
+ * @returns Reports URL with redirect to current page and account_type parameter
  */
 export const generateReportsUrl = (): string => {
     try {
         // Use origin + pathname to exclude query parameters
         const currentUrl = window.location.origin + window.location.pathname;
         const reportsBaseUrl = `${getDerivDomain('derivDtrader')}/reports`;
-        return `${reportsBaseUrl}?redirect=${encodeURIComponent(currentUrl)}`;
+        const url = new URL(reportsBaseUrl);
+
+        // Always add redirect parameter
+        url.searchParams.set('redirect', currentUrl);
+
+        // Add account_type parameter if it exists in localStorage
+        const accountType = localStorage.getItem('account_type');
+        if (accountType) {
+            url.searchParams.set('account_type', accountType); // [AI] Changed from 'account' to 'account_type'
+        }
+
+        return url.toString();
     } catch (error) {
         console.error('Error generating reports URL:', error);
         // Fallback to static URL
