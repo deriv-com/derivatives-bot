@@ -2,9 +2,7 @@ import Cookies from 'js-cookie';
 import CommonStore from '@/stores/common-store';
 import { TAuthData } from '@/types/api-types';
 import { clearAuthData } from '@/utils/auth-utils';
-// [AI] - Using generic utilities directly instead of wrapper functions
 import { setLocalStorageAndCookie } from '@/utils/session-token-utils';
-// [/AI]
 import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';
 import { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';

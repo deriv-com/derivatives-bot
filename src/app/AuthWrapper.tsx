@@ -7,9 +7,7 @@ import { getAuthError, getDefaultError } from '@/components/shared/utils/constan
 import { generateDerivApiInstance } from '@/external/bot-skeleton/services/api/appId';
 import { observer as globalObserver } from '@/external/bot-skeleton/utils/observer';
 import { clearAuthData } from '@/utils/auth-utils';
-// [AI] - Using generic utilities directly instead of wrapper functions
 import { setLocalStorageAndCookie } from '@/utils/session-token-utils';
-// [/AI]
 import { localize } from '@deriv-com/translations';
 import { URLUtils } from '@deriv-com/utils';
 import App from './App';
