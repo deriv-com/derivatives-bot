@@ -53,7 +53,7 @@ const domains: Record<Service, DomainConfig> = {
     },
 };
 
-const getDerivDomain = (service: Service): string => {
+export const getDerivDomain = (service: Service): string => {
     const hostname = window.location.hostname;
     const isStaging = hostname.includes('staging');
     const isDev = hostname.includes('dev-') || hostname.includes('localhost') || hostname.includes('127.0.0.1');
