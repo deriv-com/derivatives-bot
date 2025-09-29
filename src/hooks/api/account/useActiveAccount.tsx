@@ -23,25 +23,25 @@ const useActiveAccount = ({
     const currentBalanceData = allBalanceData?.accounts?.[activeAccount?.loginid ?? ''];
 
     const modifiedAccount = useMemo(() => {
-        return activeAccount
-            ? {
-                  ...activeAccount,
-                  balance: currentBalanceData?.balance
-                      ? addComma(currentBalanceData.balance.toFixed(getDecimalPlaces(currentBalanceData.currency)))
-                      : directBalance
-                        ? addComma(parseFloat(directBalance).toFixed(getDecimalPlaces(activeAccount.currency)))
-                        : addComma(parseFloat('0').toFixed(getDecimalPlaces(activeAccount.currency))), //  [AI] Format zero with proper decimals
-                  currencyLabel: activeAccount?.is_virtual ? localize('Demo') : activeAccount?.currency,
-                  icon: (
-                      <CurrencyIcon
-                          currency={activeAccount?.currency?.toLowerCase()}
-                          isVirtual={Boolean(activeAccount?.is_virtual)}
-                      />
-                  ),
-                  isVirtual: Boolean(activeAccount?.is_virtual),
-                  isActive: activeAccount?.loginid === activeLoginid,
-              }
-            : undefined;
+        if (!activeAccount) return undefined;
+
+        // Check if account should be treated as virtual/demo
+        // Use localStorage account_type as the source of truth for demo vs real
+        const savedAccountType = localStorage.getItem('account_type');
+        const isVirtual = Boolean(activeAccount?.is_virtual) || savedAccountType === 'demo';
+
+        return {
+            ...activeAccount,
+            balance: currentBalanceData?.balance
+                ? addComma(currentBalanceData.balance.toFixed(getDecimalPlaces(currentBalanceData.currency)))
+                : directBalance
+                  ? addComma(parseFloat(directBalance).toFixed(getDecimalPlaces(activeAccount.currency)))
+                  : addComma(parseFloat('0').toFixed(getDecimalPlaces(activeAccount.currency))),
+            currencyLabel: isVirtual ? localize('Demo') : activeAccount?.currency,
+            icon: <CurrencyIcon currency={activeAccount?.currency?.toLowerCase()} isVirtual={isVirtual} />,
+            isVirtual: isVirtual,
+            isActive: activeAccount?.loginid === activeLoginid,
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeAccount, activeLoginid, allBalanceData, directBalance]);
 
