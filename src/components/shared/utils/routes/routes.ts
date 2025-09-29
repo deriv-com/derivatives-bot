@@ -112,5 +112,3 @@ export const standalone_routes = {
     help_center: `${getDerivDomain('derivCom')}/help-centre/`,
     responsible: `${getDerivDomain('derivCom')}/responsible/`,
 };
-
-// [AI] - Removed redundant generateReportsUrl function. Use generateUrlWithRedirect(standalone_routes.reports) instead.
