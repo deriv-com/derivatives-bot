@@ -31,20 +31,20 @@ describe('MenuContent Component', () => {
 
     it('renders MenuItem components correctly', () => {
         render(<MenuContent />, { wrapper });
-        expect(screen.getByText(/Home/)).toBeInTheDocument();
-        expect(screen.getByText(/Deriv.com/)).toBeInTheDocument();
+        expect(screen.getByText(/Reports/)).toBeInTheDocument();
+        expect(screen.getByText(/Dark theme/)).toBeInTheDocument();
     });
 
     it('adjusts text size for mobile devices', () => {
         render(<MenuContent />, { wrapper });
-        const text = screen.getByText(/Home/);
+        const text = screen.getByText(/Reports/);
         expect(text).toHaveClass('derivs-text__size--md');
     });
 
     it('adjusts text size for desktop devices', () => {
         (useDevice as jest.Mock).mockReturnValue({ isDesktop: true });
         render(<MenuContent />, { wrapper });
-        const text = screen.getByText(/Home/);
+        const text = screen.getByText(/Reports/);
         expect(text).toHaveClass('derivs-text__size--sm');
     });
 });

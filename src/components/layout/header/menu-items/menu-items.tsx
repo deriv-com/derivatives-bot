@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useFirebaseCountriesConfig } from '@/hooks/firebase/useFirebaseCountriesConfig';
 import { useStore } from '@/hooks/useStore';
-import useStoreWalletAccountsList from '@/hooks/useStoreWalletAccountsList';
 import { handleTraderHubRedirect } from '@/utils/traders-hub-redirect';
 import { useTranslations } from '@deriv-com/translations';
 import { MenuItem, Text, useDevice } from '@deriv-com/ui';
@@ -13,7 +12,6 @@ export const MenuItems = observer(() => {
     const { localize } = useTranslations();
     const { isDesktop } = useDevice();
     const store = useStore();
-    const { has_wallet = false } = useStoreWalletAccountsList() || {};
 
     if (!store) return null;
 
@@ -43,14 +41,8 @@ export const MenuItems = observer(() => {
         return redirect_url.toString();
     };
 
-    // Filter out the Cashier link when the account is a wallet account
-    const filtered_items = items.filter((item, index) => {
-        // Index 0 is the Cashier link
-        if (index === 0 && has_wallet) {
-            return false;
-        }
-        return true;
-    });
+    // Use all menu items (no filtering for wallet accounts)
+    const filtered_items = items;
 
     // TODO : need to add the skeleton loader when growthbook is not loaded
     return (
@@ -85,7 +77,6 @@ export const MenuItems = observer(() => {
 });
 
 export const TradershubLink = observer(() => {
-    const { has_wallet = false } = useStoreWalletAccountsList() || {};
     const store = useStore();
     const { hubEnabledCountryList } = useFirebaseCountriesConfig();
 
@@ -94,13 +85,13 @@ export const TradershubLink = observer(() => {
     useEffect(() => {
         const redirectParams = {
             product_type: 'tradershub' as const,
-            has_wallet,
+            has_wallet: false,
             is_virtual: store?.client?.is_virtual,
             residence: store?.client?.residence,
             hubEnabledCountryList,
         };
         setRedirectUrlStr(handleTraderHubRedirect(redirectParams));
-    }, [has_wallet, store?.client?.is_virtual, store?.client?.residence, hubEnabledCountryList]);
+    }, [store?.client?.is_virtual, store?.client?.residence, hubEnabledCountryList]);
 
     if (!store) return null;
 

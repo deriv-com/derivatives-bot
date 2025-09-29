@@ -1,5 +1,5 @@
 import React from 'react';
-import { standalone_routes } from '@/components/shared';
+import { generateReportsUrl } from '@/components/shared';
 import Dialog from '@/components/shared_ui/dialog';
 import StaticUrl from '@/components/shared_ui/static-url';
 import Text from '@/components/shared_ui/text';
@@ -53,7 +53,7 @@ const StopBotModalContent = ({
                                 <StaticUrl
                                     key={0}
                                     className='link'
-                                    onClick={() => window.location.assign(standalone_routes.reports)}
+                                    onClick={() => window.location.assign(generateReportsUrl())}
                                 >
                                     <Localize i18n_default_text='Reports' />
                                 </StaticUrl>
@@ -75,7 +75,7 @@ const StopBotModalContent = ({
                                 <StaticUrl
                                     key={0}
                                     className='link'
-                                    onClick={() => window.location.assign(standalone_routes.reports)}
+                                    onClick={() => window.location.assign(generateReportsUrl())}
                                 >
                                     <Localize i18n_default_text='Reports' />
                                 </StaticUrl>
