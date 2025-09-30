@@ -2,7 +2,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { botNotification } from '@/components/bot-notification/bot-notification';
 import { notification_message } from '@/components/bot-notification/bot-notification-utils';
 import { button_status } from '@/constants/button-status';
-import { config, importExternal } from '@/external/bot-skeleton';
+import { config } from '@/external/bot-skeleton';
 import { getInitialLanguage, localize } from '@deriv-com/translations';
 import {
     rudderStackSendUploadStrategyCompletedEvent,
@@ -64,10 +64,11 @@ export default class GoogleDriveStore {
         this.setKey();
         this.client = null;
         this.access_token = localStorage.getItem('google_access_token') ?? '';
-        setTimeout(() => {
-            importExternal('https://accounts.google.com/gsi/client').then(() => this.initialiseClient());
-            importExternal('https://apis.google.com/js/api.js').then(() => this.initialise());
-        }, 3000);
+        //NOTE : TO be done later wehen we get the tokens
+        // setTimeout(() => {
+        //     importExternal('https://accounts.google.com/gsi/client').then(() => this.initialiseClient());
+        //     importExternal('https://apis.google.com/js/api.js').then(() => this.initialise());
+        // }, 3000);
     }
 
     is_google_drive_token_valid = true;

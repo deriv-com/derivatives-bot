@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { tabs_title } from '@/constants/bot-contents';
 import { getSavedWorkspaces, onWorkspaceResize } from '@/external/bot-skeleton';
 import { getSetting, storeSetting } from '@/utils/settings';
@@ -27,7 +27,7 @@ export default class BlocklyStore {
     // Computed property to check if there's an active bot
     get has_active_bot(): boolean {
         // Check if there's an active bot in the workspace
-        const workspace = window.Blockly?.derivWorkspace;
+        const workspace = (window as any).Blockly?.derivWorkspace;
         if (!workspace) return false;
 
         // Check if there are any blocks in the workspace
@@ -49,11 +49,15 @@ export default class BlocklyStore {
     checkForSavedBots = async (): Promise<void> => {
         try {
             const workspaces = await getSavedWorkspaces();
-            // Use action to update observable property
-            this._has_saved_bots = Array.isArray(workspaces) && workspaces.length > 0;
+            // Use runInAction to update observable property
+            runInAction(() => {
+                this._has_saved_bots = Array.isArray(workspaces) && workspaces.length > 0;
+            });
         } catch (e) {
             console.error('Error checking for saved workspaces:', e);
-            this._has_saved_bots = false;
+            runInAction(() => {
+                this._has_saved_bots = false;
+            });
         }
     };
 
@@ -76,7 +80,9 @@ export default class BlocklyStore {
 
     getCachedActiveTab = (): void => {
         if (getSetting('active_tab')) {
-            this.active_tab = getSetting('active_tab');
+            runInAction(() => {
+                this.active_tab = getSetting('active_tab');
+            });
         }
     };
 
