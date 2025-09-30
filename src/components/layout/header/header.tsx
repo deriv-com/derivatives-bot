@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { generateOAuthURL, standalone_routes } from '@/components/shared';
@@ -22,7 +22,7 @@ type TAppHeaderProps = {
 
 const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const { isDesktop } = useDevice();
-    const { isAuthorizing, isAuthorized, activeLoginid } = useApiBase();
+    const { isAuthorizing, isAuthorized, activeLoginid, setIsAuthorizing } = useApiBase();
     const { client } = useStore() ?? {};
 
     const { data: activeAccount } = useActiveAccount({
@@ -46,10 +46,38 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         }
     }, [oAuthLogout]);
 
+    // Handle direct URL access with token
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+
+        // If there's a token in the URL, set authorizing to true
+        if (tokenFromUrl) {
+            setIsAuthorizing(true);
+        }
+    }, [setIsAuthorizing]);
+
+    const handleLogin = useCallback(() => {
+        try {
+            // Set authorizing state immediately when login is clicked
+            setIsAuthorizing(true);
+            // Redirect to OAuth URL
+            window.location.replace(generateOAuthURL());
+        } catch (error) {
+            console.error('Login redirection failed:', error);
+            // Reset authorizing state if redirection fails
+            setIsAuthorizing(false);
+        }
+    }, [setIsAuthorizing]);
+
+    console.log('Rendering AppHeader', isAuthorized, isAuthorizing);
     const renderAccountSection = useCallback(() => {
-        if (isAuthenticating || isAuthorizing || isSingleLoggingIn || (activeLoginid && !isAuthorized)) {
+        // Show loader during various loading states
+        if (isAuthorizing) {
             return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
-        } else if (activeLoginid && isAuthorized) {
+        }
+        // Show account switcher and logout when user is fully authenticated
+        else if (activeLoginid) {
             return (
                 <div className='auth-actions'>
                     <AccountSwitcher activeAccount={activeAccount} />
@@ -60,20 +88,16 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                     )}
                 </div>
             );
-        } else {
+        } else if (!isAuthorizing) {
             return (
                 <div className='auth-actions'>
-                    <Button
-                        tertiary
-                        onClick={() => {
-                            window.location.replace(generateOAuthURL());
-                        }}
-                    >
+                    <Button tertiary onClick={handleLogin}>
                         <Localize i18n_default_text='Log in' />
                     </Button>
                 </div>
             );
         }
+        // Show login button when user is not logged in
     }, [
         isAuthenticating,
         isAuthorizing,
