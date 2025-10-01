@@ -19,19 +19,12 @@ export const getRecentFileIcon = (save_type: string): React.ReactElement => {
     if (!save_type && typeof save_type !== 'string')
         return <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' />;
 
-    // Check if Google Drive should be shown
-    const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
-
     const icons: TIcons = {
         [save_types.UNSAVED]: (
             <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' className='icon-general-fill-g-path' />
         ),
         [save_types.LOCAL]: <DerivLightMyComputerIcon height='16px' width='16px' fill='var(--text-general)' />,
-        [save_types.GOOGLE_DRIVE]: shouldShowGoogleDrive ? (
-            <DerivLightGoogleDriveIcon height='16px' width='16px' fill='var(--text-general)' />
-        ) : (
-            <div style={{ width: '16px', height: '16px', backgroundColor: '#f0f0f0', borderRadius: '2px' }} />
-        ),
+        [save_types.GOOGLE_DRIVE]: <DerivLightGoogleDriveIcon height='16px' width='16px' fill='var(--text-general)' />,
     };
     return icons[save_type as string] as React.ReactElement;
 };

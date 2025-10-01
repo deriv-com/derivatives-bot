@@ -40,9 +40,6 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
     const { onCloseDialog, dialog_options, is_dialog_open, setActiveTab, setPreviewOnPopup } = dashboard;
     const { setFormVisibility } = quick_strategy;
 
-    // Check if Google Drive should be shown
-    const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
-
     const openFileLoader = () => {
         toggleLoadModal();
         setActiveTabIndex(is_mobile ? 0 : 1);
@@ -74,24 +71,20 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                 } as any);
             },
         },
-        ...(shouldShowGoogleDrive
-            ? [
-                  {
-                      id: 'google-drive',
-                      icon: <DerivLightGoogleDriveIcon height='48px' width='48px' />,
-                      content: <Localize i18n_default_text='Google Drive' />,
-                      callback: () => {
-                          openGoogleDriveDialog();
-                          rudderStackSendOpenEvent({
-                              subpage_name: 'bot_builder',
-                              subform_source: 'dashboard',
-                              subform_name: 'load_strategy' as any,
-                              load_strategy_tab: 'google drive' as any,
-                          } as any);
-                      },
-                  },
-              ]
-            : []),
+        {
+            id: 'google-drive',
+            icon: <DerivLightGoogleDriveIcon height='48px' width='48px' />,
+            content: <Localize i18n_default_text='Google Drive' />,
+            callback: () => {
+                openGoogleDriveDialog();
+                rudderStackSendOpenEvent({
+                    subpage_name: 'bot_builder',
+                    subform_source: 'dashboard',
+                    subform_name: 'load_strategy' as any,
+                    load_strategy_tab: 'google drive' as any,
+                } as any);
+            },
+        },
         {
             id: 'bot-builder',
             icon: <DerivLightBotBuilderIcon height='48px' width='48px' />,
