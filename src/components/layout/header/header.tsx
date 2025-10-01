@@ -70,7 +70,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         }
     }, [setIsAuthorizing]);
 
-    console.log('Rendering AppHeader', isAuthorized, isAuthorizing);
     const renderAccountSection = useCallback(() => {
         // Show loader during various loading states
         if (isAuthorizing) {

@@ -266,6 +266,7 @@ export default class TicksService {
         };
         return new Promise((resolve, reject) => {
             if (!api_base.api) resolve([]);
+            console.trace('Requesting ticks/candles', request_object);
             doUntilDone(() => api_base.api.send(request_object), [], api_base)
                 .then(r => {
                     if (style === 'ticks') {
@@ -282,6 +283,7 @@ export default class TicksService {
                     }
                 })
                 .catch(error => {
+                    console.log(error, 'error in ticks service');
                     if (error?.code === 'InvalidSymbol') {
                         clearAuthData();
                     }
@@ -293,12 +295,16 @@ export default class TicksService {
     forget = () => {
         return new Promise((resolve, reject) => {
             if (api_base?.api) {
-                api_base.api
-                    .forgetAll('ticks')
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch(reject);
+                try {
+                    api_base.api
+                        .forgetAll('ticks')
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch(reject);
+                } catch (e) {
+                    console.log('Error in forget ticks', e);
+                }
             } else {
                 resolve();
             }
@@ -308,12 +314,16 @@ export default class TicksService {
     forgetCandleSubscription = () => {
         return new Promise((resolve, reject) => {
             if (api_base?.api) {
-                api_base.api
-                    .forgetAll('candles')
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch(reject);
+                try {
+                    api_base.api
+                        .forgetAll('candles')
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch(reject);
+                } catch (e) {
+                    console.log('Error in forget candles', e);
+                }
             } else {
                 resolve();
             }
@@ -324,11 +334,15 @@ export default class TicksService {
         return new Promise((resolve, reject) => {
             this.forget()
                 .then(() => {
-                    this.forgetCandleSubscription()
-                        .then(() => {
-                            resolve();
-                        })
-                        .catch(reject);
+                    try {
+                        this.forgetCandleSubscription()
+                            .then(() => {
+                                resolve();
+                            })
+                            .catch(reject);
+                    } catch (e) {
+                        console.log('Error in unsubscribeFromTicksService', e);
+                    }
                 })
                 .catch(reject);
             this.ticks_history_promise = null;
