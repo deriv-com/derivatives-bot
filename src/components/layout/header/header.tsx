@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import { generateOAuthURL, standalone_routes } from '@/components/shared';
@@ -24,6 +24,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const { isDesktop } = useDevice();
     const { isAuthorizing, isAuthorized, activeLoginid, setIsAuthorizing } = useApiBase();
     const { client } = useStore() ?? {};
+    const [authTimeout, setAuthTimeout] = useState(false);
 
     const { data: activeAccount } = useActiveAccount({
         allBalanceData: client?.all_accounts_balance,
@@ -57,6 +58,25 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         }
     }, [setIsAuthorizing]);
 
+    // Add fallback timeout to show login button if auth never fires
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // If still authorizing after 10 seconds and no activeLoginid, show login button
+            if (isAuthorizing && !activeLoginid) {
+                setAuthTimeout(true);
+                setIsAuthorizing(false);
+            }
+        }, 5000); // 5 second timeout
+
+        // Clear timeout if user gets authenticated or if not authorizing
+        if (activeLoginid || !isAuthorizing) {
+            setAuthTimeout(false);
+            clearTimeout(timer);
+        }
+
+        return () => clearTimeout(timer);
+    }, [isAuthorizing, activeLoginid, setIsAuthorizing]);
+
     const handleLogin = useCallback(() => {
         try {
             // Set authorizing state immediately when login is clicked
@@ -71,12 +91,8 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     }, [setIsAuthorizing]);
 
     const renderAccountSection = useCallback(() => {
-        // Show loader during various loading states
-        if (isAuthorizing) {
-            return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
-        }
         // Show account switcher and logout when user is fully authenticated
-        else if (activeLoginid) {
+        if (activeLoginid) {
             return (
                 <div className='auth-actions'>
                     <AccountSwitcher activeAccount={activeAccount} />
@@ -87,7 +103,9 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                     )}
                 </div>
             );
-        } else if (!isAuthorizing) {
+        }
+        // Show login button when not authorizing, or when auth timeout occurred
+        else if ((!isAuthorizing && !activeLoginid) || authTimeout) {
             return (
                 <div className='auth-actions'>
                     <Button tertiary onClick={handleLogin}>
@@ -96,7 +114,10 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                 </div>
             );
         }
-        // Show login button when user is not logged in
+        // Default: Show loader during loading states or when authorizing
+        else {
+            return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
+        }
     }, [
         isAuthenticating,
         isAuthorizing,
@@ -111,6 +132,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         activeAccount,
         is_virtual,
         handleLogout,
+        authTimeout,
     ]);
 
     if (client?.should_hide_header) return null;
