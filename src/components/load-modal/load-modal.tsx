@@ -31,6 +31,9 @@ const LoadModal: React.FC = observer(() => {
     const { isDesktop } = useDevice();
     const header_text = localize('Load strategy');
 
+    // Check if Google Drive should be shown
+    const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
+
     const handleTabItemClick = (active_index: number) => {
         setActiveTabIndex(active_index);
         rudderStackSendSwitchLoadStrategyTabEvent({
@@ -92,9 +95,11 @@ const LoadModal: React.FC = observer(() => {
                     <div label={localize('Local')}>
                         <Local />
                     </div>
-                    <div label={localize('Google Drive')}>
-                        <GoogleDrive />
-                    </div>
+                    {shouldShowGoogleDrive && (
+                        <div label={localize('Google Drive')}>
+                            <GoogleDrive />
+                        </div>
+                    )}
                 </Tabs>
             </Modal.Body>
             {has_recent_strategies && (

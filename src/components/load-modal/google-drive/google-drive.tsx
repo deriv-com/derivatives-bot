@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import Button from '@/components/shared_ui/button';
 import StaticUrl from '@/components/shared_ui/static-url';
 import { useStore } from '@/hooks/useStore';
-// import { DerivLightGoogleDriveIcon } from '@deriv/quill-icons/Illustration'; // Commented out - Google Drive token not finalized
+import { DerivLightGoogleDriveIcon } from '@deriv/quill-icons/Illustration';
 import { Localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import {
@@ -20,35 +20,23 @@ const GoogleDrive: React.FC = observer(() => {
     const { isDesktop } = useDevice();
     const icon_size = isDesktop ? '128' : '96';
 
+    // Check if Google Drive should be shown
+    const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
+
+    if (!shouldShowGoogleDrive) {
+        return null; // Don't render anything if the flag is not set
+    }
+
     return (
         <div className='load-strategy__container' data-testid='dt_google_drive'>
             <div className='load-strategy__google-drive'>
-                {/* <DerivLightGoogleDriveIcon
+                <DerivLightGoogleDriveIcon
                     className={classnames('load-strategy__google-drive-icon', {
                         'load-strategy__google-drive-icon--disabled': !is_authorised,
                     })}
                     height={icon_size}
                     width={icon_size}
-                /> */}
-                {/* Commented out - Google Drive token not finalized */}
-                <div
-                    className={classnames('load-strategy__google-drive-icon', {
-                        'load-strategy__google-drive-icon--disabled': !is_authorised,
-                    })}
-                    style={{
-                        width: icon_size + 'px',
-                        height: icon_size + 'px',
-                        backgroundColor: '#f0f0f0',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        color: '#999',
-                    }}
-                >
-                    Google Drive
-                </div>
+                />
                 <div className='load-strategy__google-drive-connected-text'>
                     {is_authorised ? (
                         <Localize i18n_default_text='You are connected to Google Drive' />
