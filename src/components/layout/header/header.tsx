@@ -24,7 +24,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const { isDesktop } = useDevice();
     const { isAuthorizing, isAuthorized, activeLoginid, setIsAuthorizing } = useApiBase();
     const { client } = useStore() ?? {};
-    const [authTimeout, setAuthTimeout] = useState(false);
+    const [shouldShowLogin, setShouldShowLogin] = useState(false);
 
     const { data: activeAccount } = useActiveAccount({
         allBalanceData: client?.all_accounts_balance,
@@ -58,24 +58,20 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         }
     }, [setIsAuthorizing]);
 
-    // Add fallback timeout to show login button if auth never fires
+    // Conservative detection for when to show login button
     useEffect(() => {
-        const timer = setTimeout(() => {
-            // If still authorizing after 10 seconds and no activeLoginid, show login button
-            if (isAuthorizing && !activeLoginid) {
-                setAuthTimeout(true);
-                setIsAuthorizing(false);
-            }
-        }, 5000); // 5 second timeout
-
-        // Clear timeout if user gets authenticated or if not authorizing
-        if (activeLoginid || !isAuthorizing) {
-            setAuthTimeout(false);
-            clearTimeout(timer);
+        // Only show login button in very specific cases to avoid flash
+        if (activeLoginid) {
+            // User is authenticated - definitely hide login button
+            setShouldShowLogin(false);
+        } else if (!isAuthorizing && !activeLoginid) {
+            // Only show login when explicitly not authorizing (like after logout)
+            setShouldShowLogin(true);
+        } else {
+            // Keep login button hidden during any authorizing state
+            setShouldShowLogin(false);
         }
-
-        return () => clearTimeout(timer);
-    }, [isAuthorizing, activeLoginid, setIsAuthorizing]);
+    }, [isAuthorizing, activeLoginid]);
 
     const handleLogin = useCallback(() => {
         try {
@@ -104,8 +100,8 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                 </div>
             );
         }
-        // Show login button when not authorizing, or when auth timeout occurred
-        else if ((!isAuthorizing && !activeLoginid) || authTimeout) {
+        // Show login button when not authorizing, or when intelligent detection determines it should show
+        else if ((!isAuthorizing && !activeLoginid) || shouldShowLogin) {
             return (
                 <div className='auth-actions'>
                     <Button tertiary onClick={handleLogin}>
@@ -132,7 +128,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         activeAccount,
         is_virtual,
         handleLogout,
-        authTimeout,
+        shouldShowLogin,
     ]);
 
     if (client?.should_hide_header) return null;
