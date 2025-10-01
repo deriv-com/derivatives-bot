@@ -21,6 +21,7 @@ const LoadModal: React.FC = observer(() => {
     const {
         active_index,
         is_load_modal_open,
+        loaded_local_file,
         onEntered,
         recent_strategies,
         setActiveTabIndex,
@@ -67,7 +68,7 @@ const LoadModal: React.FC = observer(() => {
         );
     }
 
-    const is_file_loaded = tab_name === tabs_title.TAB_LOCAL;
+    const is_file_loaded = !!loaded_local_file && tab_name === tabs_title.TAB_LOCAL;
     const has_recent_strategies = recent_strategies.length > 0 && tab_name === tabs_title.TAB_RECENT;
 
     return (
