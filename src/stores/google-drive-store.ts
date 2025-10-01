@@ -84,6 +84,15 @@ export default class GoogleDriveStore {
         this.api_key = process.env.GD_API_KEY;
         this.scope = SCOPE;
         this.discovery_docs = DISCOVERY_DOCS;
+
+        // Debug: Log environment variables to console
+        console.log('Google Drive Environment Variables:', {
+            GD_CLIENT_ID: this.client_id,
+            GD_APP_ID: this.app_id,
+            GD_API_KEY: this.api_key,
+            SCOPE: this.scope,
+            DISCOVERY_DOCS: this.discovery_docs,
+        });
     };
 
     initialise = () => {
@@ -338,9 +347,13 @@ export default class GoogleDriveStore {
         if (is_save) {
             docs_view.setSelectFolderEnabled(true);
         }
+
+        const origin = `${window.location.protocol}//${window.location.host}`;
+        console.log('Google Drive Picker Origin:', origin);
+
         const picker = new google.picker.PickerBuilder();
         picker
-            .setOrigin(`${window.location.protocol}//${window.location.host}`)
+            .setOrigin(origin)
             .setTitle(localize(title))
             .setLocale(this.getPickerLanguage())
             .setAppId(this.app_id)
