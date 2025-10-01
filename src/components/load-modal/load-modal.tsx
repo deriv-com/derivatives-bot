@@ -32,7 +32,7 @@ const LoadModal: React.FC = observer(() => {
     const { isDesktop } = useDevice();
     const header_text = localize('Load strategy');
 
-    // Check if Google Drive should be shown
+    // Check if Google Drive should be shown *
     const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
 
     const handleTabItemClick = (active_index: number) => {
