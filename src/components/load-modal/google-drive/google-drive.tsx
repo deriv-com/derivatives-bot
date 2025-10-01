@@ -20,13 +20,6 @@ const GoogleDrive: React.FC = observer(() => {
     const { isDesktop } = useDevice();
     const icon_size = isDesktop ? '128' : '96';
 
-    // Check if Google Drive should be shown
-    const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
-
-    if (!shouldShowGoogleDrive) {
-        return null; // Don't render anything if the flag is not set
-    }
-
     return (
         <div className='load-strategy__container' data-testid='dt_google_drive'>
             <div className='load-strategy__google-drive'>
