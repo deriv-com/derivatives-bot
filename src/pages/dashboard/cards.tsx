@@ -10,7 +10,7 @@ import { DBOT_TABS } from '@/constants/bot-contents';
 import { useStore } from '@/hooks/useStore';
 import {
     DerivLightBotBuilderIcon,
-    DerivLightGoogleDriveIcon,
+    // DerivLightGoogleDriveIcon, // Commented out - Google Drive token not finalized
     DerivLightLocalDeviceIcon,
     DerivLightMyComputerIcon,
     DerivLightQuickStrategyIcon,
@@ -40,12 +40,6 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
     const { onCloseDialog, dialog_options, is_dialog_open, setActiveTab, setPreviewOnPopup } = dashboard;
     const { setFormVisibility } = quick_strategy;
 
-    const openGoogleDriveDialog = () => {
-        toggleLoadModal();
-        setActiveTabIndex(is_mobile ? 1 : 2);
-        setActiveTab(DBOT_TABS.BOT_BUILDER);
-    };
-
     const openFileLoader = () => {
         toggleLoadModal();
         setActiveTabIndex(is_mobile ? 0 : 1);
@@ -71,20 +65,21 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                 });
             },
         },
-        {
-            id: 'google-drive',
-            icon: <DerivLightGoogleDriveIcon height='48px' width='48px' />,
-            content: <Localize i18n_default_text='Google Drive' />,
-            callback: () => {
-                openGoogleDriveDialog();
-                rudderStackSendOpenEvent({
-                    subpage_name: 'bot_builder',
-                    subform_source: 'dashboard',
-                    subform_name: 'load_strategy',
-                    load_strategy_tab: 'google drive',
-                });
-            },
-        },
+        // Google Drive option removed - token not finalized by other teams
+        // {
+        //     id: 'google-drive',
+        //     icon: <DerivLightGoogleDriveIcon height='48px' width='48px' />,
+        //     content: <Localize i18n_default_text='Google Drive' />,
+        //     callback: () => {
+        //         openGoogleDriveDialog();
+        //         rudderStackSendOpenEvent({
+        //             subpage_name: 'bot_builder',
+        //             subform_source: 'dashboard',
+        //             subform_name: 'load_strategy',
+        //             load_strategy_tab: 'google drive',
+        //         });
+        //     },
+        // },
         {
             id: 'bot-builder',
             icon: <DerivLightBotBuilderIcon height='48px' width='48px' />,
