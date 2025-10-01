@@ -10,7 +10,7 @@ import { LOAD_MODAL_TABS } from '../../analytics/utils';
 import MobileFullPageModal from '../shared_ui/mobile-full-page-modal';
 import Modal from '../shared_ui/modal';
 import Tabs from '../shared_ui/tabs';
-// import GoogleDrive from './google-drive'; // Removed - Google Drive token not finalized
+import GoogleDrive from './google-drive';
 import Local from './local';
 import LocalFooter from './local-footer';
 import Recent from './recent';
@@ -31,6 +31,9 @@ const LoadModal: React.FC = observer(() => {
     const { setPreviewOnPopup } = dashboard;
     const { isDesktop } = useDevice();
     const header_text = localize('Load strategy');
+
+    // Check if Google Drive should be shown
+    const shouldShowGoogleDrive = localStorage.getItem('show_google_drive') === 'true';
 
     const handleTabItemClick = (active_index: number) => {
         setActiveTabIndex(active_index);
@@ -93,6 +96,11 @@ const LoadModal: React.FC = observer(() => {
                     <div label={localize('Local')}>
                         <Local />
                     </div>
+                    {shouldShowGoogleDrive && (
+                        <div label={localize('Google Drive')}>
+                            <GoogleDrive />
+                        </div>
+                    )}
                 </Tabs>
             </Modal.Body>
             {has_recent_strategies && (
