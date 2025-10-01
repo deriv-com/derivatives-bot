@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { timeSince } from '@/external/bot-skeleton';
 import { save_types } from '@/external/bot-skeleton/constants/save-type';
 import { useStore } from '@/hooks/useStore';
-import { /* DerivLightGoogleDriveIcon, */ DerivLightMyComputerIcon } from '@deriv/quill-icons/Illustration'; // Google Drive icon commented out - token not finalized
+import { DerivLightGoogleDriveIcon, DerivLightMyComputerIcon } from '@deriv/quill-icons/Illustration';
 import { LegacyReportsIcon } from '@deriv/quill-icons/Legacy';
 
 type TRecentWorkspaceProps = {
@@ -14,8 +14,7 @@ type TIcons = {
     [key: string]: React.ReactElement;
 };
 
-//export const getRecentFileIcon = (save_type: string, class_name: string = ''): React.ReactElement => {
-export const getRecentFileIcon = (save_type: string): React.ReactElement => {
+export const getRecentFileIcon = (save_type: string, class_name: string = ''): React.ReactElement => {
     if (!save_type && typeof save_type !== 'string')
         return <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' />;
     const icons: TIcons = {
@@ -23,10 +22,8 @@ export const getRecentFileIcon = (save_type: string): React.ReactElement => {
             <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' className='icon-general-fill-g-path' />
         ),
         [save_types.LOCAL]: <DerivLightMyComputerIcon height='16px' width='16px' fill='var(--text-general)' />,
-        // Placeholder for Google Drive icon
         [save_types.GOOGLE_DRIVE]: (
-            // <DerivLightGoogleDriveIcon className={class_name} height='16px' width='16px' fill='var(--text-general)' /> // Commented out - Google Drive token not finalized
-            <div style={{ width: '16px', height: '16px', backgroundColor: '#f0f0f0', borderRadius: '2px' }} />
+            <DerivLightGoogleDriveIcon className={class_name} height='16px' width='16px' fill='var(--text-general)' />
         ),
     };
     return icons[save_type as string] as React.ReactElement;
