@@ -2,20 +2,12 @@ import Cookies from 'js-cookie';
 import { BOT_VERSION_CONFIG } from '@/constants/bot-version';
 
 /**
- * Clears all localStorage data except for the bot_version
+ * Clears all localStorage data completely
  */
 const clearLocalStorage = (): void => {
     try {
-        // Get the current bot_version before clearing
-        const currentBotVersion = localStorage.getItem(BOT_VERSION_CONFIG.STORAGE_KEY);
-
-        // Clear all localStorage
+        // Clear all localStorage completely
         localStorage.clear();
-
-        // Restore the bot_version if it existed
-        if (currentBotVersion) {
-            localStorage.setItem(BOT_VERSION_CONFIG.STORAGE_KEY, currentBotVersion);
-        }
     } catch (error) {
         console.error('Error clearing localStorage:', error);
     }
@@ -65,14 +57,16 @@ const setBotVersion = (): void => {
 
 /**
  * Checks if the current bot version matches the required version
- * @returns true if version matches or is not set, false if version is different
+ * @returns true if version matches, false if version is different or not set
  */
 const isVersionValid = (): boolean => {
     try {
         const currentVersion = localStorage.getItem(BOT_VERSION_CONFIG.STORAGE_KEY);
 
-        // If no version is set, consider it invalid (needs clearing)
+        // If no version is set, needs clearing (first time user)
         if (currentVersion === null) {
+            clearLocalStorage();
+            clearCookies();
             return false;
         }
 
