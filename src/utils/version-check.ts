@@ -65,8 +65,6 @@ const isVersionValid = (): boolean => {
 
         // If no version is set, needs clearing (first time user)
         if (currentVersion === null) {
-            clearLocalStorage();
-            clearCookies();
             return false;
         }
 
