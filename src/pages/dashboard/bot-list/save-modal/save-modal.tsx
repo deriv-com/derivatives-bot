@@ -6,12 +6,13 @@ import Button from '@/components/shared_ui/button';
 import Input from '@/components/shared_ui/input';
 import MobileFullPageModal from '@/components/shared_ui/mobile-full-page-modal';
 import Modal from '@/components/shared_ui/modal';
+import RadioGroup from '@/components/shared_ui/radio-group';
 import Text from '@/components/shared_ui/text';
 import ThemedScrollbars from '@/components/shared_ui/themed-scrollbars';
-import { config } from '@/external/bot-skeleton';
+import { config, save_types } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import {
-    // DerivLightGoogleDriveIcon, // Commented out - Google Drive token not finalized
+    DerivLightGoogleDriveIcon,
     DerivLightLocalDeviceIcon,
     DerivLightMyComputerIcon,
 } from '@deriv/quill-icons/Illustration';
@@ -40,7 +41,9 @@ type TSaveModalForm = {
 const SaveModalForm: React.FC<TSaveModalForm> = ({
     bot_name,
     button_status,
+    is_authorised,
     onConfirmSave,
+    onDriveConnect,
     validateBotName,
     toggleSaveModal,
     is_mobile,
@@ -56,14 +59,16 @@ const SaveModalForm: React.FC<TSaveModalForm> = ({
         validate={validateBotName}
         onSubmit={onConfirmSave}
     >
-        {({ touched, errors }) => {
+        {({ values: { is_local }, setFieldValue, touched, errors }) => {
             const content_height = !is_mobile ? '500px' : `calc(100%)`;
             return (
                 <ThemedScrollbars height={content_height} autohide>
                     <Form className={classNames({ 'form--active-keyboard': is_onscreen_keyboard_active })}>
                         <div className='modal__content'>
                             <Text size='xs' lineHeight='l'>
-                                {localize('Enter your bot name, choose to save on your computer, and hit ')}
+                                {localize(
+                                    'Enter your bot name, choose to save on your computer or Google Drive, and hit '
+                                )}
                                 <strong>{localize('Save.')}</strong>
                             </Text>
                             <div className='modal__content-row'>
@@ -84,21 +89,48 @@ const SaveModalForm: React.FC<TSaveModalForm> = ({
                                 </Field>
                             </div>
                             <div className='modal__content-row'>
-                                {/* Using existing CSS classes for proper styling */}
-                                <div className='radio-group__save-type'>
-                                    <div className='dc-radio-group__item dc-radio-group__item--selected save-type__icon'>
-                                        <IconRadio
-                                            text={localize('Local')}
-                                            icon={
-                                                is_mobile ? (
-                                                    <DerivLightLocalDeviceIcon height='48px' width='48px' />
-                                                ) : (
-                                                    <DerivLightMyComputerIcon height='48px' width='48px' />
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                </div>
+                                <RadioGroup
+                                    className='radio-group__save-type'
+                                    name='is_local'
+                                    selected={() => {
+                                        if (is_authorised && !is_local) return save_types.GOOGLE_DRIVE;
+                                        return save_types.LOCAL;
+                                    }}
+                                    onToggle={() => setFieldValue('is_local', !is_local)}
+                                >
+                                    <RadioGroup.Item
+                                        id='local'
+                                        label={
+                                            <IconRadio
+                                                text={localize('Local')}
+                                                icon={
+                                                    is_mobile ? (
+                                                        <DerivLightLocalDeviceIcon height='48px' width='48px' />
+                                                    ) : (
+                                                        <DerivLightMyComputerIcon height='48px' width='48px' />
+                                                    )
+                                                }
+                                            />
+                                        }
+                                        value={save_types.LOCAL}
+                                    />
+                                    <RadioGroup.Item
+                                        id='drive'
+                                        label={
+                                            <IconRadio
+                                                text={'Google Drive'}
+                                                icon={<DerivLightGoogleDriveIcon height='48px' width='48px' />}
+                                                google_drive_connected={is_authorised}
+                                                onDriveConnect={onDriveConnect}
+                                            />
+                                        }
+                                        value={save_types.GOOGLE_DRIVE}
+                                        disabled={!is_authorised}
+                                        className={classNames({
+                                            'dc-radio-group__item-disabled': !is_authorised,
+                                        })}
+                                    />
+                                </RadioGroup>
                             </div>
                         </div>
                         <div
