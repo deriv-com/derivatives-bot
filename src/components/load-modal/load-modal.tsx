@@ -60,6 +60,9 @@ const LoadModal: React.FC = observer(() => {
                     <div label={localize('Local')}>
                         <Local />
                     </div>
+                    <div label='Google Drive'>
+                        <GoogleDrive />
+                    </div>
                 </Tabs>
             </MobileFullPageModal>
         );
@@ -93,7 +96,7 @@ const LoadModal: React.FC = observer(() => {
                     <div label={localize('Local')}>
                         <Local />
                     </div>
-                    <div label={localize('Google Drive')}>
+                    <div label='Google Drive'>
                         <GoogleDrive />
                     </div>
                 </Tabs>
