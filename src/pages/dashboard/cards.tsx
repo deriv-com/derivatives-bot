@@ -47,8 +47,9 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
     };
 
     const openGoogleDriveDialog = () => {
+        const google_drive_tab_index = isDesktop ? 2 : 1;
         toggleLoadModal();
-        setActiveTabIndex(2); // Google Drive tab index
+        setActiveTabIndex(google_drive_tab_index); // Google Drive tab index
         setActiveTab(DBOT_TABS.BOT_BUILDER);
     };
 
