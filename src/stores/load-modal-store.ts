@@ -293,7 +293,7 @@ export default class LoadModalStore {
         }
     };
 
-    loadStrategyToBuilder = async (strategy: TStrategy, is_import_notification: boolean = true) => {
+    loadStrategyToBuilder = async (strategy: TStrategy, is_show_notification: boolean = true) => {
         if (strategy?.id) {
             await load({
                 block_string: strategy.xml,
@@ -303,7 +303,7 @@ export default class LoadModalStore {
                 from: strategy.save_type,
                 drop_event: {},
                 showIncompatibleStrategyDialog: false,
-                show_snackbar: is_import_notification,
+                show_snackbar: is_show_notification,
             });
             window.Blockly.derivWorkspace.strategy_to_load = strategy.xml;
         }
