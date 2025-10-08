@@ -250,7 +250,6 @@ const QSInput: React.FC<TQSInput> = observer(
             ) {
                 value = 1;
             }
-
             // For stake field, check if value is within the allowed range
             if (name === 'stake' && is_number) {
                 const min_stake = (quick_strategy?.additional_data as any)?.min_stake || 0.35;
