@@ -1,4 +1,5 @@
 import { standalone_routes } from '@/components/shared';
+import { generateUrlWithRedirect } from '@/utils/url-redirect-utils';
 import { LegacyOpenPositionIcon, LegacyProfitTableIcon, LegacyStatementIcon } from '@deriv/quill-icons/Legacy';
 import { useTranslations } from '@deriv-com/translations';
 import { MenuItem, Text } from '@deriv-com/ui';
@@ -11,17 +12,17 @@ const ReportsSubmenu = () => {
         {
             icon: LegacyOpenPositionIcon,
             label: localize('Open positions'),
-            href: standalone_routes.positions,
+            href: generateUrlWithRedirect(standalone_routes.positions),
         },
         {
             icon: LegacyProfitTableIcon,
             label: localize('Trade table'),
-            href: standalone_routes.profit,
+            href: generateUrlWithRedirect(standalone_routes.profit),
         },
         {
             icon: LegacyStatementIcon,
             label: localize('Statement'),
-            href: standalone_routes.statement,
+            href: generateUrlWithRedirect(standalone_routes.statement),
         },
     ];
 

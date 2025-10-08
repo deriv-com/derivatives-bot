@@ -40,11 +40,7 @@ export default defineConfig({
                 DATADOG_SESSION_SAMPLE_RATE: JSON.stringify(process.env.DATADOG_SESSION_SAMPLE_RATE),
                 DATADOG_APPLICATION_ID: JSON.stringify(process.env.DATADOG_APPLICATION_ID),
                 DATADOG_CLIENT_TOKEN: JSON.stringify(process.env.DATADOG_CLIENT_TOKEN),
-                RUDDERSTACK_KEY: JSON.stringify(
-                    process.env.APP_ENV === 'production'
-                        ? process.env.RUDDERSTACK_KEY_PROD
-                        : process.env.RUDDERSTACK_KEY_DEV
-                ),
+                RUDDERSTACK_KEY: JSON.stringify(process.env.RUDDERSTACK_KEY),
                 GROWTHBOOK_CLIENT_KEY: JSON.stringify(process.env.GROWTHBOOK_CLIENT_KEY),
                 GROWTHBOOK_DECRYPTION_KEY: JSON.stringify(process.env.GROWTHBOOK_DECRYPTION_KEY),
             },

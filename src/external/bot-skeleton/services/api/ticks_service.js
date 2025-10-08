@@ -1,6 +1,5 @@
 /* eslint-disable no-confusing-arrow */
 import { Map } from 'immutable';
-import { clearAuthData } from '@/utils/auth-utils';
 import { getLast, historyToTicks } from '../../utils/binary-utils';
 import { observer as globalObserver } from '../../utils/observer';
 import { doUntilDone, getUUID } from '../tradeEngine/utils/helpers';
@@ -230,7 +229,8 @@ export default class TicksService {
         const stringified_options = JSON.stringify(options);
 
         if (style === 'ticks') {
-            if (this.ticks_history_promise?.stringified_options !== stringified_options) {
+            // Check if we already have a promise for these exact options
+            if (!this.ticks_history_promise || this.ticks_history_promise.stringified_options !== stringified_options) {
                 this.ticks_history_promise = {
                     promise: this.requestPipSizes().then(() => this.requestTicks(options)),
                     stringified_options,
@@ -241,6 +241,7 @@ export default class TicksService {
         }
 
         if (style === 'candles') {
+            // Check if we already have a promise for these exact options
             if (!this.candles_promise || this.candles_promise.stringified_options !== stringified_options) {
                 this.candles_promise = {
                     promise: this.requestPipSizes().then(() => this.requestTicks(options)),
@@ -266,7 +267,8 @@ export default class TicksService {
         };
         return new Promise((resolve, reject) => {
             if (!api_base.api) resolve([]);
-            doUntilDone(() => api_base.api.send(request_object), [], api_base)
+            console.log('Requesting ticks/candles', request_object);
+            doUntilDone(() => api_base.api.send(request_object), ['AlreadySubscribed'], api_base)
                 .then(r => {
                     if (style === 'ticks') {
                         const ticks = historyToTicks(r.history);
@@ -282,9 +284,22 @@ export default class TicksService {
                     }
                 })
                 .catch(error => {
-                    if (error?.code === 'InvalidSymbol') {
-                        clearAuthData();
+                    console.log(error, 'error in ticks service');
+                    // Handle AlreadySubscribed errors gracefully - they're not fatal
+                    if (error?.code === 'AlreadySubscribed') {
+                        console.log('Already subscribed to symbol, ignoring error');
+                        // For AlreadySubscribed errors, we can still resolve with existing data
+                        if (style === 'ticks' && this.ticks.has(symbol)) {
+                            resolve(this.ticks.get(symbol));
+                        } else if (style === 'candles' && this.candles.hasIn([symbol, Number(granularity)])) {
+                            resolve(this.candles.getIn([symbol, Number(granularity)]));
+                        } else {
+                            resolve([]);
+                        }
+                        return;
                     }
+                    // Don't clear auth data for InvalidSymbol errors as it causes unwanted logouts
+                    // InvalidSymbol errors can occur for various reasons and don't necessarily mean the user is unauthorized
                     reject(error);
                 });
         });
@@ -293,12 +308,16 @@ export default class TicksService {
     forget = () => {
         return new Promise((resolve, reject) => {
             if (api_base?.api) {
-                api_base.api
-                    .forgetAll('ticks')
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch(reject);
+                try {
+                    api_base.api
+                        .forgetAll('ticks')
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch(reject);
+                } catch (e) {
+                    console.log('Error in forget ticks', e);
+                }
             } else {
                 resolve();
             }
@@ -308,12 +327,16 @@ export default class TicksService {
     forgetCandleSubscription = () => {
         return new Promise((resolve, reject) => {
             if (api_base?.api) {
-                api_base.api
-                    .forgetAll('candles')
-                    .then(() => {
-                        resolve();
-                    })
-                    .catch(reject);
+                try {
+                    api_base.api
+                        .forgetAll('candles')
+                        .then(() => {
+                            resolve();
+                        })
+                        .catch(reject);
+                } catch (e) {
+                    console.log('Error in forget candles', e);
+                }
             } else {
                 resolve();
             }
@@ -324,11 +347,15 @@ export default class TicksService {
         return new Promise((resolve, reject) => {
             this.forget()
                 .then(() => {
-                    this.forgetCandleSubscription()
-                        .then(() => {
-                            resolve();
-                        })
-                        .catch(reject);
+                    try {
+                        this.forgetCandleSubscription()
+                            .then(() => {
+                                resolve();
+                            })
+                            .catch(reject);
+                    } catch (e) {
+                        console.log('Error in unsubscribeFromTicksService', e);
+                    }
                 })
                 .catch(reject);
             this.ticks_history_promise = null;

@@ -14,17 +14,17 @@ type TIcons = {
     [key: string]: React.ReactElement;
 };
 
-export const getRecentFileIcon = (save_type: string, class_name: string = ''): React.ReactElement => {
+//export const getRecentFileIcon = (save_type: string, class_name: string = ''): React.ReactElement => {
+export const getRecentFileIcon = (save_type: string): React.ReactElement => {
     if (!save_type && typeof save_type !== 'string')
         return <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' />;
+
     const icons: TIcons = {
         [save_types.UNSAVED]: (
             <LegacyReportsIcon iconSize='xs' fill='var(--text-general)' className='icon-general-fill-g-path' />
         ),
         [save_types.LOCAL]: <DerivLightMyComputerIcon height='16px' width='16px' fill='var(--text-general)' />,
-        [save_types.GOOGLE_DRIVE]: (
-            <DerivLightGoogleDriveIcon className={class_name} height='16px' width='16px' fill='var(--text-general)' />
-        ),
+        [save_types.GOOGLE_DRIVE]: <DerivLightGoogleDriveIcon height='16px' width='16px' fill='var(--text-general)' />,
     };
     return icons[save_type as string] as React.ReactElement;
 };
@@ -58,7 +58,7 @@ const RecentWorkspace = observer(({ workspace }: TRecentWorkspaceProps) => {
                 <div className='load-strategy__recent-item-time'>{timeSince(workspace.timestamp)}</div>
             </div>
             <div className='load-strategy__recent-item-location'>
-                {getRecentFileIcon(workspace.save_type, 'load-strategy__recent-icon--active')}
+                {getRecentFileIcon(workspace.save_type)}
                 <div className='load-strategy__recent-item-saved'>{getSaveType(workspace.save_type)}</div>
             </div>
         </div>
