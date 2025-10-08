@@ -10,7 +10,7 @@ export enum CONNECTION_STATUS {
 
 // Initial connection status will be 'unknown'
 export const connectionStatus$ = new BehaviorSubject<string>('unknown');
-export const isAuthorizing$ = new BehaviorSubject<boolean>(false);
+export const isAuthorizing$ = new BehaviorSubject<boolean>(true); // Start with true to show loader immediately
 export const isAuthorized$ = new BehaviorSubject<boolean>(false);
 export const account_list$ = new BehaviorSubject<TAuthData['account_list']>([]);
 export const authData$ = new BehaviorSubject<TAuthData | null>(null);

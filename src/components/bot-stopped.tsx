@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Text from '@/components/shared_ui/text';
 import { useStore } from '@/hooks/useStore';
+import { generateUrlWithRedirect } from '@/utils/url-redirect-utils';
 import { LegacyClose1pxIcon } from '@deriv/quill-icons/Legacy';
 import { Localize, localize } from '@deriv-com/translations';
 import Dialog from './shared_ui/dialog';
@@ -20,7 +21,7 @@ const BotStopped = observer(() => {
             className={'dc-dialog bot-stopped-dialog'}
             cancel_button_text={localize('Go to Reports')}
             confirm_button_text={localize('Back to Bot')}
-            onCancel={() => (window.location.href = standalone_routes.positions)}
+            onCancel={() => (window.location.href = generateUrlWithRedirect(standalone_routes.positions))}
             onConfirm={() => location.reload()}
         >
             <div className='dc-dialog__content__header'>

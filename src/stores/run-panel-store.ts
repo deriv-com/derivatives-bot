@@ -10,6 +10,7 @@ import { getSelectedTradeType } from '@/external/bot-skeleton/scratch/utils';
 // import { journalError, switch_account_notification } from '@/utils/bot-notifications';
 import GTM from '@/utils/gtm';
 import { helpers } from '@/utils/store-helpers';
+import { generateUrlWithRedirect } from '@/utils/url-redirect-utils';
 import { Buy, ProposalOpenContract } from '@deriv/api-types';
 import { TStores } from '@deriv/stores/types';
 import { localize } from '@deriv-com/translations';
@@ -145,17 +146,11 @@ export default class RunPanelStore {
         if (!show_bot_stop_message) return;
         const handleNotificationClick = () => {
             const contract_type = getSelectedTradeType();
-            const url = new URL(standalone_routes.positions);
-            url.searchParams.set('contract_type_bots', contract_type);
+            const baseUrl = `${standalone_routes.positions}?contract_type_bots=${contract_type}`;
 
-            const getQueryParams = new URLSearchParams(window.location.search);
-            const account = getQueryParams.get('account') || sessionStorage.getItem('query_param_currency') || '';
-
-            if (account) {
-                url.searchParams.set('account', account);
-            }
-
-            window.location.assign(url.toString());
+            // Use generateUrlWithRedirect to add redirect parameter and account_type from localStorage
+            const urlWithRedirect = generateUrlWithRedirect(baseUrl);
+            window.location.assign(urlWithRedirect);
         };
 
         botNotification(notification_message().bot_stop, {

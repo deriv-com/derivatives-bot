@@ -1,6 +1,7 @@
 /* eslint-disable no-confusing-arrow */
 import { localize } from '@deriv-com/translations';
 import {
+    ACTIVE_SYMBOLS,
     MARKET_MAPPINGS,
     MARKET_OPTIONS,
     SUBMARKET_OPTIONS,
@@ -44,6 +45,11 @@ export default class ActiveSymbols {
         } else {
             await api_base.active_symbols_promise;
             this.active_symbols = api_base?.active_symbols ?? [];
+        }
+
+        // Fallback to static data if API fails completely
+        if (this.active_symbols.length === 0) {
+            this.active_symbols = ACTIVE_SYMBOLS;
         }
 
         this.processed_symbols = this.processActiveSymbols();

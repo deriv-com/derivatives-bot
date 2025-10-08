@@ -40,15 +40,16 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
     const { onCloseDialog, dialog_options, is_dialog_open, setActiveTab, setPreviewOnPopup } = dashboard;
     const { setFormVisibility } = quick_strategy;
 
-    const openGoogleDriveDialog = () => {
-        toggleLoadModal();
-        setActiveTabIndex(is_mobile ? 1 : 2);
-        setActiveTab(DBOT_TABS.BOT_BUILDER);
-    };
-
     const openFileLoader = () => {
         toggleLoadModal();
         setActiveTabIndex(is_mobile ? 0 : 1);
+        setActiveTab(DBOT_TABS.BOT_BUILDER);
+    };
+
+    const openGoogleDriveDialog = () => {
+        const google_drive_tab_index = isDesktop ? 2 : 1;
+        toggleLoadModal();
+        setActiveTabIndex(google_drive_tab_index); // Google Drive tab index
         setActiveTab(DBOT_TABS.BOT_BUILDER);
     };
 
@@ -66,9 +67,9 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                 rudderStackSendOpenEvent({
                     subpage_name: 'bot_builder',
                     subform_source: 'dashboard',
-                    subform_name: 'load_strategy',
-                    load_strategy_tab: 'local',
-                });
+                    subform_name: 'load_strategy' as any,
+                    load_strategy_tab: 'local' as any,
+                } as any);
             },
         },
         {
@@ -80,9 +81,9 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                 rudderStackSendOpenEvent({
                     subpage_name: 'bot_builder',
                     subform_source: 'dashboard',
-                    subform_name: 'load_strategy',
-                    load_strategy_tab: 'google drive',
-                });
+                    subform_name: 'load_strategy' as any,
+                    load_strategy_tab: 'google drive' as any,
+                } as any);
             },
         },
         {
@@ -92,9 +93,9 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
             callback: () => {
                 setActiveTab(DBOT_TABS.BOT_BUILDER);
                 rudderStackSendDashboardClickEvent({
-                    dashboard_click_name: 'bot_builder',
+                    dashboard_click_name: 'bot_builder' as any,
                     subpage_name: 'bot_builder',
-                });
+                } as any);
             },
         },
         {
@@ -177,7 +178,6 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                                 onCloseDialog();
                             }}
                             height_offset='80px'
-                            page_overlay
                         >
                             <div label='Google Drive' className='google-drive-label'>
                                 <GoogleDrive />
