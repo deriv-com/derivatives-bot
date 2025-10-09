@@ -8,6 +8,7 @@ import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
+import TradeTypeConfirmationModal from '@/components/trade-type-confirmation-modal';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { DBOT_TABS, TAB_IDS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
@@ -15,6 +16,23 @@ import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observab
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
+import {
+    disableUrlParameterApplication,
+    enableUrlParameterApplication,
+    removeTradeTypeFromUrl,
+    setPendingUrlTradeType,
+    setupTradeTypeChangeListener,
+    updateTradeTypeFromUrlParams,
+} from '@/utils/blockly-url-param-handler';
+import {
+    checkAndShowTradeTypeModal,
+    getInternalTradeTypeDisplayName,
+    getModalState,
+    handleTradeTypeCancel,
+    handleTradeTypeConfirm,
+    resetUrlParamProcessing,
+    setModalStateChangeCallback,
+} from '@/utils/trade-type-modal-handler';
 import {
     LabelPairedChartLineCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
@@ -69,6 +87,9 @@ const AppWrapper = observer(() => {
     const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
     const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
 
+    // Trade type modal state
+    const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
+
     let tab_value: number | string = active_tab;
     const GetHashedValue = (tab: number) => {
         tab_value = location.hash?.split('#')[1];
@@ -76,6 +97,18 @@ const AppWrapper = observer(() => {
         return Number(hash.indexOf(String(tab_value)));
     };
     const active_hash_tab = GetHashedValue(active_tab);
+
+    // Set up modal state change listener
+    React.useEffect(() => {
+        setModalStateChangeCallback(newState => {
+            setTradeTypeModalState(newState);
+        });
+    }, []);
+
+    // Reset URL parameter processing when location changes
+    React.useEffect(() => {
+        resetUrlParamProcessing();
+    }, [location.search]);
 
     React.useEffect(() => {
         const el_dashboard = document.getElementById('id-dbot-dashboard');
@@ -144,16 +177,47 @@ const AppWrapper = observer(() => {
         if (is_open) {
             setTourDialogVisibility(false);
         }
-
         if (init_render.current) {
             setActiveTab(Number(active_hash_tab));
             if (!isDesktop) handleTabChange(Number(active_hash_tab));
             init_render.current = false;
         } else {
-            navigate(`#${hash[active_tab] || hash[0]}`);
+            // Preserve URL parameters when navigating
+            const currentSearch = window.location.search;
+            navigate(`${currentSearch}#${hash[active_tab] || hash[0]}`);
         }
         if (active_tour !== '') {
             setActiveTour('');
+        }
+        // Handle URL trade type parameters when switching to Bot Builder tab
+        if (active_tab === BOT_BUILDER) {
+            // Set a timeout to ensure Blockly workspace is fully initialized
+            setTimeout(() => {
+                // Disable automatic URL parameter application to prevent changes before modal
+                disableUrlParameterApplication();
+
+                // Set up listener for manual trade type changes (only once)
+                setupTradeTypeChangeListener();
+
+                // Check for URL parameters and show modal if needed
+                checkAndShowTradeTypeModal(
+                    // onConfirm: Apply the trade type change
+                    () => {
+                        // Enable URL parameter application and apply the change
+                        enableUrlParameterApplication();
+                        setPendingUrlTradeType();
+                        setTimeout(() => {
+                            updateTradeTypeFromUrlParams();
+                        }, 500);
+                    },
+                    // onCancel: Do nothing, keep current trade type
+                    () => {
+                        // Remove URL parameter when user cancels
+                        removeTradeTypeFromUrl();
+                        // Keep URL parameter application disabled since user declined
+                    }
+                );
+            }, 1000);
         }
 
         // Prevent scrolling when tutorial tab is active (only on mobile)
@@ -342,6 +406,22 @@ const AppWrapper = observer(() => {
             >
                 {message}
             </Dialog>
+
+            {/* Trade Type Confirmation Modal */}
+            <TradeTypeConfirmationModal
+                is_visible={tradeTypeModalState.isVisible}
+                trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
+                current_trade_type={
+                    tradeTypeModalState.tradeTypeData?.currentTradeType
+                        ? getInternalTradeTypeDisplayName(
+                              tradeTypeModalState.tradeTypeData.currentTradeType.tradeTypeCategory,
+                              tradeTypeModalState.tradeTypeData.currentTradeType.tradeType
+                          )
+                        : 'Current Trade Type'
+                }
+                onConfirm={handleTradeTypeConfirm}
+                onCancel={handleTradeTypeCancel}
+            />
         </React.Fragment>
     );
 });
