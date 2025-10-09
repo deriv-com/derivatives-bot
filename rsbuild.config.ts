@@ -87,6 +87,20 @@ export default defineConfig({
     dev: {
         hmr: true,
     },
+    performance: {
+        // Configure Rsbuild's native bundle analyzer
+        bundleAnalyze:
+            process.env.BUNDLE_ANALYZE === 'true'
+                ? {
+                      analyzerMode: 'server',
+                      analyzerHost: 'localhost',
+                      analyzerPort: 8888,
+                      openAnalyzer: true,
+                      generateStatsFile: true,
+                      statsFilename: 'stats.json',
+                  }
+                : undefined,
+    },
     tools: {
         rspack: {
             plugins: [],
