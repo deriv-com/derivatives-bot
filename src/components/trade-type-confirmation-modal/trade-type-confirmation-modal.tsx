@@ -36,14 +36,16 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                 <div className='trade-type-confirmation-modal__content'>
                     <p>
                         <Localize
-                            i18n_default_text='You have selected a new trade type on the homepage: {{trade_type_name}}.'
+                            i18n_default_text='You have selected a new trade type on the homepage: <0>{{trade_type_name}}</0>.'
                             values={{ trade_type_name: trade_type_display_name }}
+                            components={[<strong key={0} />]}
                         />
                     </p>
                     <p>
                         <Localize
-                            i18n_default_text='Your current selection is: {{current_trade_type}}.'
+                            i18n_default_text='Your current selection is: <0>{{current_trade_type}}</0>.'
                             values={{ current_trade_type }}
+                            components={[<strong key={0} />]}
                         />
                     </p>
                     <p>
