@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Dialog from '@/components/shared_ui/dialog';
+import { useStore } from '@/hooks/useStore';
 import { Localize } from '@deriv-com/translations';
 import './trade-type-confirmation-modal.scss';
 
@@ -14,6 +15,9 @@ interface TradeTypeConfirmationModalProps {
 
 const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = observer(
     ({ is_visible, trade_type_display_name, current_trade_type, onConfirm, onCancel }) => {
+        const { dashboard } = useStore(); // Add any store usage if needed in the future
+        const { is_tour_dialog_visible } = dashboard;
+        if (is_tour_dialog_visible) return null;
         return (
             <Dialog
                 title={<Localize i18n_default_text='Change Trade Type?' />}
@@ -32,14 +36,16 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                 <div className='trade-type-confirmation-modal__content'>
                     <p>
                         <Localize
-                            i18n_default_text='You have selected a new trade type on the homepage: {{trade_type_name}}.'
+                            i18n_default_text='You have selected a new trade type on the homepage: <0>{{trade_type_name}}</0>.'
                             values={{ trade_type_name: trade_type_display_name }}
+                            components={[<strong key={0} />]}
                         />
                     </p>
                     <p>
                         <Localize
-                            i18n_default_text='Your current selection is: {{current_trade_type}}.'
+                            i18n_default_text='Your current selection is: <0>{{current_trade_type}}</0>.'
                             values={{ current_trade_type }}
+                            components={[<strong key={0} />]}
                         />
                     </p>
                     <p>
