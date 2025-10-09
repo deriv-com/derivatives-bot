@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Dialog from '@/components/shared_ui/dialog';
+import { useStore } from '@/hooks/useStore';
 import { Localize } from '@deriv-com/translations';
 import './trade-type-confirmation-modal.scss';
 
@@ -14,6 +15,9 @@ interface TradeTypeConfirmationModalProps {
 
 const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = observer(
     ({ is_visible, trade_type_display_name, current_trade_type, onConfirm, onCancel }) => {
+        const { dashboard } = useStore(); // Add any store usage if needed in the future
+        const { is_tour_dialog_visible } = dashboard;
+        if (is_tour_dialog_visible) return null;
         return (
             <Dialog
                 title={<Localize i18n_default_text='Change Trade Type?' />}
