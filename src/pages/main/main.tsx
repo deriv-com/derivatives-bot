@@ -189,7 +189,6 @@ const AppWrapper = observer(() => {
         if (active_tour !== '') {
             setActiveTour('');
         }
-
         // Handle URL trade type parameters when switching to Bot Builder tab
         if (active_tab === BOT_BUILDER) {
             // Set a timeout to ensure Blockly workspace is fully initialized
