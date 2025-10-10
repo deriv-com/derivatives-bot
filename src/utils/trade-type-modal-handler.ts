@@ -3,20 +3,15 @@ import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
 // Named constants for timeouts
 const FIELD_POPULATION_DELAY = 500;
-// Extend the Window interface to include Blockly types
-declare global {
-    interface Window {
-        Blockly: {
-            derivWorkspace?: any;
-            Events: {
-                BlockChange: new (block: any, element: string, name: string, oldValue: any, newValue: any) => any;
-                fire: (event: any) => void;
-                setGroup: (group: string) => void;
-                getGroup: () => string;
-            };
-        };
-    }
-}
+
+// Import types from blockly-url-param-handler to avoid conflicts
+type BlocklyBlock = {
+    type: string;
+    getFieldValue: (fieldName: string) => string;
+    setFieldValue: (value: string, fieldName: string) => void;
+    getChildByType: (type: string) => BlocklyBlock | null;
+};
+
 // Modal state management
 interface TradeTypeData {
     displayName: string;
@@ -234,7 +229,7 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
         // Find the trade definition block
         const tradeDefinitionBlocks = workspace
             .getAllBlocks()
-            .filter((block: any) => block.type === 'trade_definition');
+            .filter((block: BlocklyBlock) => block.type === 'trade_definition');
 
         if (tradeDefinitionBlocks.length === 0) {
             return false;

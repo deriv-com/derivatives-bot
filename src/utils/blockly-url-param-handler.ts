@@ -3,23 +3,54 @@ import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 // Named constants for timeouts
 const FIELD_POPULATION_DELAY = 500;
 
+// Define Blockly types
+interface BlocklyBlock {
+    type: string;
+    getFieldValue: (fieldName: string) => string;
+    setFieldValue: (value: string, fieldName: string) => void;
+    getChildByType: (type: string) => BlocklyBlock | null;
+}
+
+interface BlocklyWorkspace {
+    getAllBlocks: () => BlocklyBlock[];
+    addChangeListener: (listener: (event: BlocklyEvent) => void) => void;
+    removeChangeListener: (listener: (event: BlocklyEvent) => void) => void;
+    render: () => void;
+}
+
+interface BlocklyEvent {
+    type: string;
+    element?: string;
+    name?: string;
+    oldValue?: string;
+    newValue?: string;
+}
+
+interface BlocklyEvents {
+    BlockChange: new (
+        block: BlocklyBlock,
+        element: string,
+        name: string,
+        oldValue: string,
+        newValue: string
+    ) => BlocklyEvent;
+    fire: (event: BlocklyEvent) => void;
+    setGroup: (group: string) => void;
+    getGroup: () => string;
+}
+
 // Extend the Window interface to include Blockly types
 declare global {
     interface Window {
         Blockly: {
-            derivWorkspace?: any;
-            Events: {
-                BlockChange: new (block: any, element: string, name: string, oldValue: any, newValue: any) => any;
-                fire: (event: any) => void;
-                setGroup: (group: string) => void;
-                getGroup: () => string;
-            };
+            derivWorkspace?: BlocklyWorkspace;
+            Events: BlocklyEvents;
         };
     }
 }
 
 // Store URL trade type to apply after field options are populated
-let pendingUrlTradeType: any = null;
+let pendingUrlTradeType: { tradeTypeCategory: string; tradeType: string; isValid: boolean } | null = null;
 
 // Flag to prevent automatic URL parameter application
 let preventAutoUrlApplication = false;
