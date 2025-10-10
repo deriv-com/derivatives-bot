@@ -124,6 +124,7 @@ export const getTradeTypeDisplayName = (urlParam: string): string => {
         over_under: 'Over/Under',
         rise_fall: 'Rise/Fall',
         high_low: 'Higher/Lower', // This is for Higher/Lower (updown category)
+        high_tick: 'High Tick/Low Tick', // This is for High Tick/Low Tick (separate from high_low)
         accumulators: 'Accumulators',
         only_up_only_down: 'Only Ups/Only Downs',
         touch: 'Touch/No Touch',

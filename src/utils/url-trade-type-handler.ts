@@ -21,6 +21,7 @@ const URL_TO_TRADE_TYPE_MAPPING: Record<string, string> = {
     over_under: 'digits', // Over/Under -> digits
     rise_fall: 'callput', // Rise/Fall -> updown (callput)
     high_low: 'callput', // Higher/Lower -> updown (callput)
+    high_tick: 'highlowticks', // High Tick/Low Tick -> first dropdown only
     accumulators: 'accumulator', // Accumulators -> first dropdown only
     only_up_only_down: 'runs', // Only Ups/Only Downs -> first dropdown only
     touch: 'touchnotouch', // Touch/No Touch -> first dropdown only
@@ -49,6 +50,7 @@ const URL_TO_SPECIFIC_TRADE_TYPE_MAPPING: Record<string, string> = {
     over_under: 'overunder', // Over/Under -> digits category
     rise_fall: 'callput', // Rise/Fall -> updown category
     high_low: 'higherlower', // Higher/Lower -> updown category
+    high_tick: 'highlowticks', // High Tick/Low Tick -> first dropdown only
     accumulators: 'accumulator', // Accumulators -> first dropdown only
     only_up_only_down: 'runs', // Only Ups/Only Downs -> first dropdown only
     touch: 'touchnotouch', // Touch/No Touch -> first dropdown only
