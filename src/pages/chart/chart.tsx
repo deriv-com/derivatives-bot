@@ -1,41 +1,107 @@
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { buildSmartchartsChampionAdapter } from '@/adapters/smartcharts-champion';
+import { createServices } from '@/adapters/smartcharts-champion/services';
+import { createTransport } from '@/adapters/smartcharts-champion/transport';
 import { api_base } from '@/external/bot-skeleton';
 import chart_api from '@/external/bot-skeleton/services/api/chart-api';
 import { useStore } from '@/hooks/useStore';
+import type { SmartchartsChampionAdapter } from '@/types/smartchart.types';
 import {
-    ActiveSymbolsRequest,
-    ServerTimeRequest,
-    TicksHistoryResponse,
-    TicksStreamRequest,
-    TradingTimesRequest,
-} from '@deriv/api-types';
-import { ChartTitle, SmartChart } from '@deriv-com/derivatives-charts';
+    ActiveSymbols,
+    ChartTitle,
+    SmartChart,
+    TGetQuotes,
+    TGranularity,
+    TradingTimesMap,
+    TSubscribeQuotes,
+    TUnsubscribeQuotes,
+} from '@deriv-com/smartcharts-champion';
 import { useDevice } from '@deriv-com/ui';
 import ToolbarWidgets from './toolbar-widgets';
-import '@deriv-com/derivatives-charts/dist/smartcharts.css';
-
-type TSubscription = {
-    [key: string]: null | {
-        unsubscribe?: () => void;
-    };
-};
-
-type TError = null | {
-    error?: {
-        code?: string;
-        message?: string;
-    };
-};
-
-const subscriptions: TSubscription = {};
+import '@deriv-com/smartcharts-champion/dist/smartcharts.css';
 
 const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) => {
     const barriers: [] = [];
     const { common, ui } = useStore();
     const { chart_store, run_panel, dashboard } = useStore();
     const [isSafari, setIsSafari] = useState(false);
+    // SmartCharts Champion Adapter
+    const [adapter, setAdapter] = useState<SmartchartsChampionAdapter | null>(null);
+    const [adapterInitialized, setAdapterInitialized] = useState(false);
+    const [chartData, setChartData] = useState<{ activeSymbols: ActiveSymbols; tradingTimes: TradingTimesMap }>({
+        activeSymbols: [] as ActiveSymbols,
+        tradingTimes: {} as TradingTimesMap,
+    });
+
+    // Create wrapper functions for SmartCharts Champion API
+    const getQuotes: TGetQuotes = async params => {
+        if (!adapter) {
+            throw new Error('Adapter not initialized');
+        }
+
+        const result = await adapter.getQuotes({
+            symbol: params.symbol,
+            granularity: params.granularity as any,
+            count: params.count,
+            start: params.start,
+            end: params.end,
+        });
+
+        // Transform adapter result to SmartCharts Champion format
+        if (params.granularity === 0) {
+            // For ticks, return history format
+            return {
+                history: {
+                    prices: result.quotes.map(q => q.Close),
+                    times: result.quotes.map(q => parseInt(q.Date)),
+                },
+            };
+        } else {
+            // For candles, return candles format
+            return {
+                candles: result.quotes.map(q => ({
+                    open: q.Open || q.Close,
+                    high: q.High || q.Close,
+                    low: q.Low || q.Close,
+                    close: q.Close,
+                    epoch: parseInt(q.Date),
+                })),
+            };
+        }
+    };
+
+    const subscribeQuotes: TSubscribeQuotes = (params, callback) => {
+        if (!adapter) {
+            return () => {};
+        }
+
+        return adapter.subscribeQuotes(
+            {
+                symbol: params.symbol,
+                granularity: params.granularity as any,
+            },
+            quote => {
+                callback(quote);
+            }
+        );
+    };
+
+    const unsubscribeQuotes: TUnsubscribeQuotes = request => {
+        if (adapter) {
+            // If we have request details, use the adapter's unsubscribe method
+            if (request?.symbol && typeof request.granularity !== 'undefined') {
+                adapter.unsubscribeQuotes({
+                    symbol: request.symbol,
+                    granularity: request.granularity as any,
+                });
+            } else {
+                // Fallback: unsubscribe all via transport
+                adapter.transport.unsubscribeAll('ticks');
+            }
+        }
+    };
 
     const {
         chart_type,
@@ -47,7 +113,6 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         updateChartType,
         updateGranularity,
         updateSymbol,
-        setChartSubscriptionId,
         chart_subscription_id,
     } = chart_store;
     const chartSubscriptionIdRef = useRef(chart_subscription_id);
@@ -162,138 +227,51 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         }
     }, [symbol]);
 
-    const requestAPI = async (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
-        const response = await chart_api.api.send(req);
+    // Initialize SmartCharts Champion Adapter for verification
+    useEffect(() => {
+        if (!adapterInitialized && chart_api.api) {
+            try {
+                const transport = createTransport();
+                const services = createServices();
+                const championAdapter = buildSmartchartsChampionAdapter(transport, services, {
+                    debug: true,
+                    subscriptionTimeout: 30000,
+                });
 
-        // Only modify active_symbols responses to keep it simple and avoid breaking the chart
-        if (req && (req as ActiveSymbolsRequest).active_symbols && response && response.active_symbols) {
-            let symbols = [...response.active_symbols];
-
-            // Remove Spain 35 from chart
-            // symbols = symbols.filter(symbol => {
-            //     const symbol_code = symbol.symbol || symbol.underlying_symbol;
-            //     return symbol_code !== 'OTC_IBEX35';
-            // });
-
-            // Force add our 1s volatility indices with sorting prefixes
-            const required_1s_symbols = [
-                {
-                    symbol: '1HZ15V',
-                    underlying_symbol: '1HZ15V',
-                    display_name: 'Volatility 15 (1s) Index',
-                    market: 'synthetic_index',
-                    market_display_name: 'Derived',
-                    submarket: 'random_index',
-                    submarket_display_name: 'Continuous Indices',
-                    pip: 0.001,
-                    pip_size: 0.001,
-                    exchange_is_open: true,
-                    is_trading_suspended: false,
-                },
-                {
-                    symbol: '1HZ30V',
-                    underlying_symbol: '1HZ30V',
-                    display_name: 'Volatility 30 (1s) Index',
-                    market: 'synthetic_index',
-                    market_display_name: 'Derived',
-                    submarket: 'random_index',
-                    submarket_display_name: 'Continuous Indices',
-                    pip: 0.001,
-                    pip_size: 0.001,
-                    exchange_is_open: true,
-                    is_trading_suspended: false,
-                },
-                {
-                    symbol: '1HZ90V',
-                    underlying_symbol: '1HZ90V',
-                    display_name: 'Volatility 90 (1s) Index',
-                    market: 'synthetic_index',
-                    market_display_name: 'Derived',
-                    submarket: 'random_index',
-                    submarket_display_name: 'Continuous Indices',
-                    pip: 0.001,
-                    pip_size: 0.001,
-                    exchange_is_open: true,
-                    is_trading_suspended: false,
-                },
-            ];
-
-            // Apply alphabetical sorting prefixes to force correct order
-            // Since SmartChart uses alphabetical sorting internally, we need to make our desired order alphabetical
-            const volatilityOrderMap: Record<string, string> = {
-                'Volatility 10 (1s) Index': '01a_Volatility 10 (1s) Index',
-                'Volatility 10 Index': '01b_Volatility 10 Index',
-                'Volatility 15 (1s) Index': '02a_Volatility 15 (1s) Index',
-                'Volatility 25 (1s) Index': '03a_Volatility 25 (1s) Index',
-                'Volatility 25 Index': '03b_Volatility 25 Index',
-                'Volatility 30 (1s) Index': '04a_Volatility 30 (1s) Index',
-                'Volatility 50 (1s) Index': '05a_Volatility 50 (1s) Index',
-                'Volatility 50 Index': '05b_Volatility 50 Index',
-                'Volatility 75 (1s) Index': '06a_Volatility 75 (1s) Index',
-                'Volatility 75 Index': '06b_Volatility 75 Index',
-                'Volatility 90 (1s) Index': '07a_Volatility 90 (1s) Index',
-                'Volatility 100 (1s) Index': '08a_Volatility 100 (1s) Index',
-                'Volatility 100 Index': '08b_Volatility 100 Index',
-            };
-
-            // Apply sorting prefixes to volatility indices
-            symbols.forEach((symbol: any) => {
-                if (symbol.display_name && volatilityOrderMap[symbol.display_name]) {
-                    symbol.original_display_name = symbol.display_name;
-                    symbol.display_name = volatilityOrderMap[symbol.display_name];
-                }
-            });
-
-            // Remove any existing instances first to avoid duplicates
-            symbols = symbols.filter(symbol => {
-                const symbol_code = symbol.symbol || symbol.underlying_symbol;
-                return !['1HZ15V', '1HZ30V', '1HZ90V'].includes(symbol_code);
-            });
-
-            // Add our 1s volatility indices
-            symbols.push(...required_1s_symbols);
-
-            const modified_response = {
-                ...response,
-                active_symbols: symbols,
-            };
-
-            // Force update the global api_base.active_symbols as well to ensure consistency
-            if (api_base.active_symbols) {
-                api_base.active_symbols = symbols;
+                setAdapter(championAdapter);
+                setAdapterInitialized(true);
+            } catch (error) {
+                console.error('❌ [SmartCharts Champion Adapter] Failed to initialize:', error);
             }
-
-            return modified_response;
         }
+    }, [adapterInitialized]);
 
-        return response;
-    };
-
-    const requestForgetStream = (subscription_id: string) => {
-        subscription_id && chart_api.api.forget(subscription_id);
-    };
-
-    const requestSubscribe = async (req: TicksStreamRequest, callback: (data: any) => void) => {
-        try {
-            requestForgetStream(chartSubscriptionIdRef.current);
-            const history = await chart_api.api.send(req);
-            setChartSubscriptionId(history?.subscription.id);
-            if (history) callback(history);
-            if (req.subscribe === 1) {
-                subscriptions[history?.subscription.id] = chart_api.api
-                    .onMessage()
-                    ?.subscribe(({ data }: { data: TicksHistoryResponse }) => {
-                        callback(data);
+    // Load chart data when adapter is initialized
+    useEffect(() => {
+        if (adapter && adapterInitialized) {
+            const loadChartData = async () => {
+                try {
+                    const data = await adapter.getChartData();
+                    // TradingTimes: Use directly from adapter (already in correct format)
+                    setChartData({
+                        activeSymbols: data.activeSymbols,
+                        tradingTimes: data.tradingTimes,
                     });
-            }
-        } catch (e) {
-            // eslint-disable-next-line no-console
-            (e as TError)?.error?.code === 'MarketIsClosed' && callback([]); //if market is closed sending a empty array  to resolve
-            console.log((e as TError)?.error?.message);
-        }
-    };
+                } catch (error) {
+                    console.error('❌ [SmartCharts Champion] Failed to load chart data:', error);
+                    // Set fallback data to prevent undefined
+                    setChartData({
+                        activeSymbols: [] as ActiveSymbols,
+                        tradingTimes: {} as TradingTimesMap,
+                    });
+                }
+            };
 
-    if (!symbol) return null;
+            loadChartData();
+        }
+    }, [adapter, adapterInitialized]);
+
+    if (!symbol || chartData.activeSymbols.length === 0) return null;
     const is_connection_opened = !!chart_api?.api;
     return (
         <div
@@ -328,11 +306,11 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
                 chartType={chart_type}
                 isMobile={isMobile}
                 enabledNavigationWidget={isDesktop}
-                granularity={granularity}
-                requestAPI={requestAPI}
-                requestForget={() => {}}
-                requestForgetStream={() => {}}
-                requestSubscribe={requestSubscribe}
+                granularity={granularity as TGranularity}
+                getQuotes={getQuotes}
+                subscribeQuotes={subscribeQuotes}
+                unsubscribeQuotes={unsubscribeQuotes}
+                chartData={{ activeSymbols: chartData.activeSymbols, tradingTimes: chartData.tradingTimes }}
                 settings={settings}
                 symbol={symbol}
                 topWidgets={() => <ChartTitle onChange={onSymbolChange} />}
@@ -405,6 +383,7 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
                 }}
                 isLive
                 leftMargin={80}
+                drawingToolFloatingMenuPosition={isMobile ? { x: 100, y: 100 } : { x: 200, y: 200 }}
             />
         </div>
     );
