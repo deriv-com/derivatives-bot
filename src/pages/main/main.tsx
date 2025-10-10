@@ -19,10 +19,7 @@ import { useStore } from '@/hooks/useStore';
 import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
-    removeTradeTypeFromUrl,
-    setPendingUrlTradeType,
     setupTradeTypeChangeListener,
-    updateTradeTypeFromUrlParams,
 } from '@/utils/blockly-url-param-handler';
 import {
     checkAndShowTradeTypeModal,
@@ -201,19 +198,13 @@ const AppWrapper = observer(() => {
 
                 // Check for URL parameters and show modal if needed
                 checkAndShowTradeTypeModal(
-                    // onConfirm: Apply the trade type change
+                    // onConfirm: Changes are now handled by the modal component
                     () => {
-                        // Enable URL parameter application and apply the change
+                        // Re-enable URL parameter application for future parameters
                         enableUrlParameterApplication();
-                        setPendingUrlTradeType();
-                        setTimeout(() => {
-                            updateTradeTypeFromUrlParams();
-                        }, 500);
                     },
-                    // onCancel: Do nothing, keep current trade type
+                    // onCancel: URL parameter removal is now handled by the modal component
                     () => {
-                        // Remove URL parameter when user cancels
-                        removeTradeTypeFromUrl();
                         // Keep URL parameter application disabled since user declined
                     }
                 );

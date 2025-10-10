@@ -1,22 +1,56 @@
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
+// Named constants for timeouts
+const FIELD_POPULATION_DELAY = 500;
+
+// Define Blockly types
+interface BlocklyBlock {
+    type: string;
+    getFieldValue: (fieldName: string) => string;
+    setFieldValue: (value: string, fieldName: string) => void;
+    getChildByType: (type: string) => BlocklyBlock | null;
+}
+
+interface BlocklyWorkspace {
+    getAllBlocks: () => BlocklyBlock[];
+    addChangeListener: (listener: (event: BlocklyEvent) => void) => void;
+    removeChangeListener: (listener: (event: BlocklyEvent) => void) => void;
+    render: () => void;
+}
+
+interface BlocklyEvent {
+    type: string;
+    element?: string;
+    name?: string;
+    oldValue?: string;
+    newValue?: string;
+}
+
+interface BlocklyEvents {
+    BlockChange: new (
+        block: BlocklyBlock,
+        element: string,
+        name: string,
+        oldValue: string,
+        newValue: string
+    ) => BlocklyEvent;
+    fire: (event: BlocklyEvent) => void;
+    setGroup: (group: string) => void;
+    getGroup: () => string;
+}
+
 // Extend the Window interface to include Blockly types
 declare global {
     interface Window {
         Blockly: {
-            derivWorkspace?: any;
-            Events: {
-                BlockChange: new (block: any, element: string, name: string, oldValue: any, newValue: any) => any;
-                fire: (event: any) => void;
-                setGroup: (group: string) => void;
-                getGroup: () => string;
-            };
+            derivWorkspace?: BlocklyWorkspace;
+            Events: BlocklyEvents;
         };
     }
 }
 
 // Store URL trade type to apply after field options are populated
-let pendingUrlTradeType: any = null;
+let pendingUrlTradeType: { tradeTypeCategory: string; tradeType: string; isValid: boolean } | null = null;
 
 // Flag to prevent automatic URL parameter application
 let preventAutoUrlApplication = false;
@@ -88,33 +122,17 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
         pendingUrlTradeType = null; // Clear invalid data
         return false;
     }
-
     try {
-        // Check if the category field exists and has options
-        const categoryField = tradeTypeBlock.getField('TRADETYPECAT_LIST');
-        if (!categoryField) {
-            return false;
-        }
+        // Disable events temporarily to prevent interference
+        const originalGroup = window.Blockly.Events.getGroup();
+        window.Blockly.Events.setGroup('URL_PARAM_UPDATE');
 
-        // Get category options with null check
-        const categoryOptions = categoryField.getOptions();
-        if (!categoryOptions || !Array.isArray(categoryOptions) || categoryOptions.length === 0) {
-            return false;
-        }
+        // Get current category value
+        const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
 
-        // Check if the category option exists
-        const categoryExists = categoryOptions.some((option: any) => {
-            return option && option.length >= 2 && option[1] === pendingUrlTradeType.tradeTypeCategory;
-        });
-
-        if (!categoryExists) {
-            return false;
-        }
-
-        // Set the category
-        const currentCategory = categoryField.getValue();
+        // Set the category if it's different
         if (currentCategory !== pendingUrlTradeType.tradeTypeCategory) {
-            categoryField.setValue(pendingUrlTradeType.tradeTypeCategory);
+            tradeTypeBlock.setFieldValue(pendingUrlTradeType.tradeTypeCategory, 'TRADETYPECAT_LIST');
 
             // Fire change event for category to trigger trade type options update
             const categoryChangeEvent = new window.Blockly.Events.BlockChange(
@@ -132,35 +150,16 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
             try {
                 // Re-check if pendingUrlTradeType is still valid (might have been cleared)
                 if (!pendingUrlTradeType) {
+                    window.Blockly.Events.setGroup(originalGroup);
                     return;
                 }
 
-                const tradeTypeField = tradeTypeBlock.getField('TRADETYPE_LIST');
-                if (!tradeTypeField) {
-                    return;
-                }
+                // Get current trade type value
+                const currentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
-                // Get trade type options with null check
-                const tradeTypeOptions = tradeTypeField.getOptions();
-
-                if (!tradeTypeOptions || !Array.isArray(tradeTypeOptions) || tradeTypeOptions.length === 0) {
-                    return;
-                }
-
-                // Check if the trade type option exists
-                const tradeTypeExists = tradeTypeOptions.some((option: any) => {
-                    return option && option.length >= 2 && option[1] === pendingUrlTradeType.tradeType;
-                });
-
-                if (!tradeTypeExists) {
-                    return;
-                }
-
-                // Set the trade type
-                const currentTradeType = tradeTypeField.getValue();
-
+                // Set the trade type if it's different
                 if (currentTradeType !== pendingUrlTradeType.tradeType) {
-                    tradeTypeField.setValue(pendingUrlTradeType.tradeType);
+                    tradeTypeBlock.setFieldValue(pendingUrlTradeType.tradeType, 'TRADETYPE_LIST');
 
                     // Fire change event for trade type
                     const tradeTypeChangeEvent = new window.Blockly.Events.BlockChange(
@@ -172,35 +171,28 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
                     );
                     window.Blockly.Events.fire(tradeTypeChangeEvent);
 
-                    // Force the block to re-render to show the visual changes
-                    if (tradeTypeBlock && typeof tradeTypeBlock.forceRerender === 'function') {
-                        tradeTypeBlock.forceRerender();
-                    }
-
-                    // Also try to force render the field specifically
-                    if (tradeTypeField && typeof tradeTypeField.forceRerender === 'function') {
-                        tradeTypeField.forceRerender();
-                    }
-
-                    // Try additional rendering methods
-                    if (tradeTypeField.render) {
-                        tradeTypeField.render();
-                    }
-
-                    if (tradeTypeBlock.render) {
-                        tradeTypeBlock.render();
+                    // Force workspace to re-render
+                    const workspace = window.Blockly?.derivWorkspace;
+                    if (workspace) {
+                        workspace.render();
                     }
                 }
 
                 // Clear the pending trade type
                 pendingUrlTradeType = null;
+
+                // Restore original event group
+                window.Blockly.Events.setGroup(originalGroup);
             } catch (error) {
-                // Silent error handling
+                console.warn('Failed to apply trade type changes to Blockly workspace:', error);
+                // Restore original event group on error
+                window.Blockly.Events.setGroup(originalGroup);
             }
-        }, 150); // Slightly increased delay to allow field options to be populated
+        }, FIELD_POPULATION_DELAY); // Delay to ensure field options are fully populated
 
         return true;
     } catch (error) {
+        console.warn('Failed to apply pending URL trade type:', error);
         // Clear the pending trade type on error to prevent infinite retries
         pendingUrlTradeType = null;
         return false;
@@ -240,6 +232,7 @@ export const updateTradeTypeFromUrlParams = (): boolean => {
         // Try to apply pending URL trade type if available
         return applyPendingUrlTradeType(tradeTypeBlock);
     } catch (error) {
+        console.warn('Failed to update trade type from URL params:', error);
         return false;
     }
 };
@@ -290,16 +283,9 @@ export const getCurrentTradeTypeFromWorkspace = (): { tradeTypeCategory: string;
             return null;
         }
 
-        // Get current values from the fields
-        const categoryField = tradeTypeBlock.getField('TRADETYPECAT_LIST');
-        const tradeTypeField = tradeTypeBlock.getField('TRADETYPE_LIST');
-
-        if (!categoryField || !tradeTypeField) {
-            return null;
-        }
-
-        const currentCategory = categoryField.getValue();
-        const currentTradeType = tradeTypeField.getValue();
+        // Get current values from the fields using the correct Blockly API
+        const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
+        const currentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
         if (!currentCategory || !currentTradeType) {
             return null;
@@ -310,6 +296,7 @@ export const getCurrentTradeTypeFromWorkspace = (): { tradeTypeCategory: string;
             tradeType: currentTradeType,
         };
     } catch (error) {
+        console.warn('Failed to get current trade type from workspace:', error);
         return null;
     }
 };
@@ -332,23 +319,32 @@ export const removeTradeTypeFromUrl = (): void => {
         // Re-enable URL parameter application for future parameters
         enableUrlParameterApplication();
     } catch (error) {
-        // Silent error handling
+        console.warn('Failed to remove trade type from URL:', error);
     }
 };
+
+// Store the listener function reference for cleanup
+let tradeTypeChangeListener: ((event: any) => void) | null = null;
 
 /**
  * Sets up a listener for manual trade type changes to remove URL parameters
  * This should be called after the workspace is initialized
+ * @returns cleanup function to remove the listener
  */
-export const setupTradeTypeChangeListener = (): void => {
+export const setupTradeTypeChangeListener = (): (() => void) | null => {
     try {
         const workspace = window.Blockly?.derivWorkspace;
         if (!workspace) {
-            return;
+            return null;
         }
 
-        // Listen for field change events
-        workspace.addChangeListener((event: any) => {
+        // Remove existing listener if any
+        if (tradeTypeChangeListener) {
+            workspace.removeChangeListener(tradeTypeChangeListener);
+        }
+
+        // Create new listener function
+        tradeTypeChangeListener = (event: any) => {
             // Check if this is a field change event for trade type fields
             if (
                 event.type === 'change' &&
@@ -363,8 +359,35 @@ export const setupTradeTypeChangeListener = (): void => {
                     removeTradeTypeFromUrl();
                 }
             }
-        });
+        };
+
+        // Add the listener
+        workspace.addChangeListener(tradeTypeChangeListener);
+
+        // Return cleanup function
+        return () => {
+            if (workspace && tradeTypeChangeListener) {
+                workspace.removeChangeListener(tradeTypeChangeListener);
+                tradeTypeChangeListener = null;
+            }
+        };
     } catch (error) {
-        // Silent error handling
+        console.warn('Failed to setup trade type change listener:', error);
+        return null;
+    }
+};
+
+/**
+ * Removes the trade type change listener (cleanup function)
+ */
+export const cleanupTradeTypeChangeListener = (): void => {
+    try {
+        const workspace = window.Blockly?.derivWorkspace;
+        if (workspace && tradeTypeChangeListener) {
+            workspace.removeChangeListener(tradeTypeChangeListener);
+            tradeTypeChangeListener = null;
+        }
+    } catch (error) {
+        console.warn('Failed to cleanup trade type change listener:', error);
     }
 };
