@@ -57,9 +57,15 @@ const URL_TO_SPECIFIC_TRADE_TYPE_MAPPING: Record<string, string> = {
     multipliers: 'multiplier', // Multipliers -> first dropdown only
 };
 
+/**
+ * Interface representing trade type information extracted from URL parameters
+ */
 export interface TradeTypeFromUrl {
+    /** The internal trade type category (e.g., 'digits', 'callput', 'multiplier') */
     tradeTypeCategory: string;
+    /** The specific trade type within the category (e.g., 'matchesdiffers', 'callput') */
     tradeType: string;
+    /** Whether the trade type is valid and exists in the configuration */
     isValid: boolean;
 }
 
@@ -113,7 +119,10 @@ export const getTradeTypeFromCurrentUrl = (): TradeTypeFromUrl | null => {
 
 /**
  * Gets all supported URL trade type parameters
- * @returns Array of supported URL parameter values
+ * @returns Array of supported URL parameter values (e.g., ['multipliers', 'match_diff', 'rise_fall'])
+ * @example
+ * const supportedTypes = getSupportedUrlTradeTypes();
+ * // Returns: ['multipliers', 'match_diff', 'rise_fall', ...]
  */
 export const getSupportedUrlTradeTypes = (): string[] => {
     return Object.keys(URL_TO_TRADE_TYPE_MAPPING);
@@ -121,8 +130,11 @@ export const getSupportedUrlTradeTypes = (): string[] => {
 
 /**
  * Validates if a URL trade type parameter is supported
- * @param urlParam - The trade type parameter to validate
+ * @param urlParam - The trade type parameter to validate (case-insensitive)
  * @returns boolean indicating if the parameter is supported
+ * @example
+ * isValidUrlTradeType('multipliers') // Returns: true
+ * isValidUrlTradeType('invalid_type') // Returns: false
  */
 export const isValidUrlTradeType = (urlParam: string): boolean => {
     return getSupportedUrlTradeTypes().includes(urlParam.toLowerCase().trim());
@@ -130,8 +142,11 @@ export const isValidUrlTradeType = (urlParam: string): boolean => {
 
 /**
  * Gets the display name for a trade type category
- * @param tradeTypeCategory - The internal trade type category
+ * @param tradeTypeCategory - The internal trade type category (e.g., 'multiplier', 'digits')
  * @returns Localized display name or empty string if not found
+ * @example
+ * getTradeTypeCategoryDisplayName('multiplier') // Returns: 'Multipliers'
+ * getTradeTypeCategoryDisplayName('digits') // Returns: 'Digits'
  */
 export const getTradeTypeCategoryDisplayName = (tradeTypeCategory: string): string => {
     const { TRADE_TYPE_CATEGORY_NAMES } = config();

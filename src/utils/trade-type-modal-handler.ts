@@ -1,5 +1,8 @@
 import { getCurrentTradeTypeFromWorkspace } from './blockly-url-param-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
+
+// Named constants for timeouts
+const FIELD_POPULATION_DELAY = 500;
 // Extend the Window interface to include Blockly types
 declare global {
     interface Window {
@@ -15,9 +18,18 @@ declare global {
     }
 }
 // Modal state management
+interface TradeTypeData {
+    displayName: string;
+    tradeTypeCategory: string;
+    tradeType: string;
+    isValid: boolean;
+    urlParam?: string;
+    currentTradeType?: { tradeTypeCategory: string; tradeType: string } | null;
+}
+
 interface TradeTypeModalState {
     isVisible: boolean;
-    tradeTypeData: any;
+    tradeTypeData: TradeTypeData | null;
     onConfirm: (() => void) | null;
     onCancel: (() => void) | null;
 }
@@ -59,7 +71,11 @@ const updateModalState = (newState: Partial<TradeTypeModalState>) => {
 /**
  * Shows the trade type confirmation modal
  */
-export const showTradeTypeConfirmationModal = (tradeTypeData: any, onConfirm: () => void, onCancel: () => void) => {
+export const showTradeTypeConfirmationModal = (
+    tradeTypeData: TradeTypeData,
+    onConfirm: () => void,
+    onCancel: () => void
+) => {
     updateModalState({
         isVisible: true,
         tradeTypeData,
@@ -181,6 +197,10 @@ export const getInternalTradeTypeDisplayName = (tradeTypeCategory: string, trade
 };
 /**
  * Gets the dropdown mapping for a URL trade type parameter
+ * @returns Object with trade type category and type, or null if invalid
+ * @example
+ * const mapping = getDropdownMappingForUrlTradeType();
+ * // Returns: { tradeTypeCategory: 'multiplier', tradeType: 'multiplier' }
  */
 export const getDropdownMappingForUrlTradeType = (): { tradeTypeCategory: string; tradeType: string } | null => {
     const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
@@ -197,6 +217,12 @@ export const getDropdownMappingForUrlTradeType = (): { tradeTypeCategory: string
 
 /**
  * Applies trade type dropdown changes to the Blockly workspace
+ * @param tradeTypeCategory - The trade type category (e.g., 'multiplier', 'digits')
+ * @param tradeType - The specific trade type (e.g., 'multiplier', 'matchesdiffers')
+ * @returns boolean indicating success or failure
+ * @example
+ * const success = applyTradeTypeDropdownChanges('multiplier', 'multiplier');
+ * // Updates Blockly workspace to show "Multipliers" in dropdown
  */
 export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeType: string): boolean => {
     try {
@@ -275,17 +301,20 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
                 // Restore original event group
                 window.Blockly.Events.setGroup(originalGroup);
             } catch (error) {
+                console.warn('Failed to apply trade type changes to Blockly workspace:', error);
                 // Restore original event group on error
                 window.Blockly.Events.setGroup(originalGroup);
             }
-        }, 500); // Delay to ensure field options are fully populated
+        }, FIELD_POPULATION_DELAY); // Delay to ensure field options are fully populated
 
         return true;
     } catch (error) {
+        console.warn('Failed to apply trade type dropdown changes:', error);
         return false;
     }
 };
 // Track if we've already processed a URL parameter in this session
+// Note: This could be moved to React state or context for better state management
 let hasProcessedUrlParam = false;
 
 /**
@@ -293,6 +322,13 @@ let hasProcessedUrlParam = false;
  */
 export const resetUrlParamProcessing = () => {
     hasProcessedUrlParam = false;
+};
+
+/**
+ * Gets the current URL parameter processing state (for testing)
+ */
+export const getUrlParamProcessingState = () => {
+    return hasProcessedUrlParam;
 };
 
 /**

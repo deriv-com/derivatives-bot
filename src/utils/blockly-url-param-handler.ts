@@ -1,5 +1,8 @@
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
+// Named constants for timeouts
+const FIELD_POPULATION_DELAY = 500;
+
 // Extend the Window interface to include Blockly types
 declare global {
     interface Window {
@@ -150,13 +153,15 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
                 // Restore original event group
                 window.Blockly.Events.setGroup(originalGroup);
             } catch (error) {
+                console.warn('Failed to apply trade type changes to Blockly workspace:', error);
                 // Restore original event group on error
                 window.Blockly.Events.setGroup(originalGroup);
             }
-        }, 500); // Increased delay to ensure field options are fully populated
+        }, FIELD_POPULATION_DELAY); // Delay to ensure field options are fully populated
 
         return true;
     } catch (error) {
+        console.warn('Failed to apply pending URL trade type:', error);
         // Clear the pending trade type on error to prevent infinite retries
         pendingUrlTradeType = null;
         return false;
@@ -196,6 +201,7 @@ export const updateTradeTypeFromUrlParams = (): boolean => {
         // Try to apply pending URL trade type if available
         return applyPendingUrlTradeType(tradeTypeBlock);
     } catch (error) {
+        console.warn('Failed to update trade type from URL params:', error);
         return false;
     }
 };
@@ -259,6 +265,7 @@ export const getCurrentTradeTypeFromWorkspace = (): { tradeTypeCategory: string;
             tradeType: currentTradeType,
         };
     } catch (error) {
+        console.warn('Failed to get current trade type from workspace:', error);
         return null;
     }
 };
@@ -281,23 +288,32 @@ export const removeTradeTypeFromUrl = (): void => {
         // Re-enable URL parameter application for future parameters
         enableUrlParameterApplication();
     } catch (error) {
-        // Silent error handling
+        console.warn('Failed to remove trade type from URL:', error);
     }
 };
+
+// Store the listener function reference for cleanup
+let tradeTypeChangeListener: ((event: any) => void) | null = null;
 
 /**
  * Sets up a listener for manual trade type changes to remove URL parameters
  * This should be called after the workspace is initialized
+ * @returns cleanup function to remove the listener
  */
-export const setupTradeTypeChangeListener = (): void => {
+export const setupTradeTypeChangeListener = (): (() => void) | null => {
     try {
         const workspace = window.Blockly?.derivWorkspace;
         if (!workspace) {
-            return;
+            return null;
         }
 
-        // Listen for field change events
-        workspace.addChangeListener((event: any) => {
+        // Remove existing listener if any
+        if (tradeTypeChangeListener) {
+            workspace.removeChangeListener(tradeTypeChangeListener);
+        }
+
+        // Create new listener function
+        tradeTypeChangeListener = (event: any) => {
             // Check if this is a field change event for trade type fields
             if (
                 event.type === 'change' &&
@@ -312,8 +328,35 @@ export const setupTradeTypeChangeListener = (): void => {
                     removeTradeTypeFromUrl();
                 }
             }
-        });
+        };
+
+        // Add the listener
+        workspace.addChangeListener(tradeTypeChangeListener);
+
+        // Return cleanup function
+        return () => {
+            if (workspace && tradeTypeChangeListener) {
+                workspace.removeChangeListener(tradeTypeChangeListener);
+                tradeTypeChangeListener = null;
+            }
+        };
     } catch (error) {
-        // Silent error handling
+        console.warn('Failed to setup trade type change listener:', error);
+        return null;
+    }
+};
+
+/**
+ * Removes the trade type change listener (cleanup function)
+ */
+export const cleanupTradeTypeChangeListener = (): void => {
+    try {
+        const workspace = window.Blockly?.derivWorkspace;
+        if (workspace && tradeTypeChangeListener) {
+            workspace.removeChangeListener(tradeTypeChangeListener);
+            tradeTypeChangeListener = null;
+        }
+    } catch (error) {
+        console.warn('Failed to cleanup trade type change listener:', error);
     }
 };
