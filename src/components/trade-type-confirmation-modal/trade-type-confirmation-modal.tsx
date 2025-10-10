@@ -2,6 +2,10 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Dialog from '@/components/shared_ui/dialog';
 import { useStore } from '@/hooks/useStore';
+import { removeTradeTypeFromUrl } from '@/utils/blockly-url-param-handler';
+import { getSetting } from '@/utils/settings';
+import { applyTradeTypeDropdownChanges } from '@/utils/trade-type-modal-handler';
+import { getTradeTypeFromCurrentUrl } from '@/utils/url-trade-type-handler';
 import { Localize } from '@deriv-com/translations';
 import './trade-type-confirmation-modal.scss';
 
@@ -15,17 +19,59 @@ interface TradeTypeConfirmationModalProps {
 
 const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = observer(
     ({ is_visible, trade_type_display_name, current_trade_type, onConfirm, onCancel }) => {
-        const { dashboard } = useStore(); // Add any store usage if needed in the future
+        const { dashboard } = useStore();
+
         const { is_tour_dialog_visible } = dashboard;
-        if (is_tour_dialog_visible) return null;
+
+        // Check if user is seeing the tour (first time user)
+        const isFirstTimeUser = React.useMemo(() => {
+            const botBuilderToken = getSetting('bot_builder_token');
+            return !botBuilderToken;
+        }, []);
+
+        // Handle first-time users - apply changes silently without showing modal
+        React.useEffect(() => {
+            if (is_visible && (isFirstTimeUser || is_tour_dialog_visible)) {
+                const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
+
+                if (tradeTypeFromUrl && tradeTypeFromUrl.isValid) {
+                    // Remove URL parameter immediately for tour users - don't apply changes
+                    removeTradeTypeFromUrl();
+
+                    // Call onConfirm to indicate processing is complete
+                    onConfirm();
+                }
+            }
+        }, [is_visible, isFirstTimeUser, is_tour_dialog_visible, onConfirm]);
+
+        // Don't show modal if tour is visible or if it's a first-time user
+        if (is_tour_dialog_visible || isFirstTimeUser) return null;
         return (
             <Dialog
                 title={<Localize i18n_default_text='Change Trade Type?' />}
                 is_visible={is_visible}
                 confirm_button_text='Yes, Change'
                 cancel_button_text='No, Keep Current'
-                onConfirm={onConfirm}
-                onCancel={onCancel}
+                onConfirm={() => {
+                    // Apply the dropdown changes when user confirms
+                    const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
+                    if (tradeTypeFromUrl && tradeTypeFromUrl.isValid) {
+                        applyTradeTypeDropdownChanges(tradeTypeFromUrl.tradeTypeCategory, tradeTypeFromUrl.tradeType);
+                    }
+
+                    // Remove URL parameter
+                    removeTradeTypeFromUrl();
+
+                    // Call the original onConfirm callback
+                    onConfirm();
+                }}
+                onCancel={() => {
+                    // Remove URL parameter even when cancelled
+                    removeTradeTypeFromUrl();
+
+                    // Call the original onCancel callback
+                    onCancel();
+                }}
                 onClose={onCancel}
                 has_close_icon
                 is_mobile_full_width={false}

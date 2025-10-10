@@ -3,7 +3,6 @@ import { config } from '@/external/bot-skeleton/constants/config';
 // Mapping from URL parameter values to internal trade type categories
 const URL_TO_TRADE_TYPE_MAPPING: Record<string, string> = {
     // Original mappings
-    rise_fall: 'callput',
     rise_equals_fall_equals: 'callput',
     higher_lower: 'callput',
     touch_no_touch: 'touchnotouch',
@@ -16,29 +15,27 @@ const URL_TO_TRADE_TYPE_MAPPING: Record<string, string> = {
     high_low_ticks: 'highlowticks',
     only_ups_downs: 'runs',
 
-    // New mappings from external application identifiers
-    match_diff: 'digits', // Matches/Differs
-    even_odd: 'digits', // Even/Odd
-    over_under: 'digits', // Over/Under
-    high_low: 'callput', // Higher/Lower (alternative identifier)
-    accumulators: 'accumulator', // Accumulators
-    only_up_only_down: 'runs', // Only Ups/Only Downs
-    touch: 'touchnotouch', // Touch/No Touch
-    multipliers: 'multiplier', // Multipliers
+    // New mappings from external application identifiers based on your feedback
+    match_diff: 'digits', // Matches/Differs -> digits
+    even_odd: 'digits', // Even/Odd -> digits
+    over_under: 'digits', // Over/Under -> digits
+    rise_fall: 'callput', // Rise/Fall -> updown (callput)
+    high_low: 'callput', // Higher/Lower -> updown (callput)
+    accumulators: 'accumulator', // Accumulators -> first dropdown only
+    only_up_only_down: 'runs', // Only Ups/Only Downs -> first dropdown only
+    touch: 'touchnotouch', // Touch/No Touch -> first dropdown only
+    multipliers: 'multiplier', // Multipliers -> first dropdown only
 };
 
 // Mapping from URL parameter values to specific trade types within categories
 const URL_TO_SPECIFIC_TRADE_TYPE_MAPPING: Record<string, string> = {
     // Original mappings
-    rise_fall: 'callput',
     rise_equals_fall_equals: 'callputequal',
     higher_lower: 'higherlower',
     touch_no_touch: 'touchnotouch',
     ends_in_out: 'endsinout',
     stays_in_out: 'staysinout',
     matches_differs: 'matchesdiffers',
-    even_odd: 'evenodd',
-    over_under: 'overunder',
     multiplier: 'multiplier',
     accumulator: 'accumulator',
     asian_up_down: 'asians',
@@ -46,13 +43,16 @@ const URL_TO_SPECIFIC_TRADE_TYPE_MAPPING: Record<string, string> = {
     high_low_ticks: 'highlowticks',
     only_ups_downs: 'runs',
 
-    // New mappings from external application identifiers
-    match_diff: 'matchesdiffers', // Matches/Differs
-    high_low: 'higherlower', // Higher/Lower (alternative identifier)
-    accumulators: 'accumulator', // Accumulators
-    only_up_only_down: 'runs', // Only Ups/Only Downs
-    touch: 'touchnotouch', // Touch/No Touch
-    multipliers: 'multiplier', // Multipliers
+    // New mappings from external application identifiers based on your feedback
+    match_diff: 'matchesdiffers', // Matches/Differs -> digits category
+    even_odd: 'evenodd', // Even/Odd -> digits category
+    over_under: 'overunder', // Over/Under -> digits category
+    rise_fall: 'callput', // Rise/Fall -> updown category
+    high_low: 'higherlower', // Higher/Lower -> updown category
+    accumulators: 'accumulator', // Accumulators -> first dropdown only
+    only_up_only_down: 'runs', // Only Ups/Only Downs -> first dropdown only
+    touch: 'touchnotouch', // Touch/No Touch -> first dropdown only
+    multipliers: 'multiplier', // Multipliers -> first dropdown only
 };
 
 export interface TradeTypeFromUrl {

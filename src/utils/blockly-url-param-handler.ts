@@ -88,33 +88,17 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
         pendingUrlTradeType = null; // Clear invalid data
         return false;
     }
-
     try {
-        // Check if the category field exists and has options
-        const categoryField = tradeTypeBlock.getField('TRADETYPECAT_LIST');
-        if (!categoryField) {
-            return false;
-        }
+        // Disable events temporarily to prevent interference
+        const originalGroup = window.Blockly.Events.getGroup();
+        window.Blockly.Events.setGroup('URL_PARAM_UPDATE');
 
-        // Get category options with null check
-        const categoryOptions = categoryField.getOptions();
-        if (!categoryOptions || !Array.isArray(categoryOptions) || categoryOptions.length === 0) {
-            return false;
-        }
+        // Get current category value
+        const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
 
-        // Check if the category option exists
-        const categoryExists = categoryOptions.some((option: any) => {
-            return option && option.length >= 2 && option[1] === pendingUrlTradeType.tradeTypeCategory;
-        });
-
-        if (!categoryExists) {
-            return false;
-        }
-
-        // Set the category
-        const currentCategory = categoryField.getValue();
+        // Set the category if it's different
         if (currentCategory !== pendingUrlTradeType.tradeTypeCategory) {
-            categoryField.setValue(pendingUrlTradeType.tradeTypeCategory);
+            tradeTypeBlock.setFieldValue(pendingUrlTradeType.tradeTypeCategory, 'TRADETYPECAT_LIST');
 
             // Fire change event for category to trigger trade type options update
             const categoryChangeEvent = new window.Blockly.Events.BlockChange(
@@ -132,35 +116,16 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
             try {
                 // Re-check if pendingUrlTradeType is still valid (might have been cleared)
                 if (!pendingUrlTradeType) {
+                    window.Blockly.Events.setGroup(originalGroup);
                     return;
                 }
 
-                const tradeTypeField = tradeTypeBlock.getField('TRADETYPE_LIST');
-                if (!tradeTypeField) {
-                    return;
-                }
+                // Get current trade type value
+                const currentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
-                // Get trade type options with null check
-                const tradeTypeOptions = tradeTypeField.getOptions();
-
-                if (!tradeTypeOptions || !Array.isArray(tradeTypeOptions) || tradeTypeOptions.length === 0) {
-                    return;
-                }
-
-                // Check if the trade type option exists
-                const tradeTypeExists = tradeTypeOptions.some((option: any) => {
-                    return option && option.length >= 2 && option[1] === pendingUrlTradeType.tradeType;
-                });
-
-                if (!tradeTypeExists) {
-                    return;
-                }
-
-                // Set the trade type
-                const currentTradeType = tradeTypeField.getValue();
-
+                // Set the trade type if it's different
                 if (currentTradeType !== pendingUrlTradeType.tradeType) {
-                    tradeTypeField.setValue(pendingUrlTradeType.tradeType);
+                    tradeTypeBlock.setFieldValue(pendingUrlTradeType.tradeType, 'TRADETYPE_LIST');
 
                     // Fire change event for trade type
                     const tradeTypeChangeEvent = new window.Blockly.Events.BlockChange(
@@ -172,32 +137,23 @@ export const applyPendingUrlTradeType = (tradeTypeBlock: any): boolean => {
                     );
                     window.Blockly.Events.fire(tradeTypeChangeEvent);
 
-                    // Force the block to re-render to show the visual changes
-                    if (tradeTypeBlock && typeof tradeTypeBlock.forceRerender === 'function') {
-                        tradeTypeBlock.forceRerender();
-                    }
-
-                    // Also try to force render the field specifically
-                    if (tradeTypeField && typeof tradeTypeField.forceRerender === 'function') {
-                        tradeTypeField.forceRerender();
-                    }
-
-                    // Try additional rendering methods
-                    if (tradeTypeField.render) {
-                        tradeTypeField.render();
-                    }
-
-                    if (tradeTypeBlock.render) {
-                        tradeTypeBlock.render();
+                    // Force workspace to re-render
+                    const workspace = window.Blockly?.derivWorkspace;
+                    if (workspace) {
+                        workspace.render();
                     }
                 }
 
                 // Clear the pending trade type
                 pendingUrlTradeType = null;
+
+                // Restore original event group
+                window.Blockly.Events.setGroup(originalGroup);
             } catch (error) {
-                // Silent error handling
+                // Restore original event group on error
+                window.Blockly.Events.setGroup(originalGroup);
             }
-        }, 150); // Slightly increased delay to allow field options to be populated
+        }, 500); // Increased delay to ensure field options are fully populated
 
         return true;
     } catch (error) {
@@ -290,16 +246,9 @@ export const getCurrentTradeTypeFromWorkspace = (): { tradeTypeCategory: string;
             return null;
         }
 
-        // Get current values from the fields
-        const categoryField = tradeTypeBlock.getField('TRADETYPECAT_LIST');
-        const tradeTypeField = tradeTypeBlock.getField('TRADETYPE_LIST');
-
-        if (!categoryField || !tradeTypeField) {
-            return null;
-        }
-
-        const currentCategory = categoryField.getValue();
-        const currentTradeType = tradeTypeField.getValue();
+        // Get current values from the fields using the correct Blockly API
+        const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
+        const currentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
         if (!currentCategory || !currentTradeType) {
             return null;
