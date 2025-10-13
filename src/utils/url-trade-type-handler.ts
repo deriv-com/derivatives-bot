@@ -3,7 +3,6 @@ import { config } from '@/external/bot-skeleton/constants/config';
 // Mapping from URL parameter values to internal trade type categories
 const URL_TO_TRADE_TYPE_MAPPING: Record<string, string> = {
     // Original mappings
-    rise_fall: 'callput',
     rise_equals_fall_equals: 'callput',
     higher_lower: 'callput',
     touch_no_touch: 'touchnotouch',
@@ -16,29 +15,28 @@ const URL_TO_TRADE_TYPE_MAPPING: Record<string, string> = {
     high_low_ticks: 'highlowticks',
     only_ups_downs: 'runs',
 
-    // New mappings from external application identifiers
-    match_diff: 'digits', // Matches/Differs
-    even_odd: 'digits', // Even/Odd
-    over_under: 'digits', // Over/Under
-    high_low: 'callput', // Higher/Lower (alternative identifier)
-    accumulators: 'accumulator', // Accumulators
-    only_up_only_down: 'runs', // Only Ups/Only Downs
-    touch: 'touchnotouch', // Touch/No Touch
-    multipliers: 'multiplier', // Multipliers
+    // New mappings from external application identifiers based on your feedback
+    match_diff: 'digits', // Matches/Differs -> digits
+    even_odd: 'digits', // Even/Odd -> digits
+    over_under: 'digits', // Over/Under -> digits
+    rise_fall: 'callput', // Rise/Fall -> updown (callput)
+    high_low: 'callput', // Higher/Lower -> updown (callput)
+    high_tick: 'highlowticks', // High Tick/Low Tick -> first dropdown only
+    accumulators: 'accumulator', // Accumulators -> first dropdown only
+    only_up_only_down: 'runs', // Only Ups/Only Downs -> first dropdown only
+    touch: 'touchnotouch', // Touch/No Touch -> first dropdown only
+    multipliers: 'multiplier', // Multipliers -> first dropdown only
 };
 
 // Mapping from URL parameter values to specific trade types within categories
 const URL_TO_SPECIFIC_TRADE_TYPE_MAPPING: Record<string, string> = {
     // Original mappings
-    rise_fall: 'callput',
     rise_equals_fall_equals: 'callputequal',
     higher_lower: 'higherlower',
     touch_no_touch: 'touchnotouch',
     ends_in_out: 'endsinout',
     stays_in_out: 'staysinout',
     matches_differs: 'matchesdiffers',
-    even_odd: 'evenodd',
-    over_under: 'overunder',
     multiplier: 'multiplier',
     accumulator: 'accumulator',
     asian_up_down: 'asians',
@@ -46,18 +44,28 @@ const URL_TO_SPECIFIC_TRADE_TYPE_MAPPING: Record<string, string> = {
     high_low_ticks: 'highlowticks',
     only_ups_downs: 'runs',
 
-    // New mappings from external application identifiers
-    match_diff: 'matchesdiffers', // Matches/Differs
-    high_low: 'higherlower', // Higher/Lower (alternative identifier)
-    accumulators: 'accumulator', // Accumulators
-    only_up_only_down: 'runs', // Only Ups/Only Downs
-    touch: 'touchnotouch', // Touch/No Touch
-    multipliers: 'multiplier', // Multipliers
+    // New mappings from external application identifiers based on your feedback
+    match_diff: 'matchesdiffers', // Matches/Differs -> digits category
+    even_odd: 'evenodd', // Even/Odd -> digits category
+    over_under: 'overunder', // Over/Under -> digits category
+    rise_fall: 'callput', // Rise/Fall -> updown category
+    high_low: 'higherlower', // Higher/Lower -> updown category
+    high_tick: 'highlowticks', // High Tick/Low Tick -> first dropdown only
+    accumulators: 'accumulator', // Accumulators -> first dropdown only
+    only_up_only_down: 'runs', // Only Ups/Only Downs -> first dropdown only
+    touch: 'touchnotouch', // Touch/No Touch -> first dropdown only
+    multipliers: 'multiplier', // Multipliers -> first dropdown only
 };
 
+/**
+ * Interface representing trade type information extracted from URL parameters
+ */
 export interface TradeTypeFromUrl {
+    /** The internal trade type category (e.g., 'digits', 'callput', 'multiplier') */
     tradeTypeCategory: string;
+    /** The specific trade type within the category (e.g., 'matchesdiffers', 'callput') */
     tradeType: string;
+    /** Whether the trade type is valid and exists in the configuration */
     isValid: boolean;
 }
 
@@ -111,7 +119,10 @@ export const getTradeTypeFromCurrentUrl = (): TradeTypeFromUrl | null => {
 
 /**
  * Gets all supported URL trade type parameters
- * @returns Array of supported URL parameter values
+ * @returns Array of supported URL parameter values (e.g., ['multipliers', 'match_diff', 'rise_fall'])
+ * @example
+ * const supportedTypes = getSupportedUrlTradeTypes();
+ * // Returns: ['multipliers', 'match_diff', 'rise_fall', ...]
  */
 export const getSupportedUrlTradeTypes = (): string[] => {
     return Object.keys(URL_TO_TRADE_TYPE_MAPPING);
@@ -119,8 +130,11 @@ export const getSupportedUrlTradeTypes = (): string[] => {
 
 /**
  * Validates if a URL trade type parameter is supported
- * @param urlParam - The trade type parameter to validate
+ * @param urlParam - The trade type parameter to validate (case-insensitive)
  * @returns boolean indicating if the parameter is supported
+ * @example
+ * isValidUrlTradeType('multipliers') // Returns: true
+ * isValidUrlTradeType('invalid_type') // Returns: false
  */
 export const isValidUrlTradeType = (urlParam: string): boolean => {
     return getSupportedUrlTradeTypes().includes(urlParam.toLowerCase().trim());
@@ -128,8 +142,11 @@ export const isValidUrlTradeType = (urlParam: string): boolean => {
 
 /**
  * Gets the display name for a trade type category
- * @param tradeTypeCategory - The internal trade type category
+ * @param tradeTypeCategory - The internal trade type category (e.g., 'multiplier', 'digits')
  * @returns Localized display name or empty string if not found
+ * @example
+ * getTradeTypeCategoryDisplayName('multiplier') // Returns: 'Multipliers'
+ * getTradeTypeCategoryDisplayName('digits') // Returns: 'Digits'
  */
 export const getTradeTypeCategoryDisplayName = (tradeTypeCategory: string): string => {
     const { TRADE_TYPE_CATEGORY_NAMES } = config();

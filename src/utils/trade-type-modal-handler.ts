@@ -1,10 +1,30 @@
 import { getCurrentTradeTypeFromWorkspace } from './blockly-url-param-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
+// Named constants for timeouts
+const FIELD_POPULATION_DELAY = 500;
+
+// Import types from blockly-url-param-handler to avoid conflicts
+type BlocklyBlock = {
+    type: string;
+    getFieldValue: (fieldName: string) => string;
+    setFieldValue: (value: string, fieldName: string) => void;
+    getChildByType: (type: string) => BlocklyBlock | null;
+};
+
 // Modal state management
+interface TradeTypeData {
+    displayName: string;
+    tradeTypeCategory: string;
+    tradeType: string;
+    isValid: boolean;
+    urlParam?: string;
+    currentTradeType?: { tradeTypeCategory: string; tradeType: string } | null;
+}
+
 interface TradeTypeModalState {
     isVisible: boolean;
-    tradeTypeData: any;
+    tradeTypeData: TradeTypeData | null;
     onConfirm: (() => void) | null;
     onCancel: (() => void) | null;
 }
@@ -46,7 +66,11 @@ const updateModalState = (newState: Partial<TradeTypeModalState>) => {
 /**
  * Shows the trade type confirmation modal
  */
-export const showTradeTypeConfirmationModal = (tradeTypeData: any, onConfirm: () => void, onCancel: () => void) => {
+export const showTradeTypeConfirmationModal = (
+    tradeTypeData: TradeTypeData,
+    onConfirm: () => void,
+    onCancel: () => void
+) => {
     updateModalState({
         isVisible: true,
         tradeTypeData,
@@ -93,7 +117,6 @@ export const handleTradeTypeCancel = () => {
 export const getTradeTypeDisplayName = (urlParam: string): string => {
     const displayNames: Record<string, string> = {
         // Original mappings
-        rise_fall: 'Rise/Fall',
         rise_equals_fall_equals: 'Rise Equals/Fall Equals',
         higher_lower: 'Higher/Lower',
         touch_no_touch: 'Touch/No Touch',
@@ -106,11 +129,13 @@ export const getTradeTypeDisplayName = (urlParam: string): string => {
         high_low_ticks: 'High/Low Ticks',
         only_ups_downs: 'Only Ups/Downs',
 
-        // New mappings from external application identifiers
+        // New mappings from external application identifiers matching your specifications
         match_diff: 'Matches/Differs',
         even_odd: 'Even/Odd',
         over_under: 'Over/Under',
-        high_low: 'Higher/Lower',
+        rise_fall: 'Rise/Fall',
+        high_low: 'Higher/Lower', // This is for Higher/Lower (updown category)
+        high_tick: 'High Tick/Low Tick', // This is for High Tick/Low Tick (separate from high_low)
         accumulators: 'Accumulators',
         only_up_only_down: 'Only Ups/Only Downs',
         touch: 'Touch/No Touch',
@@ -165,8 +190,126 @@ export const getInternalTradeTypeDisplayName = (tradeTypeCategory: string, trade
 
     return tradeTypeDisplayNames[tradeTypeCategory]?.[tradeType] || `${tradeTypeCategory}/${tradeType}`;
 };
+/**
+ * Gets the dropdown mapping for a URL trade type parameter
+ * @returns Object with trade type category and type, or null if invalid
+ * @example
+ * const mapping = getDropdownMappingForUrlTradeType();
+ * // Returns: { tradeTypeCategory: 'multiplier', tradeType: 'multiplier' }
+ */
+export const getDropdownMappingForUrlTradeType = (): { tradeTypeCategory: string; tradeType: string } | null => {
+    const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
 
+    if (!tradeTypeFromUrl || !tradeTypeFromUrl.isValid) {
+        return null;
+    }
+
+    return {
+        tradeTypeCategory: tradeTypeFromUrl.tradeTypeCategory,
+        tradeType: tradeTypeFromUrl.tradeType,
+    };
+};
+
+/**
+ * Applies trade type dropdown changes to the Blockly workspace
+ * @param tradeTypeCategory - The trade type category (e.g., 'multiplier', 'digits')
+ * @param tradeType - The specific trade type (e.g., 'multiplier', 'matchesdiffers')
+ * @returns boolean indicating success or failure
+ * @example
+ * const success = applyTradeTypeDropdownChanges('multiplier', 'multiplier');
+ * // Updates Blockly workspace to show "Multipliers" in dropdown
+ */
+export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeType: string): boolean => {
+    try {
+        const workspace = window.Blockly?.derivWorkspace;
+        if (!workspace) {
+            return false;
+        }
+
+        // Find the trade definition block
+        const tradeDefinitionBlocks = workspace
+            .getAllBlocks()
+            .filter((block: BlocklyBlock) => block.type === 'trade_definition');
+
+        if (tradeDefinitionBlocks.length === 0) {
+            return false;
+        }
+
+        // Get the first trade definition block
+        const tradeDefinitionBlock = tradeDefinitionBlocks[0];
+
+        // Find the trade type block within the trade definition
+        const tradeTypeBlock = tradeDefinitionBlock.getChildByType('trade_definition_tradetype');
+
+        if (!tradeTypeBlock) {
+            return false;
+        }
+
+        // Disable events temporarily to prevent interference
+        const originalGroup = window.Blockly.Events.getGroup();
+        window.Blockly.Events.setGroup('TRADE_TYPE_MODAL_UPDATE');
+
+        // Get current values
+        const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
+
+        // Set the category if it's different
+        if (currentCategory !== tradeTypeCategory) {
+            tradeTypeBlock.setFieldValue(tradeTypeCategory, 'TRADETYPECAT_LIST');
+
+            // Fire change event for category to trigger trade type options update
+            const categoryChangeEvent = new window.Blockly.Events.BlockChange(
+                tradeTypeBlock,
+                'field',
+                'TRADETYPECAT_LIST',
+                currentCategory,
+                tradeTypeCategory
+            );
+            window.Blockly.Events.fire(categoryChangeEvent);
+        }
+
+        // Set a timeout to apply the trade type after the category change has populated the trade type options
+        setTimeout(() => {
+            try {
+                // Get current trade type value (might have changed after category update)
+                const updatedCurrentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
+
+                // Set the trade type if it's different
+                if (updatedCurrentTradeType !== tradeType) {
+                    tradeTypeBlock.setFieldValue(tradeType, 'TRADETYPE_LIST');
+
+                    // Fire change event for trade type
+                    const tradeTypeChangeEvent = new window.Blockly.Events.BlockChange(
+                        tradeTypeBlock,
+                        'field',
+                        'TRADETYPE_LIST',
+                        updatedCurrentTradeType,
+                        tradeType
+                    );
+                    window.Blockly.Events.fire(tradeTypeChangeEvent);
+
+                    // Force workspace to re-render
+                    if (workspace) {
+                        workspace.render();
+                    }
+                }
+
+                // Restore original event group
+                window.Blockly.Events.setGroup(originalGroup);
+            } catch (error) {
+                console.warn('Failed to apply trade type changes to Blockly workspace:', error);
+                // Restore original event group on error
+                window.Blockly.Events.setGroup(originalGroup);
+            }
+        }, FIELD_POPULATION_DELAY); // Delay to ensure field options are fully populated
+
+        return true;
+    } catch (error) {
+        console.warn('Failed to apply trade type dropdown changes:', error);
+        return false;
+    }
+};
 // Track if we've already processed a URL parameter in this session
+// Note: This could be moved to React state or context for better state management
 let hasProcessedUrlParam = false;
 
 /**
@@ -174,6 +317,13 @@ let hasProcessedUrlParam = false;
  */
 export const resetUrlParamProcessing = () => {
     hasProcessedUrlParam = false;
+};
+
+/**
+ * Gets the current URL parameter processing state (for testing)
+ */
+export const getUrlParamProcessingState = () => {
+    return hasProcessedUrlParam;
 };
 
 /**
@@ -237,11 +387,13 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
         () => {
             // Mark as processed when user confirms
             hasProcessedUrlParam = true;
+            // Modal component now handles the Blockly changes and URL parameter removal
             onConfirm();
         },
         () => {
             // Mark as processed when user cancels
             hasProcessedUrlParam = true;
+            // Modal component now handles the URL parameter removal
             onCancel();
         }
     );
