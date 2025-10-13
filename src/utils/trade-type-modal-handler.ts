@@ -374,7 +374,7 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
     // Get current trade type display name for the modal
     const currentTradeTypeDisplayName = currentTradeType
         ? getInternalTradeTypeDisplayName(currentTradeType.tradeTypeCategory, currentTradeType.tradeType)
-        : 'Current Trade Type';
+        : 'N/A';
 
     showTradeTypeConfirmationModal(
         {
