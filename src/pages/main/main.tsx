@@ -190,41 +190,55 @@ const AppWrapper = observer(() => {
         }
         // Handle URL trade type parameters when switching to Bot Builder tab
         if (active_tab === BOT_BUILDER) {
-            // Use setTimeout to ensure Blockly workspace is fully initialized
-            setTimeout(() => {
-                // Disable automatic URL parameter application to prevent changes before modal
-                disableUrlParameterApplication();
+            // Wait for Blockly workspace to be ready before checking trade type modal
+            const waitForBlocklyWorkspace = () => {
+                const workspace = window.Blockly?.derivWorkspace;
+                const hasTradeDefinitionBlocks = workspace
+                    ?.getAllBlocks()
+                    ?.some((block: any) => block.type === 'trade_definition');
 
-                // Set up listener for manual trade type changes (only once)
-                setupTradeTypeChangeListener();
+                if (workspace && hasTradeDefinitionBlocks) {
+                    // Workspace is ready, proceed with trade type modal check
+                    // Disable automatic URL parameter application to prevent changes before modal
+                    disableUrlParameterApplication();
 
-                // Check for URL parameters and show modal if needed
-                checkAndShowTradeTypeModal(
-                    // onConfirm: Changes are now handled by the modal component
-                    () => {
-                        // Re-enable URL parameter application for future parameters
-                        enableUrlParameterApplication();
-                        // Set the pending URL trade type first
-                        const hasPendingType = setTradeTypeFromUrl();
+                    // Set up listener for manual trade type changes (only once)
+                    setupTradeTypeChangeListener();
 
-                        if (hasPendingType) {
-                            // Use requestAnimationFrame for better timing
-                            requestAnimationFrame(() => {
-                                updateTradeTypeFromUrlParams();
-                                // Use another frame for cleanup
+                    // Check for URL parameters and show modal if needed
+                    checkAndShowTradeTypeModal(
+                        // onConfirm: Changes are now handled by the modal component
+                        () => {
+                            // Re-enable URL parameter application for future parameters
+                            enableUrlParameterApplication();
+                            // Set the pending URL trade type first
+                            const hasPendingType = setTradeTypeFromUrl();
+
+                            if (hasPendingType) {
+                                // Use requestAnimationFrame for better timing
                                 requestAnimationFrame(() => {
-                                    removeTradeTypeFromUrl();
+                                    updateTradeTypeFromUrlParams();
+                                    // Use another frame for cleanup
+                                    requestAnimationFrame(() => {
+                                        removeTradeTypeFromUrl();
+                                    });
                                 });
-                            });
+                            }
+                        },
+                        // onCancel: URL parameter removal is now handled by the modal component
+                        () => {
+                            // Keep URL parameter application disabled since user declined
+                            removeTradeTypeFromUrl();
                         }
-                    },
-                    // onCancel: URL parameter removal is now handled by the modal component
-                    () => {
-                        // Keep URL parameter application disabled since user declined
-                        removeTradeTypeFromUrl();
-                    }
-                );
-            }, 500); // Give more time for Blockly workspace to initialize
+                    );
+                } else {
+                    // Workspace not ready yet, check again on next frame
+                    requestAnimationFrame(waitForBlocklyWorkspace);
+                }
+            };
+
+            // Start checking for workspace readiness
+            requestAnimationFrame(waitForBlocklyWorkspace);
         }
 
         // Prevent scrolling when tutorial tab is active (only on mobile)
