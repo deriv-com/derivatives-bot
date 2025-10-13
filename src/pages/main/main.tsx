@@ -20,7 +20,7 @@ import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
     removeTradeTypeFromUrl,
-    setPendingUrlTradeType,
+    setTradeTypeFromUrl,
     setupTradeTypeChangeListener,
     updateTradeTypeFromUrlParams,
 } from '@/utils/blockly-url-param-handler';
@@ -205,7 +205,7 @@ const AppWrapper = observer(() => {
                         // Re-enable URL parameter application for future parameters
                         enableUrlParameterApplication();
                         // Set the pending URL trade type first
-                        const hasPendingType = setPendingUrlTradeType();
+                        const hasPendingType = setTradeTypeFromUrl();
 
                         if (hasPendingType) {
                             // Use requestAnimationFrame for better timing
