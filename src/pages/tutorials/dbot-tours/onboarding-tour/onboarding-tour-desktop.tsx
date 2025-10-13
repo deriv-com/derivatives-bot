@@ -11,14 +11,6 @@ const OnboardingTourDesktop = observer(() => {
     const { dashboard } = useStore();
     const { active_tab, active_tour, setActiveTour, setTourDialogVisibility, is_tour_dialog_visible } = dashboard;
     const { is_close_tour, is_finished, handleJoyrideCallback, setIsCloseTour } = useTourHandler();
-    const hasCheckedTour = React.useRef(false);
-
-    // Check if we're on dashboard tab (either by active_tab state or URL hash)
-    const isDashboardTab = React.useMemo(() => {
-        const urlHash = window.location.hash?.split('#')[1];
-        return active_tab === 0 || urlHash === 'dashboard' || !urlHash; // Default to dashboard if no hash
-    }, [active_tab]);
-
     React.useEffect(() => {
         if (is_close_tour || is_finished) {
             setIsCloseTour(false);
@@ -26,16 +18,19 @@ const OnboardingTourDesktop = observer(() => {
         }
     }, [is_close_tour, is_finished, setActiveTour, setIsCloseTour]);
 
-    // Check if tour should be shown only once per session
+    // Check if tour should be shown with setTimeout to prevent showing on every reload
     React.useEffect(() => {
-        if (!hasCheckedTour.current && isDashboardTab) {
-            const token = getSetting('onboard_tour_token');
-            if (!token && !is_tour_dialog_visible) {
-                setTourDialogVisibility(true);
-            }
-            hasCheckedTour.current = true;
+        if (active_tab === 0) {
+            const timeoutId = setTimeout(() => {
+                const token = getSetting('onboard_tour_token');
+                if (!token && !is_tour_dialog_visible) {
+                    setTourDialogVisibility(true);
+                }
+            }, 100);
+
+            return () => clearTimeout(timeoutId);
         }
-    }, [isDashboardTab, is_tour_dialog_visible, setTourDialogVisibility, active_tab]);
+    }, [active_tab, is_tour_dialog_visible, setTourDialogVisibility]);
 
     return (
         <>

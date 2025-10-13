@@ -13,23 +13,19 @@ const BotBuilderTourDesktop = observer(() => {
     const { dashboard, load_modal } = useStore();
     const { active_tab, active_tour, setActiveTour, setTourDialogVisibility, is_tour_dialog_visible } = dashboard;
     const { is_load_modal_open } = load_modal;
-    const hasCheckedTour = React.useRef(false);
-    // Check if we're on bot builder tab (either by active_tab state or URL hash)
-    const isBotBuilderTab = React.useMemo(() => {
-        const urlHash = window.location.hash?.split('#')[1];
-        return active_tab === 1 || urlHash === 'bot_builder';
-    }, [active_tab]);
-
-    // Check if tour should be shown only once per session
+    // Check if tour should be shown with setTimeout to prevent showing on every reload
     React.useEffect(() => {
-        if (!hasCheckedTour.current && isBotBuilderTab) {
-            const token = getSetting('bot_builder_token');
-            if (!token && !is_tour_dialog_visible) {
-                setTourDialogVisibility(true);
-            }
-            hasCheckedTour.current = true;
+        if (active_tab === 1) {
+            const timeoutId = setTimeout(() => {
+                const token = getSetting('bot_builder_token');
+                if (!token && !is_tour_dialog_visible) {
+                    setTourDialogVisibility(true);
+                }
+            }, 100);
+
+            return () => clearTimeout(timeoutId);
         }
-    }, [isBotBuilderTab, is_tour_dialog_visible, setTourDialogVisibility]);
+    }, [active_tab, is_tour_dialog_visible, setTourDialogVisibility]);
 
     React.useEffect(() => {
         if (is_finished) {
