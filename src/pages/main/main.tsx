@@ -190,8 +190,8 @@ const AppWrapper = observer(() => {
         }
         // Handle URL trade type parameters when switching to Bot Builder tab
         if (active_tab === BOT_BUILDER) {
-            // Use requestAnimationFrame to ensure Blockly workspace is fully initialized
-            requestAnimationFrame(() => {
+            // Use setTimeout to ensure Blockly workspace is fully initialized
+            setTimeout(() => {
                 // Disable automatic URL parameter application to prevent changes before modal
                 disableUrlParameterApplication();
 
@@ -224,7 +224,7 @@ const AppWrapper = observer(() => {
                         removeTradeTypeFromUrl();
                     }
                 );
-            });
+            }, 500); // Give more time for Blockly workspace to initialize
         }
 
         // Prevent scrolling when tutorial tab is active (only on mobile)
