@@ -19,11 +19,13 @@ import { useStore } from '@/hooks/useStore';
 import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
+    removeTradeTypeFromUrl,
+    setPendingUrlTradeType,
     setupTradeTypeChangeListener,
+    updateTradeTypeFromUrlParams,
 } from '@/utils/blockly-url-param-handler';
 import {
     checkAndShowTradeTypeModal,
-    getInternalTradeTypeDisplayName,
     getModalState,
     handleTradeTypeCancel,
     handleTradeTypeConfirm,
@@ -188,8 +190,8 @@ const AppWrapper = observer(() => {
         }
         // Handle URL trade type parameters when switching to Bot Builder tab
         if (active_tab === BOT_BUILDER) {
-            // Set a timeout to ensure Blockly workspace is fully initialized
-            setTimeout(() => {
+            // Use requestAnimationFrame to ensure Blockly workspace is fully initialized
+            requestAnimationFrame(() => {
                 // Disable automatic URL parameter application to prevent changes before modal
                 disableUrlParameterApplication();
 
@@ -202,13 +204,27 @@ const AppWrapper = observer(() => {
                     () => {
                         // Re-enable URL parameter application for future parameters
                         enableUrlParameterApplication();
+                        // Set the pending URL trade type first
+                        const hasPendingType = setPendingUrlTradeType();
+
+                        if (hasPendingType) {
+                            // Use requestAnimationFrame for better timing
+                            requestAnimationFrame(() => {
+                                updateTradeTypeFromUrlParams();
+                                // Use another frame for cleanup
+                                requestAnimationFrame(() => {
+                                    removeTradeTypeFromUrl();
+                                });
+                            });
+                        }
                     },
                     // onCancel: URL parameter removal is now handled by the modal component
                     () => {
                         // Keep URL parameter application disabled since user declined
+                        removeTradeTypeFromUrl();
                     }
                 );
-            }, 1000);
+            });
         }
 
         // Prevent scrolling when tutorial tab is active (only on mobile)
@@ -402,14 +418,7 @@ const AppWrapper = observer(() => {
             <TradeTypeConfirmationModal
                 is_visible={tradeTypeModalState.isVisible}
                 trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
-                current_trade_type={
-                    tradeTypeModalState.tradeTypeData?.currentTradeType
-                        ? getInternalTradeTypeDisplayName(
-                              tradeTypeModalState.tradeTypeData.currentTradeType.tradeTypeCategory,
-                              tradeTypeModalState.tradeTypeData.currentTradeType.tradeType
-                          )
-                        : 'Current Trade Type'
-                }
+                current_trade_type={tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'}
                 onConfirm={handleTradeTypeConfirm}
                 onCancel={handleTradeTypeCancel}
             />

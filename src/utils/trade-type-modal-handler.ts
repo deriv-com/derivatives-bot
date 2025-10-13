@@ -371,12 +371,18 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
     // 6. Show modal since trade types differ or we couldn't determine current trade type
     const displayName = getTradeTypeDisplayName(tradeTypeParam);
 
+    // Get current trade type display name for the modal
+    const currentTradeTypeDisplayName = currentTradeType
+        ? getInternalTradeTypeDisplayName(currentTradeType.tradeTypeCategory, currentTradeType.tradeType)
+        : 'N/A';
+
     showTradeTypeConfirmationModal(
         {
             ...tradeTypeFromUrl,
             displayName,
             urlParam: tradeTypeParam,
             currentTradeType: currentTradeType,
+            currentTradeTypeDisplayName: currentTradeTypeDisplayName,
         },
         () => {
             // Mark as processed when user confirms
