@@ -19,6 +19,7 @@ import { useStore } from '@/hooks/useStore';
 import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
+    getCurrentTradeTypeFromWorkspace,
     removeTradeTypeFromUrl,
     setTradeTypeFromUrl,
     setupTradeTypeChangeListener,
@@ -197,7 +198,10 @@ const AppWrapper = observer(() => {
                     ?.getAllBlocks()
                     ?.some((block: any) => block.type === 'trade_definition');
 
-                if (workspace && hasTradeDefinitionBlocks) {
+                // Also check if we can get the current trade type from workspace
+                const currentTradeType = getCurrentTradeTypeFromWorkspace();
+
+                if (workspace && hasTradeDefinitionBlocks && currentTradeType !== null) {
                     // Workspace is ready, proceed with trade type modal check
                     // Disable automatic URL parameter application to prevent changes before modal
                     disableUrlParameterApplication();
