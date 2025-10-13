@@ -26,7 +26,6 @@ import {
 } from '@/utils/blockly-url-param-handler';
 import {
     checkAndShowTradeTypeModal,
-    getInternalTradeTypeDisplayName,
     getModalState,
     handleTradeTypeCancel,
     handleTradeTypeConfirm,
@@ -205,10 +204,19 @@ const AppWrapper = observer(() => {
                     () => {
                         // Enable URL parameter application and apply the change
                         enableUrlParameterApplication();
-                        setPendingUrlTradeType();
-                        setTimeout(() => {
-                            updateTradeTypeFromUrlParams();
-                        }, 500);
+                        // Set the pending URL trade type first
+                        const hasPendingType = setPendingUrlTradeType();
+
+                        if (hasPendingType) {
+                            // Apply the trade type change immediately
+                            setTimeout(() => {
+                                updateTradeTypeFromUrlParams();
+                                // Remove URL parameter after successful application
+                                setTimeout(() => {
+                                    removeTradeTypeFromUrl();
+                                }, 100);
+                            }, 100);
+                        }
                     },
                     // onCancel: Do nothing, keep current trade type
                     () => {
@@ -411,14 +419,7 @@ const AppWrapper = observer(() => {
             <TradeTypeConfirmationModal
                 is_visible={tradeTypeModalState.isVisible}
                 trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
-                current_trade_type={
-                    tradeTypeModalState.tradeTypeData?.currentTradeType
-                        ? getInternalTradeTypeDisplayName(
-                              tradeTypeModalState.tradeTypeData.currentTradeType.tradeTypeCategory,
-                              tradeTypeModalState.tradeTypeData.currentTradeType.tradeType
-                          )
-                        : 'Current Trade Type'
-                }
+                current_trade_type={tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'}
                 onConfirm={handleTradeTypeConfirm}
                 onCancel={handleTradeTypeCancel}
             />
