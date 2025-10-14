@@ -356,7 +356,7 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 const tradeTypeParam = urlParams.get('trade_type');
 
                 if (tradeTypeParam) {
-                    removeTradeTypeFromUrl();
+                    //removeTradeTypeFromUrl();
                 }
             }
         };
