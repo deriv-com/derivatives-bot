@@ -20,6 +20,7 @@ interface TradeTypeData {
     isValid: boolean;
     urlParam?: string;
     currentTradeType?: { tradeTypeCategory: string; tradeType: string } | null;
+    currentTradeTypeDisplayName?: string;
 }
 
 interface TradeTypeModalState {

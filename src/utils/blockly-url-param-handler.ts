@@ -72,7 +72,7 @@ export const disableUrlParameterApplication = () => {
 /**
  * Sets the pending URL trade type to be applied when field options are available
  */
-export const setPendingUrlTradeType = () => {
+export const setTradeTypeFromUrl = () => {
     try {
         const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
 
@@ -355,8 +355,8 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const tradeTypeParam = urlParams.get('trade_type');
 
-                if (tradeTypeParam) {
-                    removeTradeTypeFromUrl();
+                if (!tradeTypeParam) {
+                    return;
                 }
             }
         };
