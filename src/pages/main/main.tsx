@@ -51,7 +51,8 @@ const Tutorial = lazy(() => import('../tutorials'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
-    const { dashboard, load_modal, run_panel, quick_strategy, summary_card } = useStore();
+    const { dashboard, load_modal, run_panel, quick_strategy, summary_card, blockly_store } = useStore();
+    const { is_loading } = blockly_store;
     const {
         active_tab,
         active_tour,
@@ -99,10 +100,10 @@ const AppWrapper = observer(() => {
 
     // Set up modal state change listener
     React.useEffect(() => {
-        setModalStateChangeCallback(newState => {
-            setTradeTypeModalState(newState);
+        setModalStateChangeCallback(new_state => {
+            setTradeTypeModalState(new_state);
         });
-    }, []);
+    }, [is_loading]);
 
     // Reset URL parameter processing when location changes
     React.useEffect(() => {
@@ -170,6 +171,85 @@ const AppWrapper = observer(() => {
     };
 
     React.useEffect(() => {
+        // Handle URL trade type parameters when switching to Bot Builder tab
+        if (active_tab === BOT_BUILDER) {
+            // Use requestAnimationFrame to ensure Blockly workspace is fully initialized
+            requestAnimationFrame(() => {
+                // Disable automatic URL parameter application to prevent changes before modal
+                disableUrlParameterApplication();
+
+                // Set up listener for manual trade type changes (only once)
+                setupTradeTypeChangeListener();
+
+                // Wait for Blockly to finish loading before checking for URL parameters
+                if (!blockly_store.is_loading) {
+                    // Blockly is already loaded, check immediately
+                    checkAndShowTradeTypeModal(
+                        // onConfirm: Changes are now handled by the modal component
+                        () => {
+                            // Re-enable URL parameter application for future parameters
+                            enableUrlParameterApplication();
+                            // Set the pending URL trade type first
+                            const hasPendingType = setPendingUrlTradeType();
+
+                            if (hasPendingType) {
+                                // Use requestAnimationFrame for better timing
+                                requestAnimationFrame(() => {
+                                    updateTradeTypeFromUrlParams();
+                                    // Use another frame for cleanup
+                                    requestAnimationFrame(() => {
+                                        removeTradeTypeFromUrl();
+                                    });
+                                });
+                            }
+                        },
+                        // onCancel: URL parameter removal is now handled by the modal component
+                        () => {
+                            // Keep URL parameter application disabled since user declined
+                            removeTradeTypeFromUrl();
+                        }
+                    );
+                } else {
+                    // Blockly is still loading, wait for it to finish
+                    const checkBlocklyLoaded = () => {
+                        if (!blockly_store.is_loading) {
+                            checkAndShowTradeTypeModal(
+                                // onConfirm: Changes are now handled by the modal component
+                                () => {
+                                    // Re-enable URL parameter application for future parameters
+                                    enableUrlParameterApplication();
+                                    // Set the pending URL trade type first
+                                    const hasPendingType = setPendingUrlTradeType();
+
+                                    if (hasPendingType) {
+                                        // Use requestAnimationFrame for better timing
+                                        requestAnimationFrame(() => {
+                                            updateTradeTypeFromUrlParams();
+                                            // Use another frame for cleanup
+                                            requestAnimationFrame(() => {
+                                                removeTradeTypeFromUrl();
+                                            });
+                                        });
+                                    }
+                                },
+                                // onCancel: URL parameter removal is now handled by the modal component
+                                () => {
+                                    // Keep URL parameter application disabled since user declined
+                                    removeTradeTypeFromUrl();
+                                }
+                            );
+                        } else {
+                            // Still loading, check again in 100ms
+                            setTimeout(checkBlocklyLoaded, 100);
+                        }
+                    };
+                    checkBlocklyLoaded();
+                }
+            });
+        }
+    }, [active_tab, is_loading]);
+
+    React.useEffect(() => {
         // Run on mount and when active tab changes
         updateTabShadowsHeight();
 
@@ -187,44 +267,6 @@ const AppWrapper = observer(() => {
         }
         if (active_tour !== '') {
             setActiveTour('');
-        }
-        // Handle URL trade type parameters when switching to Bot Builder tab
-        if (active_tab === BOT_BUILDER) {
-            // Use requestAnimationFrame to ensure Blockly workspace is fully initialized
-            requestAnimationFrame(() => {
-                // Disable automatic URL parameter application to prevent changes before modal
-                disableUrlParameterApplication();
-
-                // Set up listener for manual trade type changes (only once)
-                setupTradeTypeChangeListener();
-
-                // Check for URL parameters and show modal if needed
-                checkAndShowTradeTypeModal(
-                    // onConfirm: Changes are now handled by the modal component
-                    () => {
-                        // Re-enable URL parameter application for future parameters
-                        enableUrlParameterApplication();
-                        // Set the pending URL trade type first
-                        const hasPendingType = setPendingUrlTradeType();
-
-                        if (hasPendingType) {
-                            // Use requestAnimationFrame for better timing
-                            requestAnimationFrame(() => {
-                                updateTradeTypeFromUrlParams();
-                                // Use another frame for cleanup
-                                requestAnimationFrame(() => {
-                                    removeTradeTypeFromUrl();
-                                });
-                            });
-                        }
-                    },
-                    // onCancel: URL parameter removal is now handled by the modal component
-                    () => {
-                        // Keep URL parameter application disabled since user declined
-                        removeTradeTypeFromUrl();
-                    }
-                );
-            });
         }
 
         // Prevent scrolling when tutorial tab is active (only on mobile)
@@ -419,6 +461,9 @@ const AppWrapper = observer(() => {
                 is_visible={tradeTypeModalState.isVisible}
                 trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
                 current_trade_type={tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'}
+                current_trade_type_display_name={
+                    tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'
+                }
                 onConfirm={handleTradeTypeConfirm}
                 onCancel={handleTradeTypeCancel}
             />
