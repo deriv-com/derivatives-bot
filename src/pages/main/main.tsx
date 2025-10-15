@@ -19,10 +19,7 @@ import { useStore } from '@/hooks/useStore';
 import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
-    removeTradeTypeFromUrl,
-    setTradeTypeFromUrl,
     setupTradeTypeChangeListener,
-    updateTradeTypeFromUrlParams,
 } from '@/utils/blockly-url-param-handler';
 import {
     checkAndShowTradeTypeModal,
@@ -89,6 +86,37 @@ const AppWrapper = observer(() => {
 
     // Trade type modal state
     const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
+
+    /**
+     * Helper function to get modal props with enhanced type safety and clear documentation
+     *
+     * Props serve distinct purposes:
+     * - current_trade_type: Technical identifier for API/internal use (format: "category/type")
+     * - current_trade_type_display_name: Human-readable name for UI display
+     *
+     * This separation ensures proper data flow between technical systems and user interface
+     */
+    const getTradeTypeModalProps = () => {
+        const { tradeTypeData } = tradeTypeModalState;
+
+        return {
+            is_visible: tradeTypeModalState.isVisible,
+            trade_type_display_name: tradeTypeData?.displayName || '',
+
+            // Technical identifier for internal/API use (e.g., "callput/callput")
+            // Used by backend systems and technical integrations
+            current_trade_type: tradeTypeData?.currentTradeType
+                ? `${tradeTypeData.currentTradeType.tradeTypeCategory}/${tradeTypeData.currentTradeType.tradeType}`
+                : 'N/A',
+
+            // Human-readable display name for UI (e.g., "Rise/Fall")
+            // Used for user-facing text and modal content
+            current_trade_type_display_name: tradeTypeData?.currentTradeTypeDisplayName || 'N/A',
+
+            onConfirm: handleTradeTypeConfirm,
+            onCancel: handleTradeTypeCancel,
+        };
+    };
 
     let tab_value: number | string = active_tab;
     const GetHashedValue = (tab: number) => {
@@ -190,45 +218,38 @@ const AppWrapper = observer(() => {
                         () => {
                             // Re-enable URL parameter application for future parameters
                             enableUrlParameterApplication();
-                            // Set the pending URL trade type first
-                            const hasPendingType = setTradeTypeFromUrl();
-
-                            if (hasPendingType) {
-                                // Use requestAnimationFrame for better timing
-                                requestAnimationFrame(() => {
-                                    updateTradeTypeFromUrlParams();
-                                    // Use another frame for cleanup
-                                    requestAnimationFrame(() => {
-                                        removeTradeTypeFromUrl();
-                                    });
-                                });
-                            }
                         },
                         // onCancel: URL parameter removal is now handled by the modal component
-                        () => {
-                            // Keep URL parameter application disabled since user declined
-                            removeTradeTypeFromUrl();
-                        }
+                        () => {}
                     );
                 };
 
                 // Wait for Blockly to finish loading before checking for URL parameters
                 if (!blockly_store.is_loading) {
-                    // Blockly is already loaded, check immediately
-                    handleTradeTypeModal();
+                    // Blockly is loaded, but add longer delay to ensure workspace is fully initialized
+                    // and trade type fields are populated
+                    setTimeout(() => {
+                        handleTradeTypeModal();
+                    }, 500);
                 } else {
-                    // Blockly is still loading, wait for it to finish with improved polling
+                    // Blockly is still loading, wait for it to finish with optimized polling
                     let pollAttempts = 0;
-                    const maxPollAttempts = 50; // Maximum 5 seconds (50 * 100ms)
+                    const maxPollAttempts = 10; // Maximum 5 seconds (10 * 500ms) - optimized performance
 
                     const checkBlocklyLoaded = () => {
                         if (!blockly_store.is_loading) {
                             handleTradeTypeModal();
-                        } else if (pollAttempts < maxPollAttempts) {
+                            return; // Exit polling once loaded
+                        }
+
+                        if (pollAttempts < maxPollAttempts) {
                             pollAttempts++;
-                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 100);
+                            // Use 500ms intervals for better performance (5x improvement from 100ms)
+                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 500);
                         } else {
-                            console.warn('Blockly loading timeout - proceeding without URL parameter check');
+                            console.warn(
+                                'Blockly loading timeout after 5 seconds - proceeding without URL parameter check'
+                            );
                         }
                     };
 
@@ -454,16 +475,19 @@ const AppWrapper = observer(() => {
             </Dialog>
 
             {/* Trade Type Confirmation Modal */}
-            <TradeTypeConfirmationModal
-                is_visible={tradeTypeModalState.isVisible}
-                trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
-                current_trade_type={tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'}
-                current_trade_type_display_name={
-                    tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'
-                }
-                onConfirm={handleTradeTypeConfirm}
-                onCancel={handleTradeTypeCancel}
-            />
+            {(() => {
+                const modalProps = getTradeTypeModalProps();
+                return (
+                    <TradeTypeConfirmationModal
+                        is_visible={modalProps.is_visible}
+                        trade_type_display_name={modalProps.trade_type_display_name}
+                        current_trade_type={modalProps.current_trade_type}
+                        current_trade_type_display_name={modalProps.current_trade_type_display_name}
+                        onConfirm={modalProps.onConfirm}
+                        onCancel={modalProps.onCancel}
+                    />
+                );
+            })()}
         </React.Fragment>
     );
 });

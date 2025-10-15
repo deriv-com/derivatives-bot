@@ -70,7 +70,6 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                     if (tradeTypeFromUrl && tradeTypeFromUrl.isValid) {
                         applyTradeTypeDropdownChanges(tradeTypeFromUrl.tradeTypeCategory, tradeTypeFromUrl.tradeType);
                     }
-
                     // Remove URL parameter
                     removeTradeTypeFromUrl();
 

@@ -1,4 +1,4 @@
-import { getModalState,resetUrlParamProcessing } from './trade-type-modal-handler';
+import { getModalState, resetUrlParamProcessing } from './trade-type-modal-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
 // Named constants for timeouts
@@ -242,13 +242,19 @@ export const getCurrentTradeTypeFromWorkspace = (): { tradeTypeCategory: string;
         const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
         const currentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
-        if (!currentCategory || !currentTradeType) {
+        // Validate field values
+        if (
+            typeof currentCategory !== 'string' ||
+            typeof currentTradeType !== 'string' ||
+            currentCategory.trim() === '' ||
+            currentTradeType.trim() === ''
+        ) {
             return null;
         }
 
         return {
-            tradeTypeCategory: currentCategory,
-            tradeType: currentTradeType,
+            tradeTypeCategory: currentCategory.trim(),
+            tradeType: currentTradeType.trim(),
         };
     } catch (error) {
         console.warn('Failed to get current trade type from workspace:', error);
@@ -312,9 +318,7 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 // Only remove URL parameter if it exists AND the modal is not currently open
                 // (i.e., it's a genuine manual user change, not when modal is pending)
                 const modalState = getModalState();
-                if (tradeTypeParam && !modalState.isVisible) {
-                    removeTradeTypeFromUrl();
-                }
+                if (tradeTypeParam && !modalState.isVisible) return;
             }
         };
 
