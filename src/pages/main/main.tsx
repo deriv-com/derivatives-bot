@@ -87,19 +87,32 @@ const AppWrapper = observer(() => {
     // Trade type modal state
     const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
 
-    // Helper function to get modal props with better type safety
+    /**
+     * Helper function to get modal props with enhanced type safety and clear documentation
+     *
+     * Props serve distinct purposes:
+     * - current_trade_type: Technical identifier for API/internal use (format: "category/type")
+     * - current_trade_type_display_name: Human-readable name for UI display
+     *
+     * This separation ensures proper data flow between technical systems and user interface
+     */
     const getTradeTypeModalProps = () => {
         const { tradeTypeData } = tradeTypeModalState;
 
         return {
             is_visible: tradeTypeModalState.isVisible,
             trade_type_display_name: tradeTypeData?.displayName || '',
-            // Raw technical identifier (e.g., "callput/callput")
-            current_trade_type_raw: tradeTypeData?.currentTradeType
+
+            // Technical identifier for internal/API use (e.g., "callput/callput")
+            // Used by backend systems and technical integrations
+            current_trade_type: tradeTypeData?.currentTradeType
                 ? `${tradeTypeData.currentTradeType.tradeTypeCategory}/${tradeTypeData.currentTradeType.tradeType}`
                 : 'N/A',
-            // User-friendly display name (e.g., "Rise/Fall")
-            current_trade_type_display: tradeTypeData?.currentTradeTypeDisplayName || 'N/A',
+
+            // Human-readable display name for UI (e.g., "Rise/Fall")
+            // Used for user-facing text and modal content
+            current_trade_type_display_name: tradeTypeData?.currentTradeTypeDisplayName || 'N/A',
+
             onConfirm: handleTradeTypeConfirm,
             onCancel: handleTradeTypeCancel,
         };
@@ -465,8 +478,8 @@ const AppWrapper = observer(() => {
                     <TradeTypeConfirmationModal
                         is_visible={modalProps.is_visible}
                         trade_type_display_name={modalProps.trade_type_display_name}
-                        current_trade_type={modalProps.current_trade_type_raw}
-                        current_trade_type_display_name={modalProps.current_trade_type_display}
+                        current_trade_type={modalProps.current_trade_type}
+                        current_trade_type_display_name={modalProps.current_trade_type_display_name}
                         onConfirm={modalProps.onConfirm}
                         onCancel={modalProps.onCancel}
                     />

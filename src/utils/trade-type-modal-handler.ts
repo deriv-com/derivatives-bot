@@ -44,6 +44,9 @@ let modalStateChangeCallback: ((state: TradeTypeModalState) => void) | null = nu
 // Store active polling timeout to prevent memory leaks and multiple polling instances
 let activePollingTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
+// AbortController for robust polling management
+let pollingAbortController: AbortController | null = null;
+
 // State update lock to prevent race conditions
 let isUpdatingModalState = false;
 
@@ -119,7 +122,7 @@ export const updateModalTradeTypeData = () => {
 };
 
 /**
- * Shows the trade type confirmation modal with enhanced error handling and debouncing
+ * Shows the trade type confirmation modal with enhanced error handling and robust polling management
  */
 export const showTradeTypeConfirmationModal = (
     tradeTypeData: TradeTypeData,
@@ -165,14 +168,23 @@ export const showTradeTypeConfirmationModal = (
                     onCancel,
                 });
             } finally {
+                // Clean up polling state
                 isPollingActive = false;
+                if (pollingAbortController) {
+                    pollingAbortController.abort();
+                    pollingAbortController = null;
+                }
             }
         };
 
-        // Clear any existing polling timeout to prevent memory leaks
+        // Clear any existing polling resources to prevent memory leaks
         if (activePollingTimeoutId) {
             clearTimeout(activePollingTimeoutId);
             activePollingTimeoutId = null;
+        }
+        if (pollingAbortController) {
+            pollingAbortController.abort();
+            pollingAbortController = null;
         }
 
         // Try to get current trade type immediately
@@ -182,8 +194,9 @@ export const showTradeTypeConfirmationModal = (
             // If we have the data immediately, show modal
             showModalWithCurrentData();
         } else {
-            // Set polling active flag to prevent multiple instances
+            // Set polling active flag and create AbortController for robust management
             isPollingActive = true;
+            pollingAbortController = new AbortController();
 
             // If we don't have the data yet, poll until we do or timeout
             let attempts = 0;
@@ -191,11 +204,20 @@ export const showTradeTypeConfirmationModal = (
 
             const pollForData = () => {
                 try {
+                    // Check if polling was aborted
+                    if (pollingAbortController?.signal.aborted) {
+                        return;
+                    }
+
                     const currentTradeType = getCurrentTradeTypeFromWorkspace();
 
                     if (currentTradeType || attempts >= maxAttempts) {
                         showModalWithCurrentData();
-                        activePollingTimeoutId = null; // Clear reference when done
+                        // Proper cleanup: clear timeout before setting to null
+                        if (activePollingTimeoutId) {
+                            clearTimeout(activePollingTimeoutId);
+                        }
+                        activePollingTimeoutId = null;
                     } else {
                         attempts++;
                         // Use 500ms intervals for better performance
@@ -205,6 +227,9 @@ export const showTradeTypeConfirmationModal = (
                     console.warn('Error during polling for trade type data:', error);
                     // Stop polling on error and show modal with available data
                     showModalWithCurrentData();
+                    if (activePollingTimeoutId) {
+                        clearTimeout(activePollingTimeoutId);
+                    }
                     activePollingTimeoutId = null;
                 }
             };
@@ -215,6 +240,15 @@ export const showTradeTypeConfirmationModal = (
     } catch (error) {
         console.warn('Failed to show trade type confirmation modal:', error);
         isPollingActive = false;
+        // Clean up resources on error
+        if (activePollingTimeoutId) {
+            clearTimeout(activePollingTimeoutId);
+            activePollingTimeoutId = null;
+        }
+        if (pollingAbortController) {
+            pollingAbortController.abort();
+            pollingAbortController = null;
+        }
         // Fallback: try to show modal with minimal data
         try {
             updateModalState({
@@ -240,6 +274,12 @@ export const hideTradeTypeConfirmationModal = () => {
             activePollingTimeoutId = null;
         }
 
+        // Abort any active polling operations
+        if (pollingAbortController) {
+            pollingAbortController.abort();
+            pollingAbortController = null;
+        }
+
         // Reset polling active flag
         isPollingActive = false;
 
@@ -256,6 +296,10 @@ export const hideTradeTypeConfirmationModal = () => {
         if (activePollingTimeoutId) {
             clearTimeout(activePollingTimeoutId);
             activePollingTimeoutId = null;
+        }
+        if (pollingAbortController) {
+            pollingAbortController.abort();
+            pollingAbortController = null;
         }
     }
 };
@@ -562,21 +606,43 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
     }
 };
 // Track if we've already processed a URL parameter in this session
-// Note: This could be moved to React state or context for better state management
-let hasProcessedUrlParam = false;
+// Enhanced to tie to specific URL patterns for better session management
+const processedUrlParams = new Set<string>();
 
 /**
  * Resets the URL parameter processing flag (useful for testing or when URL changes)
+ * Can optionally reset for a specific URL parameter
  */
-export const resetUrlParamProcessing = () => {
-    hasProcessedUrlParam = false;
+export const resetUrlParamProcessing = (specificParam?: string) => {
+    if (specificParam) {
+        processedUrlParams.delete(specificParam);
+    } else {
+        processedUrlParams.clear();
+    }
 };
 
 /**
  * Gets the current URL parameter processing state (for testing)
  */
-export const getUrlParamProcessingState = () => {
-    return hasProcessedUrlParam;
+export const getUrlParamProcessingState = (param?: string) => {
+    if (param) {
+        return processedUrlParams.has(param);
+    }
+    return Array.from(processedUrlParams);
+};
+
+/**
+ * Checks if a specific URL parameter has been processed
+ */
+const hasProcessedUrlParam = (param: string) => {
+    return processedUrlParams.has(param);
+};
+
+/**
+ * Marks a URL parameter as processed
+ */
+const markUrlParamAsProcessed = (param: string) => {
+    processedUrlParams.add(param);
 };
 
 /**
@@ -601,7 +667,7 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
         }
 
         // 3. Check if we've already processed this URL parameter in this session
-        if (hasProcessedUrlParam) {
+        if (hasProcessedUrlParam(tradeTypeParam)) {
             return false;
         }
 
@@ -621,7 +687,7 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
 
             if (isSameCategory && isSameTradeType) {
                 // Mark as processed even though we're not showing modal
-                hasProcessedUrlParam = true;
+                markUrlParamAsProcessed(tradeTypeParam);
                 return false;
             }
         }
@@ -650,7 +716,7 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
             () => {
                 try {
                     // Mark as processed when user confirms
-                    hasProcessedUrlParam = true;
+                    markUrlParamAsProcessed(tradeTypeParam);
                     onConfirm();
                 } catch (confirmError) {
                     console.warn('Error in onConfirm callback:', confirmError);
@@ -659,7 +725,7 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
             () => {
                 try {
                     // Mark as processed when user cancels
-                    hasProcessedUrlParam = true;
+                    markUrlParamAsProcessed(tradeTypeParam);
                     onCancel();
                 } catch (cancelError) {
                     console.warn('Error in onCancel callback:', cancelError);
