@@ -37,6 +37,9 @@ let modalState: TradeTypeModalState = {
 // Callback to notify when modal state changes
 let modalStateChangeCallback: ((state: TradeTypeModalState) => void) | null = null;
 
+// Store active polling timeout to prevent memory leaks
+let activePollingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
 /**
  * Sets the callback function to be called when modal state changes
  */
@@ -122,6 +125,12 @@ export const showTradeTypeConfirmationModal = (
         });
     };
 
+    // Clear any existing polling timeout to prevent memory leaks
+    if (activePollingTimeoutId) {
+        clearTimeout(activePollingTimeoutId);
+        activePollingTimeoutId = null;
+    }
+
     // Try to get current trade type immediately
     const currentTradeType = getCurrentTradeTypeFromWorkspace();
 
@@ -131,16 +140,18 @@ export const showTradeTypeConfirmationModal = (
     } else {
         // If we don't have the data yet, poll until we do or timeout
         let attempts = 0;
-        const maxAttempts = 20; // 2 seconds max wait
+        const maxAttempts = 10; // Reduced from 20 to 10 (2 seconds max wait with 200ms intervals)
 
         const pollForData = () => {
             const currentTradeType = getCurrentTradeTypeFromWorkspace();
 
             if (currentTradeType || attempts >= maxAttempts) {
                 showModalWithCurrentData();
+                activePollingTimeoutId = null; // Clear reference when done
             } else {
                 attempts++;
-                setTimeout(pollForData, 100);
+                // Increased interval from 100ms to 200ms for better performance
+                activePollingTimeoutId = setTimeout(pollForData, 200);
             }
         };
 
@@ -152,6 +163,12 @@ export const showTradeTypeConfirmationModal = (
  * Hides the trade type confirmation modal
  */
 export const hideTradeTypeConfirmationModal = () => {
+    // Clear any active polling timeout when hiding modal
+    if (activePollingTimeoutId) {
+        clearTimeout(activePollingTimeoutId);
+        activePollingTimeoutId = null;
+    }
+
     updateModalState({
         isVisible: false,
         tradeTypeData: null,
@@ -352,25 +369,25 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
         const originalGroup = window.Blockly.Events.getGroup();
         window.Blockly.Events.setGroup('TRADE_TYPE_MODAL_UPDATE');
 
-        // Get current values
-        const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
-
-        // Set the category if it's different
-        if (currentCategory !== tradeTypeCategory) {
-            tradeTypeBlock.setFieldValue(tradeTypeCategory, 'TRADETYPECAT_LIST');
-
-            // Fire change event for category to trigger trade type options update
-            const categoryChangeEvent = new window.Blockly.Events.BlockChange(
-                tradeTypeBlock,
-                'field',
-                'TRADETYPECAT_LIST',
-                currentCategory,
-                tradeTypeCategory
-            );
-            window.Blockly.Events.fire(categoryChangeEvent);
-        }
-
         try {
+            // Get current values
+            const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
+
+            // Set the category if it's different
+            if (currentCategory !== tradeTypeCategory) {
+                tradeTypeBlock.setFieldValue(tradeTypeCategory, 'TRADETYPECAT_LIST');
+
+                // Fire change event for category to trigger trade type options update
+                const categoryChangeEvent = new window.Blockly.Events.BlockChange(
+                    tradeTypeBlock,
+                    'field',
+                    'TRADETYPECAT_LIST',
+                    currentCategory,
+                    tradeTypeCategory
+                );
+                window.Blockly.Events.fire(categoryChangeEvent);
+            }
+
             // Get current trade type value (might have changed after category update)
             const updatedCurrentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
@@ -396,13 +413,13 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
 
             // Restore original event group
             window.Blockly.Events.setGroup(originalGroup);
+            return true;
         } catch (error) {
             console.warn('Failed to apply trade type changes to Blockly workspace:', error);
             // Restore original event group on error
             window.Blockly.Events.setGroup(originalGroup);
+            return false;
         }
-
-        return true;
     } catch (error) {
         console.warn('Failed to apply trade type dropdown changes:', error);
         return false;

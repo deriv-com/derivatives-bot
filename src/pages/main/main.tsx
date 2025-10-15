@@ -198,16 +198,17 @@ const AppWrapper = observer(() => {
                     // Blockly is already loaded, check immediately
                     handleTradeTypeModal();
                 } else {
-                    // Blockly is still loading, wait for it to finish with improved polling
+                    // Blockly is still loading, wait for it to finish with optimized polling
                     let pollAttempts = 0;
-                    const maxPollAttempts = 50; // Maximum 5 seconds (50 * 100ms)
+                    const maxPollAttempts = 20; // Maximum 4 seconds (20 * 200ms)
 
                     const checkBlocklyLoaded = () => {
                         if (!blockly_store.is_loading) {
                             handleTradeTypeModal();
                         } else if (pollAttempts < maxPollAttempts) {
                             pollAttempts++;
-                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 100);
+                            // Increased interval from 100ms to 200ms for better performance
+                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 200);
                         } else {
                             console.warn('Blockly loading timeout - proceeding without URL parameter check');
                         }
