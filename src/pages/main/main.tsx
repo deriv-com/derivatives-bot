@@ -20,6 +20,7 @@ import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
     removeTradeTypeFromUrl,
+    setTradeTypeFromUrl,
     setupTradeTypeChangeListener,
     updateTradeTypeFromUrlParams,
 } from '@/utils/blockly-url-param-handler';
@@ -180,16 +181,15 @@ const AppWrapper = observer(() => {
                 // Set up listener for manual trade type changes (only once)
                 setupTradeTypeChangeListener();
 
-                // Wait for Blockly to finish loading before checking for URL parameters
-                if (!blockly_store.is_loading) {
-                    // Blockly is already loaded, check immediately
+                // Create unified handler for both immediate and delayed execution
+                const handleTradeTypeModal = () => {
                     checkAndShowTradeTypeModal(
                         // onConfirm: Changes are now handled by the modal component
                         () => {
                             // Re-enable URL parameter application for future parameters
                             enableUrlParameterApplication();
                             // Set the pending URL trade type first
-                            const hasPendingType = setPendingUrlTradeType();
+                            const hasPendingType = setTradeTypeFromUrl();
 
                             if (hasPendingType) {
                                 // Use requestAnimationFrame for better timing
@@ -208,38 +208,25 @@ const AppWrapper = observer(() => {
                             removeTradeTypeFromUrl();
                         }
                     );
+                };
+
+                // Wait for Blockly to finish loading before checking for URL parameters
+                if (!blockly_store.is_loading) {
+                    // Blockly is already loaded, check immediately
+                    handleTradeTypeModal();
                 } else {
-                    // Blockly is still loading, wait for it to finish
+                    // Blockly is still loading, wait for it to finish with improved polling
+                    let pollAttempts = 0;
+                    const maxPollAttempts = 50; // Maximum 5 seconds (50 * 100ms)
+
                     const checkBlocklyLoaded = () => {
                         if (!blockly_store.is_loading) {
-                            checkAndShowTradeTypeModal(
-                                // onConfirm: Changes are now handled by the modal component
-                                () => {
-                                    // Re-enable URL parameter application for future parameters
-                                    enableUrlParameterApplication();
-                                    // Set the pending URL trade type first
-                                    const hasPendingType = setPendingUrlTradeType();
-
-                                    if (hasPendingType) {
-                                        // Use requestAnimationFrame for better timing
-                                        requestAnimationFrame(() => {
-                                            updateTradeTypeFromUrlParams();
-                                            // Use another frame for cleanup
-                                            requestAnimationFrame(() => {
-                                                removeTradeTypeFromUrl();
-                                            });
-                                        });
-                                    }
-                                },
-                                // onCancel: URL parameter removal is now handled by the modal component
-                                () => {
-                                    // Keep URL parameter application disabled since user declined
-                                    removeTradeTypeFromUrl();
-                                }
-                            );
-                        } else {
-                            // Still loading, check again in 100ms
+                            handleTradeTypeModal();
+                        } else if (pollAttempts < maxPollAttempts) {
+                            pollAttempts++;
                             setTimeout(checkBlocklyLoaded, 100);
+                        } else {
+                            console.warn('Blockly loading timeout - proceeding without URL parameter check');
                         }
                     };
                     checkBlocklyLoaded();

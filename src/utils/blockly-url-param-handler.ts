@@ -1,3 +1,4 @@
+import { resetUrlParamProcessing } from './trade-type-modal-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
 // Named constants for timeouts
@@ -313,7 +314,6 @@ export const removeTradeTypeFromUrl = (): void => {
         window.history.replaceState({}, '', url.toString());
 
         // Reset URL parameter processing flag when URL parameter is removed
-        const { resetUrlParamProcessing } = require('./trade-type-modal-handler');
         resetUrlParamProcessing();
 
         // Re-enable URL parameter application for future parameters
@@ -355,9 +355,7 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const tradeTypeParam = urlParams.get('trade_type');
 
-                if (!tradeTypeParam) {
-                    return;
-                }
+                if (!tradeTypeParam) tradeTypeChangeListener = null;
             }
         };
 
