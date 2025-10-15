@@ -87,6 +87,24 @@ const AppWrapper = observer(() => {
     // Trade type modal state
     const [tradeTypeModalState, setTradeTypeModalState] = useState(getModalState());
 
+    // Helper function to get modal props with better type safety
+    const getTradeTypeModalProps = () => {
+        const { tradeTypeData } = tradeTypeModalState;
+
+        return {
+            is_visible: tradeTypeModalState.isVisible,
+            trade_type_display_name: tradeTypeData?.displayName || '',
+            // Raw technical identifier (e.g., "callput/callput")
+            current_trade_type_raw: tradeTypeData?.currentTradeType
+                ? `${tradeTypeData.currentTradeType.tradeTypeCategory}/${tradeTypeData.currentTradeType.tradeType}`
+                : 'N/A',
+            // User-friendly display name (e.g., "Rise/Fall")
+            current_trade_type_display: tradeTypeData?.currentTradeTypeDisplayName || 'N/A',
+            onConfirm: handleTradeTypeConfirm,
+            onCancel: handleTradeTypeCancel,
+        };
+    };
+
     let tab_value: number | string = active_tab;
     const GetHashedValue = (tab: number) => {
         tab_value = location.hash?.split('#')[1];
@@ -441,20 +459,19 @@ const AppWrapper = observer(() => {
             </Dialog>
 
             {/* Trade Type Confirmation Modal */}
-            <TradeTypeConfirmationModal
-                is_visible={tradeTypeModalState.isVisible}
-                trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
-                current_trade_type={
-                    tradeTypeModalState.tradeTypeData?.currentTradeType
-                        ? `${tradeTypeModalState.tradeTypeData.currentTradeType.tradeTypeCategory}/${tradeTypeModalState.tradeTypeData.currentTradeType.tradeType}`
-                        : 'N/A'
-                }
-                current_trade_type_display_name={
-                    tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'
-                }
-                onConfirm={handleTradeTypeConfirm}
-                onCancel={handleTradeTypeCancel}
-            />
+            {(() => {
+                const modalProps = getTradeTypeModalProps();
+                return (
+                    <TradeTypeConfirmationModal
+                        is_visible={modalProps.is_visible}
+                        trade_type_display_name={modalProps.trade_type_display_name}
+                        current_trade_type={modalProps.current_trade_type_raw}
+                        current_trade_type_display_name={modalProps.current_trade_type_display}
+                        onConfirm={modalProps.onConfirm}
+                        onCancel={modalProps.onCancel}
+                    />
+                );
+            })()}
         </React.Fragment>
     );
 });

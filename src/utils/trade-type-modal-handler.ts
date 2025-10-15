@@ -27,33 +27,10 @@ interface TradeTypeModalState {
     onCancel: (() => void) | null;
 }
 
-// TODO: State Management Anti-pattern Warning
-// This module-level mutable state can cause issues with multiple component instances or testing.
-//
-// MIGRATION AVAILABLE: A React Context solution has been created at:
-// src/contexts/TradeTypeModalContext.tsx
-//
-// To migrate from this anti-pattern:
-// 1. Wrap your app with <TradeTypeModalProvider>
-// 2. Use useTradeTypeModal() hook instead of these module functions
-// 3. Replace direct function calls with context methods:
-//    - showTradeTypeConfirmationModal() → showModal()
-//    - hideTradeTypeConfirmationModal() → hideModal()
-//    - updateModalTradeTypeData() → updateTradeTypeData()
-//    - getModalState() → modalState from context
-//
-// Benefits of migration:
-// - Proper React state management
-// - Better testing isolation
-// - Support for multiple modal instances
-// - Server-side rendering compatibility
-// - Automatic cleanup on component unmount
-//
-// Current implementation works for single-instance usage but should be migrated for:
-// - Multiple modal instances
-// - Server-side rendering
-// - Unit testing isolation
-// - State persistence across component unmounts
+// State Management Note:
+// This module uses module-level state for simplicity in the current single-modal use case.
+// For applications requiring multiple modal instances, server-side rendering, or enhanced
+// testing isolation, consider migrating to React Context or a state management library.
 let modalState: TradeTypeModalState = {
     isVisible: false,
     tradeTypeData: null,
@@ -64,11 +41,14 @@ let modalState: TradeTypeModalState = {
 // Callback to notify when modal state changes
 let modalStateChangeCallback: ((state: TradeTypeModalState) => void) | null = null;
 
-// Store active polling timeout to prevent memory leaks
+// Store active polling timeout to prevent memory leaks and multiple polling instances
 let activePollingTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 // State update lock to prevent race conditions
 let isUpdatingModalState = false;
+
+// Debouncing mechanism to prevent multiple rapid polling calls
+let isPollingActive = false;
 
 /**
  * Sets the callback function to be called when modal state changes
@@ -139,141 +119,239 @@ export const updateModalTradeTypeData = () => {
 };
 
 /**
- * Shows the trade type confirmation modal
+ * Shows the trade type confirmation modal with enhanced error handling and debouncing
  */
 export const showTradeTypeConfirmationModal = (
     tradeTypeData: TradeTypeData,
     onConfirm: () => void,
     onCancel: () => void
 ) => {
-    // Function to show modal with current workspace data
-    const showModalWithCurrentData = () => {
-        const currentTradeType = getCurrentTradeTypeFromWorkspace();
+    try {
+        // Prevent multiple concurrent polling instances
+        if (isPollingActive) {
+            console.warn('Modal polling already active, skipping duplicate request');
+            return;
+        }
 
-        const finalTradeTypeData = currentTradeType
-            ? {
-                  ...tradeTypeData,
-                  currentTradeType: currentTradeType,
-                  currentTradeTypeDisplayName: getInternalTradeTypeDisplayName(
-                      currentTradeType.tradeTypeCategory,
-                      currentTradeType.tradeType
-                  ),
-              }
-            : tradeTypeData;
+        // Function to show modal with current workspace data
+        const showModalWithCurrentData = () => {
+            try {
+                const currentTradeType = getCurrentTradeTypeFromWorkspace();
 
-        updateModalState({
-            isVisible: true,
-            tradeTypeData: finalTradeTypeData,
-            onConfirm,
-            onCancel,
-        });
-    };
+                const finalTradeTypeData = currentTradeType
+                    ? {
+                          ...tradeTypeData,
+                          currentTradeType: currentTradeType,
+                          currentTradeTypeDisplayName: getInternalTradeTypeDisplayName(
+                              currentTradeType.tradeTypeCategory,
+                              currentTradeType.tradeType
+                          ),
+                      }
+                    : tradeTypeData;
 
-    // Clear any existing polling timeout to prevent memory leaks
-    if (activePollingTimeoutId) {
-        clearTimeout(activePollingTimeoutId);
-        activePollingTimeoutId = null;
-    }
-
-    // Try to get current trade type immediately
-    const currentTradeType = getCurrentTradeTypeFromWorkspace();
-
-    if (currentTradeType) {
-        // If we have the data immediately, show modal
-        showModalWithCurrentData();
-    } else {
-        // If we don't have the data yet, poll until we do or timeout
-        let attempts = 0;
-        const maxAttempts = 6; // 3 seconds max wait with 500ms intervals (better performance)
-
-        const pollForData = () => {
-            const currentTradeType = getCurrentTradeTypeFromWorkspace();
-
-            if (currentTradeType || attempts >= maxAttempts) {
-                showModalWithCurrentData();
-                activePollingTimeoutId = null; // Clear reference when done
-            } else {
-                attempts++;
-                // Use 500ms intervals for better performance as recommended
-                activePollingTimeoutId = setTimeout(pollForData, 500);
+                updateModalState({
+                    isVisible: true,
+                    tradeTypeData: finalTradeTypeData,
+                    onConfirm,
+                    onCancel,
+                });
+            } catch (error) {
+                console.warn('Failed to show modal with current data:', error);
+                // Fallback: show modal with original data
+                updateModalState({
+                    isVisible: true,
+                    tradeTypeData,
+                    onConfirm,
+                    onCancel,
+                });
+            } finally {
+                isPollingActive = false;
             }
         };
 
-        // Start polling with initial call
-        pollForData();
-    }
-};
+        // Clear any existing polling timeout to prevent memory leaks
+        if (activePollingTimeoutId) {
+            clearTimeout(activePollingTimeoutId);
+            activePollingTimeoutId = null;
+        }
 
-/**
- * Hides the trade type confirmation modal
- */
-export const hideTradeTypeConfirmationModal = () => {
-    // Clear any active polling timeout when hiding modal
-    if (activePollingTimeoutId) {
-        clearTimeout(activePollingTimeoutId);
-        activePollingTimeoutId = null;
-    }
+        // Try to get current trade type immediately
+        const currentTradeType = getCurrentTradeTypeFromWorkspace();
 
-    updateModalState({
-        isVisible: false,
-        tradeTypeData: null,
-        onConfirm: null,
-        onCancel: null,
-    });
-};
-
-/**
- * Handles the user confirming the trade type change
- */
-export const handleTradeTypeConfirm = () => {
-    // Apply the trade type changes directly to the Blockly workspace
-    if (modalState.tradeTypeData) {
-        const { tradeTypeCategory, tradeType } = modalState.tradeTypeData;
-
-        // Apply the changes to the workspace
-        const success = applyTradeTypeDropdownChanges(tradeTypeCategory, tradeType);
-
-        if (success) {
-            console.warn(`Successfully applied trade type: ${tradeTypeCategory}/${tradeType}`);
+        if (currentTradeType) {
+            // If we have the data immediately, show modal
+            showModalWithCurrentData();
         } else {
-            console.warn(`Failed to apply trade type: ${tradeTypeCategory}/${tradeType}`);
+            // Set polling active flag to prevent multiple instances
+            isPollingActive = true;
+
+            // If we don't have the data yet, poll until we do or timeout
+            let attempts = 0;
+            const maxAttempts = 6; // 3 seconds max wait with 500ms intervals
+
+            const pollForData = () => {
+                try {
+                    const currentTradeType = getCurrentTradeTypeFromWorkspace();
+
+                    if (currentTradeType || attempts >= maxAttempts) {
+                        showModalWithCurrentData();
+                        activePollingTimeoutId = null; // Clear reference when done
+                    } else {
+                        attempts++;
+                        // Use 500ms intervals for better performance
+                        activePollingTimeoutId = setTimeout(pollForData, 500);
+                    }
+                } catch (error) {
+                    console.warn('Error during polling for trade type data:', error);
+                    // Stop polling on error and show modal with available data
+                    showModalWithCurrentData();
+                    activePollingTimeoutId = null;
+                }
+            };
+
+            // Start polling with initial call
+            pollForData();
+        }
+    } catch (error) {
+        console.warn('Failed to show trade type confirmation modal:', error);
+        isPollingActive = false;
+        // Fallback: try to show modal with minimal data
+        try {
+            updateModalState({
+                isVisible: true,
+                tradeTypeData,
+                onConfirm,
+                onCancel,
+            });
+        } catch (fallbackError) {
+            console.error('Critical error: Failed to show modal even with fallback:', fallbackError);
         }
     }
-
-    // Remove the URL parameter after applying changes
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('trade_type')) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('trade_type');
-        window.history.replaceState({}, '', url.toString());
-    }
-
-    // Call the original onConfirm callback if it exists
-    if (modalState.onConfirm) {
-        modalState.onConfirm();
-    }
-
-    hideTradeTypeConfirmationModal();
 };
 
 /**
- * Handles the user canceling the trade type change
+ * Hides the trade type confirmation modal with comprehensive cleanup
+ */
+export const hideTradeTypeConfirmationModal = () => {
+    try {
+        // Clear any active polling timeout when hiding modal
+        if (activePollingTimeoutId) {
+            clearTimeout(activePollingTimeoutId);
+            activePollingTimeoutId = null;
+        }
+
+        // Reset polling active flag
+        isPollingActive = false;
+
+        updateModalState({
+            isVisible: false,
+            tradeTypeData: null,
+            onConfirm: null,
+            onCancel: null,
+        });
+    } catch (error) {
+        console.warn('Error while hiding trade type confirmation modal:', error);
+        // Force reset state even on error
+        isPollingActive = false;
+        if (activePollingTimeoutId) {
+            clearTimeout(activePollingTimeoutId);
+            activePollingTimeoutId = null;
+        }
+    }
+};
+
+/**
+ * Handles the user confirming the trade type change with comprehensive error handling
+ */
+export const handleTradeTypeConfirm = () => {
+    try {
+        // Apply the trade type changes directly to the Blockly workspace
+        if (modalState.tradeTypeData) {
+            const { tradeTypeCategory, tradeType } = modalState.tradeTypeData;
+
+            try {
+                // Apply the changes to the workspace
+                const success = applyTradeTypeDropdownChanges(tradeTypeCategory, tradeType);
+
+                if (success) {
+                    console.warn(`Successfully applied trade type: ${tradeTypeCategory}/${tradeType}`);
+                } else {
+                    console.warn(`Failed to apply trade type: ${tradeTypeCategory}/${tradeType}`);
+                }
+            } catch (applyError) {
+                console.warn('Error applying trade type changes to workspace:', applyError);
+            }
+        }
+
+        // Remove the URL parameter after applying changes
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('trade_type')) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('trade_type');
+                window.history.replaceState({}, '', url.toString());
+            }
+        } catch (urlError) {
+            console.warn('Error removing URL parameter:', urlError);
+        }
+
+        // Call the original onConfirm callback if it exists
+        try {
+            if (modalState.onConfirm) {
+                modalState.onConfirm();
+            }
+        } catch (callbackError) {
+            console.warn('Error executing onConfirm callback:', callbackError);
+        }
+
+        hideTradeTypeConfirmationModal();
+    } catch (error) {
+        console.warn('Critical error in handleTradeTypeConfirm:', error);
+        // Ensure modal is hidden even on error
+        try {
+            hideTradeTypeConfirmationModal();
+        } catch (hideError) {
+            console.error('Failed to hide modal after error:', hideError);
+        }
+    }
+};
+
+/**
+ * Handles the user canceling the trade type change with comprehensive error handling
  */
 export const handleTradeTypeCancel = () => {
-    // Remove the URL parameter when user cancels
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('trade_type')) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('trade_type');
-        window.history.replaceState({}, '', url.toString());
-    }
+    try {
+        // Remove the URL parameter when user cancels
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('trade_type')) {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('trade_type');
+                window.history.replaceState({}, '', url.toString());
+            }
+        } catch (urlError) {
+            console.warn('Error removing URL parameter on cancel:', urlError);
+        }
 
-    // Call the original onCancel callback if it exists
-    if (modalState.onCancel) {
-        modalState.onCancel();
-    }
+        // Call the original onCancel callback if it exists
+        try {
+            if (modalState.onCancel) {
+                modalState.onCancel();
+            }
+        } catch (callbackError) {
+            console.warn('Error executing onCancel callback:', callbackError);
+        }
 
-    hideTradeTypeConfirmationModal();
+        hideTradeTypeConfirmationModal();
+    } catch (error) {
+        console.warn('Critical error in handleTradeTypeCancel:', error);
+        // Ensure modal is hidden even on error
+        try {
+            hideTradeTypeConfirmationModal();
+        } catch (hideError) {
+            console.error('Failed to hide modal after cancel error:', hideError);
+        }
+    }
 };
 
 /**
@@ -503,75 +581,95 @@ export const getUrlParamProcessingState = () => {
 
 /**
  * Checks if there's a valid URL trade type parameter and shows modal if needed
- * Enhanced logic: only shows modal when URL and current trade types differ
+ * Enhanced logic with comprehensive error handling
  */
 export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () => void) => {
-    // 1. Check if there's a valid URL trade type parameter
-    const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
+    try {
+        // 1. Check if there's a valid URL trade type parameter
+        const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
 
-    if (!tradeTypeFromUrl || !tradeTypeFromUrl.isValid) {
-        return false;
-    }
-
-    // 2. Get the URL parameter to show user-friendly name
-    const urlParams = new URLSearchParams(window.location.search);
-    const tradeTypeParam = urlParams.get('trade_type');
-
-    if (!tradeTypeParam) {
-        return false;
-    }
-
-    // 3. Check if we've already processed this URL parameter in this session
-    if (hasProcessedUrlParam) {
-        return false;
-    }
-
-    // 4. Get current trade type from workspace
-    const currentTradeType = getCurrentTradeTypeFromWorkspace();
-
-    if (!currentTradeType) {
-        // If we can't get current trade type, show modal to be safe
-    } else {
-        // 5. Compare URL trade type with current trade type
-        const isSameCategory = currentTradeType.tradeTypeCategory === tradeTypeFromUrl.tradeTypeCategory;
-        const isSameTradeType = currentTradeType.tradeType === tradeTypeFromUrl.tradeType;
-
-        if (isSameCategory && isSameTradeType) {
-            // Mark as processed even though we're not showing modal
-            hasProcessedUrlParam = true;
+        if (!tradeTypeFromUrl || !tradeTypeFromUrl.isValid) {
             return false;
         }
-    }
 
-    // 6. Show modal since trade types differ or we couldn't determine current trade type
-    const displayName = getTradeTypeDisplayName(tradeTypeParam);
+        // 2. Get the URL parameter to show user-friendly name
+        const urlParams = new URLSearchParams(window.location.search);
+        const tradeTypeParam = urlParams.get('trade_type');
 
-    // Get current trade type display name for the modal
-    const currentTradeTypeDisplayName = currentTradeType
-        ? getInternalTradeTypeDisplayName(currentTradeType.tradeTypeCategory, currentTradeType.tradeType)
-        : 'N/A';
-
-    showTradeTypeConfirmationModal(
-        {
-            ...tradeTypeFromUrl,
-            displayName,
-            urlParam: tradeTypeParam,
-            currentTradeType: currentTradeType,
-            currentTradeTypeDisplayName: currentTradeTypeDisplayName,
-        },
-        () => {
-            // Mark as processed when user confirms
-            hasProcessedUrlParam = true;
-            // Modal component now handles the Blockly changes and URL parameter removal
-            onConfirm();
-        },
-        () => {
-            // Mark as processed when user cancels
-            hasProcessedUrlParam = true;
-            // Modal component now handles the URL parameter removal
-            onCancel();
+        if (!tradeTypeParam) {
+            return false;
         }
-    );
 
-    return true;
+        // 3. Check if we've already processed this URL parameter in this session
+        if (hasProcessedUrlParam) {
+            return false;
+        }
+
+        // 4. Get current trade type from workspace
+        let currentTradeType;
+        try {
+            currentTradeType = getCurrentTradeTypeFromWorkspace();
+        } catch (workspaceError) {
+            console.warn('Error getting current trade type from workspace:', workspaceError);
+            currentTradeType = null;
+        }
+
+        if (currentTradeType) {
+            // 5. Compare URL trade type with current trade type
+            const isSameCategory = currentTradeType.tradeTypeCategory === tradeTypeFromUrl.tradeTypeCategory;
+            const isSameTradeType = currentTradeType.tradeType === tradeTypeFromUrl.tradeType;
+
+            if (isSameCategory && isSameTradeType) {
+                // Mark as processed even though we're not showing modal
+                hasProcessedUrlParam = true;
+                return false;
+            }
+        }
+
+        // 6. Show modal since trade types differ or we couldn't determine current trade type
+        const displayName = getTradeTypeDisplayName(tradeTypeParam);
+
+        // Get current trade type display name for the modal
+        let currentTradeTypeDisplayName = 'N/A';
+        try {
+            currentTradeTypeDisplayName = currentTradeType
+                ? getInternalTradeTypeDisplayName(currentTradeType.tradeTypeCategory, currentTradeType.tradeType)
+                : 'N/A';
+        } catch (displayNameError) {
+            console.warn('Error getting display name for current trade type:', displayNameError);
+        }
+
+        showTradeTypeConfirmationModal(
+            {
+                ...tradeTypeFromUrl,
+                displayName,
+                urlParam: tradeTypeParam,
+                currentTradeType: currentTradeType,
+                currentTradeTypeDisplayName: currentTradeTypeDisplayName,
+            },
+            () => {
+                try {
+                    // Mark as processed when user confirms
+                    hasProcessedUrlParam = true;
+                    onConfirm();
+                } catch (confirmError) {
+                    console.warn('Error in onConfirm callback:', confirmError);
+                }
+            },
+            () => {
+                try {
+                    // Mark as processed when user cancels
+                    hasProcessedUrlParam = true;
+                    onCancel();
+                } catch (cancelError) {
+                    console.warn('Error in onCancel callback:', cancelError);
+                }
+            }
+        );
+
+        return true;
+    } catch (error) {
+        console.warn('Error in checkAndShowTradeTypeModal:', error);
+        return false;
+    }
 };
