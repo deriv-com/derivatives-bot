@@ -189,7 +189,7 @@ export const handleTradeTypeConfirm = () => {
         const success = applyTradeTypeDropdownChanges(tradeTypeCategory, tradeType);
 
         if (success) {
-            console.log(`Successfully applied trade type: ${tradeTypeCategory}/${tradeType}`);
+            console.warn(`Successfully applied trade type: ${tradeTypeCategory}/${tradeType}`);
         } else {
             console.warn(`Failed to apply trade type: ${tradeTypeCategory}/${tradeType}`);
         }
