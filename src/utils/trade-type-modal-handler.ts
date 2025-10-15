@@ -1,9 +1,6 @@
 import { getCurrentTradeTypeFromWorkspace } from './blockly-url-param-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
-// Named constants for timeouts
-const FIELD_POPULATION_DELAY = 500;
-
 // Import types from blockly-url-param-handler to avoid conflicts
 type BlocklyBlock = {
     type: string;
@@ -268,40 +265,37 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
             window.Blockly.Events.fire(categoryChangeEvent);
         }
 
-        // Set a timeout to apply the trade type after the category change has populated the trade type options
-        setTimeout(() => {
-            try {
-                // Get current trade type value (might have changed after category update)
-                const updatedCurrentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
+        try {
+            // Get current trade type value (might have changed after category update)
+            const updatedCurrentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
-                // Set the trade type if it's different
-                if (updatedCurrentTradeType !== tradeType) {
-                    tradeTypeBlock.setFieldValue(tradeType, 'TRADETYPE_LIST');
+            // Set the trade type if it's different
+            if (updatedCurrentTradeType !== tradeType) {
+                tradeTypeBlock.setFieldValue(tradeType, 'TRADETYPE_LIST');
 
-                    // Fire change event for trade type
-                    const tradeTypeChangeEvent = new window.Blockly.Events.BlockChange(
-                        tradeTypeBlock,
-                        'field',
-                        'TRADETYPE_LIST',
-                        updatedCurrentTradeType,
-                        tradeType
-                    );
-                    window.Blockly.Events.fire(tradeTypeChangeEvent);
+                // Fire change event for trade type
+                const tradeTypeChangeEvent = new window.Blockly.Events.BlockChange(
+                    tradeTypeBlock,
+                    'field',
+                    'TRADETYPE_LIST',
+                    updatedCurrentTradeType,
+                    tradeType
+                );
+                window.Blockly.Events.fire(tradeTypeChangeEvent);
 
-                    // Force workspace to re-render
-                    if (workspace) {
-                        workspace.render();
-                    }
+                // Force workspace to re-render
+                if (workspace) {
+                    workspace.render();
                 }
-
-                // Restore original event group
-                window.Blockly.Events.setGroup(originalGroup);
-            } catch (error) {
-                console.warn('Failed to apply trade type changes to Blockly workspace:', error);
-                // Restore original event group on error
-                window.Blockly.Events.setGroup(originalGroup);
             }
-        }, FIELD_POPULATION_DELAY); // Delay to ensure field options are fully populated
+
+            // Restore original event group
+            window.Blockly.Events.setGroup(originalGroup);
+        } catch (error) {
+            console.warn('Failed to apply trade type changes to Blockly workspace:', error);
+            // Restore original event group on error
+            window.Blockly.Events.setGroup(originalGroup);
+        }
 
         return true;
     } catch (error) {

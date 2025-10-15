@@ -19,7 +19,6 @@ import { useStore } from '@/hooks/useStore';
 import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
-    getCurrentTradeTypeFromWorkspace,
     removeTradeTypeFromUrl,
     setTradeTypeFromUrl,
     setupTradeTypeChangeListener,
@@ -52,7 +51,8 @@ const Tutorial = lazy(() => import('../tutorials'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
-    const { dashboard, load_modal, run_panel, quick_strategy, summary_card } = useStore();
+    const { dashboard, load_modal, run_panel, quick_strategy, summary_card, blockly_store } = useStore();
+    const { is_loading } = blockly_store;
     const {
         active_tab,
         active_tour,
@@ -100,10 +100,10 @@ const AppWrapper = observer(() => {
 
     // Set up modal state change listener
     React.useEffect(() => {
-        setModalStateChangeCallback(newState => {
-            setTradeTypeModalState(newState);
+        setModalStateChangeCallback(new_state => {
+            setTradeTypeModalState(new_state);
         });
-    }, []);
+    }, [is_loading]);
 
     // Reset URL parameter processing when location changes
     React.useEffect(() => {
@@ -171,45 +171,20 @@ const AppWrapper = observer(() => {
     };
 
     React.useEffect(() => {
-        // Run on mount and when active tab changes
-        updateTabShadowsHeight();
+        let pollTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-        if (is_open) {
-            setTourDialogVisibility(false);
-        }
-        if (init_render.current) {
-            setActiveTab(Number(active_hash_tab));
-            if (!isDesktop) handleTabChange(Number(active_hash_tab));
-            init_render.current = false;
-        } else {
-            // Preserve URL parameters when navigating
-            const currentSearch = window.location.search;
-            navigate(`${currentSearch}#${hash[active_tab] || hash[0]}`);
-        }
-        if (active_tour !== '') {
-            setActiveTour('');
-        }
         // Handle URL trade type parameters when switching to Bot Builder tab
         if (active_tab === BOT_BUILDER) {
-            // Wait for Blockly workspace to be ready before checking trade type modal
-            const waitForBlocklyWorkspace = () => {
-                const workspace = window.Blockly?.derivWorkspace;
-                const hasTradeDefinitionBlocks = workspace
-                    ?.getAllBlocks()
-                    ?.some((block: any) => block.type === 'trade_definition');
+            // Use requestAnimationFrame to ensure Blockly workspace is fully initialized
+            requestAnimationFrame(() => {
+                // Disable automatic URL parameter application to prevent changes before modal
+                disableUrlParameterApplication();
 
-                // Also check if we can get the current trade type from workspace
-                const currentTradeType = getCurrentTradeTypeFromWorkspace();
+                // Set up listener for manual trade type changes (only once)
+                setupTradeTypeChangeListener();
 
-                if (workspace && hasTradeDefinitionBlocks && currentTradeType !== null) {
-                    // Workspace is ready, proceed with trade type modal check
-                    // Disable automatic URL parameter application to prevent changes before modal
-                    disableUrlParameterApplication();
-
-                    // Set up listener for manual trade type changes (only once)
-                    setupTradeTypeChangeListener();
-
-                    // Check for URL parameters and show modal if needed
+                // Create unified handler for both immediate and delayed execution
+                const handleTradeTypeModal = () => {
                     checkAndShowTradeTypeModal(
                         // onConfirm: Changes are now handled by the modal component
                         () => {
@@ -235,14 +210,60 @@ const AppWrapper = observer(() => {
                             removeTradeTypeFromUrl();
                         }
                     );
-                } else {
-                    // Workspace not ready yet, check again on next frame
-                    requestAnimationFrame(waitForBlocklyWorkspace);
-                }
-            };
+                };
 
-            // Start checking for workspace readiness
-            requestAnimationFrame(waitForBlocklyWorkspace);
+                // Wait for Blockly to finish loading before checking for URL parameters
+                if (!blockly_store.is_loading) {
+                    // Blockly is already loaded, check immediately
+                    handleTradeTypeModal();
+                } else {
+                    // Blockly is still loading, wait for it to finish with improved polling
+                    let pollAttempts = 0;
+                    const maxPollAttempts = 50; // Maximum 5 seconds (50 * 100ms)
+
+                    const checkBlocklyLoaded = () => {
+                        if (!blockly_store.is_loading) {
+                            handleTradeTypeModal();
+                        } else if (pollAttempts < maxPollAttempts) {
+                            pollAttempts++;
+                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 100);
+                        } else {
+                            console.warn('Blockly loading timeout - proceeding without URL parameter check');
+                        }
+                    };
+
+                    checkBlocklyLoaded();
+                }
+            });
+        }
+
+        // Cleanup function to prevent memory leaks
+        return () => {
+            if (pollTimeoutId) {
+                clearTimeout(pollTimeoutId);
+                pollTimeoutId = null;
+            }
+        };
+    }, [active_tab, is_loading]);
+
+    React.useEffect(() => {
+        // Run on mount and when active tab changes
+        updateTabShadowsHeight();
+
+        if (is_open) {
+            setTourDialogVisibility(false);
+        }
+        if (init_render.current) {
+            setActiveTab(Number(active_hash_tab));
+            if (!isDesktop) handleTabChange(Number(active_hash_tab));
+            init_render.current = false;
+        } else {
+            // Preserve URL parameters when navigating
+            const currentSearch = window.location.search;
+            navigate(`${currentSearch}#${hash[active_tab] || hash[0]}`);
+        }
+        if (active_tour !== '') {
+            setActiveTour('');
         }
 
         // Prevent scrolling when tutorial tab is active (only on mobile)
@@ -437,6 +458,9 @@ const AppWrapper = observer(() => {
                 is_visible={tradeTypeModalState.isVisible}
                 trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
                 current_trade_type={tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'}
+                current_trade_type_display_name={
+                    tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'
+                }
                 onConfirm={handleTradeTypeConfirm}
                 onCancel={handleTradeTypeCancel}
             />
