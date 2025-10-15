@@ -319,7 +319,8 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 // (i.e., it's a genuine manual user change, not when modal is pending)
                 const modalState = getModalState();
                 if (tradeTypeParam && !modalState.isVisible) {
-                    removeTradeTypeFromUrl();
+                    console.log('test 2');
+                    //removeTradeTypeFromUrl();
                 }
             }
         };

@@ -47,6 +47,7 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                 const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
 
                 if (tradeTypeFromUrl && tradeTypeFromUrl.isValid) {
+                    console.log('test');
                     // Remove URL parameter immediately for tour users - don't apply changes
                     removeTradeTypeFromUrl();
 
@@ -70,13 +71,14 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                     if (tradeTypeFromUrl && tradeTypeFromUrl.isValid) {
                         applyTradeTypeDropdownChanges(tradeTypeFromUrl.tradeTypeCategory, tradeTypeFromUrl.tradeType);
                     }
-
+                    console.log('test 1');
                     // Remove URL parameter
                     removeTradeTypeFromUrl();
 
                     onConfirm();
                 }}
                 onCancel={() => {
+                    console.log('test 3');
                     // Remove URL parameter even when cancelled
                     removeTradeTypeFromUrl();
 
