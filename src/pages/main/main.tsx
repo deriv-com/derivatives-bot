@@ -200,17 +200,22 @@ const AppWrapper = observer(() => {
                 } else {
                     // Blockly is still loading, wait for it to finish with optimized polling
                     let pollAttempts = 0;
-                    const maxPollAttempts = 20; // Maximum 4 seconds (20 * 200ms)
+                    const maxPollAttempts = 10; // Maximum 5 seconds (10 * 500ms) - optimized performance
 
                     const checkBlocklyLoaded = () => {
                         if (!blockly_store.is_loading) {
                             handleTradeTypeModal();
-                        } else if (pollAttempts < maxPollAttempts) {
+                            return; // Exit polling once loaded
+                        }
+
+                        if (pollAttempts < maxPollAttempts) {
                             pollAttempts++;
-                            // Increased interval from 100ms to 200ms for better performance
-                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 200);
+                            // Use 500ms intervals for better performance (5x improvement from 100ms)
+                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 500);
                         } else {
-                            console.warn('Blockly loading timeout - proceeding without URL parameter check');
+                            console.warn(
+                                'Blockly loading timeout after 5 seconds - proceeding without URL parameter check'
+                            );
                         }
                     };
 
@@ -439,7 +444,11 @@ const AppWrapper = observer(() => {
             <TradeTypeConfirmationModal
                 is_visible={tradeTypeModalState.isVisible}
                 trade_type_display_name={tradeTypeModalState.tradeTypeData?.displayName || ''}
-                current_trade_type={tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'}
+                current_trade_type={
+                    tradeTypeModalState.tradeTypeData?.currentTradeType
+                        ? `${tradeTypeModalState.tradeTypeData.currentTradeType.tradeTypeCategory}/${tradeTypeModalState.tradeTypeData.currentTradeType.tradeType}`
+                        : 'N/A'
+                }
                 current_trade_type_display_name={
                     tradeTypeModalState.tradeTypeData?.currentTradeTypeDisplayName || 'N/A'
                 }

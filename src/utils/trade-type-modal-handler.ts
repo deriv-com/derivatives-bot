@@ -27,6 +27,33 @@ interface TradeTypeModalState {
     onCancel: (() => void) | null;
 }
 
+// TODO: State Management Anti-pattern Warning
+// This module-level mutable state can cause issues with multiple component instances or testing.
+//
+// MIGRATION AVAILABLE: A React Context solution has been created at:
+// src/contexts/TradeTypeModalContext.tsx
+//
+// To migrate from this anti-pattern:
+// 1. Wrap your app with <TradeTypeModalProvider>
+// 2. Use useTradeTypeModal() hook instead of these module functions
+// 3. Replace direct function calls with context methods:
+//    - showTradeTypeConfirmationModal() → showModal()
+//    - hideTradeTypeConfirmationModal() → hideModal()
+//    - updateModalTradeTypeData() → updateTradeTypeData()
+//    - getModalState() → modalState from context
+//
+// Benefits of migration:
+// - Proper React state management
+// - Better testing isolation
+// - Support for multiple modal instances
+// - Server-side rendering compatibility
+// - Automatic cleanup on component unmount
+//
+// Current implementation works for single-instance usage but should be migrated for:
+// - Multiple modal instances
+// - Server-side rendering
+// - Unit testing isolation
+// - State persistence across component unmounts
 let modalState: TradeTypeModalState = {
     isVisible: false,
     tradeTypeData: null,
@@ -39,6 +66,9 @@ let modalStateChangeCallback: ((state: TradeTypeModalState) => void) | null = nu
 
 // Store active polling timeout to prevent memory leaks
 let activePollingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+// State update lock to prevent race conditions
+let isUpdatingModalState = false;
 
 /**
  * Sets the callback function to be called when modal state changes
@@ -56,19 +86,33 @@ export const getModalState = (): TradeTypeModalState => {
 
 /**
  * Updates the modal state and notifies listeners
+ * Protected against race conditions with state locking
  */
 const updateModalState = (newState: Partial<TradeTypeModalState>) => {
-    modalState = { ...modalState, ...newState };
-    if (modalStateChangeCallback) {
-        modalStateChangeCallback(modalState);
+    // Prevent race conditions by checking if another update is in progress
+    if (isUpdatingModalState) {
+        console.warn('Modal state update skipped due to concurrent update in progress');
+        return;
+    }
+
+    isUpdatingModalState = true;
+    try {
+        modalState = { ...modalState, ...newState };
+        if (modalStateChangeCallback) {
+            modalStateChangeCallback(modalState);
+        }
+    } finally {
+        isUpdatingModalState = false;
     }
 };
 
 /**
  * Updates the current trade type data in the modal if it's currently visible
+ * Protected against race conditions
  */
 export const updateModalTradeTypeData = () => {
-    if (!modalState.isVisible || !modalState.tradeTypeData) {
+    // Prevent race conditions by checking state update lock
+    if (isUpdatingModalState || !modalState.isVisible || !modalState.tradeTypeData) {
         return;
     }
 
@@ -140,7 +184,7 @@ export const showTradeTypeConfirmationModal = (
     } else {
         // If we don't have the data yet, poll until we do or timeout
         let attempts = 0;
-        const maxAttempts = 10; // Reduced from 20 to 10 (2 seconds max wait with 200ms intervals)
+        const maxAttempts = 6; // 3 seconds max wait with 500ms intervals (better performance)
 
         const pollForData = () => {
             const currentTradeType = getCurrentTradeTypeFromWorkspace();
@@ -150,11 +194,12 @@ export const showTradeTypeConfirmationModal = (
                 activePollingTimeoutId = null; // Clear reference when done
             } else {
                 attempts++;
-                // Increased interval from 100ms to 200ms for better performance
-                activePollingTimeoutId = setTimeout(pollForData, 200);
+                // Use 500ms intervals for better performance as recommended
+                activePollingTimeoutId = setTimeout(pollForData, 500);
             }
         };
 
+        // Start polling with initial call
         pollForData();
     }
 };
@@ -340,9 +385,12 @@ export const getDropdownMappingForUrlTradeType = (): { tradeTypeCategory: string
  * // Updates Blockly workspace to show "Multipliers" in dropdown
  */
 export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeType: string): boolean => {
+    let originalGroup: string | null = null;
+
     try {
         const workspace = window.Blockly?.derivWorkspace;
         if (!workspace) {
+            console.warn('Blockly workspace not available for trade type changes');
             return false;
         }
 
@@ -352,6 +400,7 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
             .filter((block: BlocklyBlock) => block.type === 'trade_definition');
 
         if (tradeDefinitionBlocks.length === 0) {
+            console.warn('No trade definition blocks found in workspace');
             return false;
         }
 
@@ -362,11 +411,12 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
         const tradeTypeBlock = tradeDefinitionBlock.getChildByType('trade_definition_tradetype');
 
         if (!tradeTypeBlock) {
+            console.warn('No trade type block found within trade definition');
             return false;
         }
 
         // Disable events temporarily to prevent interference
-        const originalGroup = window.Blockly.Events.getGroup();
+        originalGroup = window.Blockly.Events.getGroup();
         window.Blockly.Events.setGroup('TRADE_TYPE_MODAL_UPDATE');
 
         try {
@@ -411,17 +461,25 @@ export const applyTradeTypeDropdownChanges = (tradeTypeCategory: string, tradeTy
                 }
             }
 
-            // Restore original event group
+            // Restore original event group on success
             window.Blockly.Events.setGroup(originalGroup);
             return true;
-        } catch (error) {
-            console.warn('Failed to apply trade type changes to Blockly workspace:', error);
-            // Restore original event group on error
+        } catch (innerError) {
+            console.warn('Failed to apply trade type changes to Blockly workspace:', innerError);
+            // Restore original event group on inner error
             window.Blockly.Events.setGroup(originalGroup);
             return false;
         }
-    } catch (error) {
-        console.warn('Failed to apply trade type dropdown changes:', error);
+    } catch (outerError) {
+        console.warn('Failed to apply trade type dropdown changes:', outerError);
+        // Restore original event group on outer error (if it was set)
+        if (originalGroup !== null) {
+            try {
+                window.Blockly.Events.setGroup(originalGroup);
+            } catch (restoreError) {
+                console.warn('Failed to restore original event group:', restoreError);
+            }
+        }
         return false;
     }
 };
