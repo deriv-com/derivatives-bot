@@ -647,7 +647,7 @@ const markUrlParamAsProcessed = (param: string) => {
 
 /**
  * Checks if there's a valid URL trade type parameter and shows modal if needed
- * Enhanced logic with comprehensive error handling
+ * Enhanced logic with comprehensive error handling and workspace timing
  */
 export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () => void) => {
     try {
@@ -671,69 +671,100 @@ export const checkAndShowTradeTypeModal = (onConfirm: () => void, onCancel: () =
             return false;
         }
 
-        // 4. Get current trade type from workspace
-        let currentTradeType;
-        try {
-            currentTradeType = getCurrentTradeTypeFromWorkspace();
-        } catch (workspaceError) {
-            console.warn('Error getting current trade type from workspace:', workspaceError);
-            currentTradeType = null;
-        }
+        // 4. Check workspace with retry mechanism for timing issues
+        const checkWorkspaceAndShowModal = (attempt = 1, maxAttempts = 5) => {
+            try {
+                const currentTradeType = getCurrentTradeTypeFromWorkspace();
 
-        if (currentTradeType) {
-            // 5. Compare URL trade type with current trade type
-            const isSameCategory = currentTradeType.tradeTypeCategory === tradeTypeFromUrl.tradeTypeCategory;
-            const isSameTradeType = currentTradeType.tradeType === tradeTypeFromUrl.tradeType;
+                if (currentTradeType) {
+                    // Workspace is ready, compare trade types
+                    const urlCategory = tradeTypeFromUrl.tradeTypeCategory;
+                    const urlType = tradeTypeFromUrl.tradeType;
+                    const workspaceCategory = currentTradeType.tradeTypeCategory;
+                    const workspaceType = currentTradeType.tradeType;
 
-            if (isSameCategory && isSameTradeType) {
-                // Mark as processed even though we're not showing modal
-                markUrlParamAsProcessed(tradeTypeParam);
-                return false;
-            }
-        }
+                    if (workspaceCategory === urlCategory && workspaceType === urlType) {
+                        // Trade types are identical, mark as processed and don't show modal
+                        markUrlParamAsProcessed(tradeTypeParam);
+                        return false;
+                    }
 
-        // 6. Show modal since trade types differ or we couldn't determine current trade type
-        const displayName = getTradeTypeDisplayName(tradeTypeParam);
-
-        // Get current trade type display name for the modal
-        let currentTradeTypeDisplayName = 'N/A';
-        try {
-            currentTradeTypeDisplayName = currentTradeType
-                ? getInternalTradeTypeDisplayName(currentTradeType.tradeTypeCategory, currentTradeType.tradeType)
-                : 'N/A';
-        } catch (displayNameError) {
-            console.warn('Error getting display name for current trade type:', displayNameError);
-        }
-
-        showTradeTypeConfirmationModal(
-            {
-                ...tradeTypeFromUrl,
-                displayName,
-                urlParam: tradeTypeParam,
-                currentTradeType: currentTradeType,
-                currentTradeTypeDisplayName: currentTradeTypeDisplayName,
-            },
-            () => {
-                try {
-                    // Mark as processed when user confirms
-                    markUrlParamAsProcessed(tradeTypeParam);
-                    onConfirm();
-                } catch (confirmError) {
-                    console.warn('Error in onConfirm callback:', confirmError);
+                    // Trade types are different, show modal
+                    showModalWithData(currentTradeType);
+                    return true;
+                } else if (attempt < maxAttempts) {
+                    // Workspace not ready yet, retry after delay
+                    setTimeout(() => {
+                        checkWorkspaceAndShowModal(attempt + 1, maxAttempts);
+                    }, 200); // 200ms delay between attempts
+                    return true; // Indicate we're handling it
+                } else {
+                    // Max attempts reached, show modal anyway (workspace might not be available)
+                    showModalWithData(null);
+                    return true;
                 }
-            },
-            () => {
-                try {
-                    // Mark as processed when user cancels
-                    markUrlParamAsProcessed(tradeTypeParam);
-                    onCancel();
-                } catch (cancelError) {
-                    console.warn('Error in onCancel callback:', cancelError);
+            } catch (workspaceError) {
+                console.warn(
+                    'Error getting current trade type from workspace (attempt ' + attempt + '):',
+                    workspaceError
+                );
+                if (attempt < maxAttempts) {
+                    setTimeout(() => {
+                        checkWorkspaceAndShowModal(attempt + 1, maxAttempts);
+                    }, 200);
+                    return true;
+                } else {
+                    showModalWithData(null);
+                    return true;
                 }
             }
-        );
+        };
 
-        return true;
+        // Helper function to show modal with data
+        const showModalWithData = (currentTradeType: { tradeTypeCategory: string; tradeType: string } | null) => {
+            const displayName = getTradeTypeDisplayName(tradeTypeParam);
+
+            // Get current trade type display name for the modal
+            let currentTradeTypeDisplayName = 'N/A';
+            try {
+                currentTradeTypeDisplayName = currentTradeType
+                    ? getInternalTradeTypeDisplayName(currentTradeType.tradeTypeCategory, currentTradeType.tradeType)
+                    : 'N/A';
+            } catch (displayNameError) {
+                console.warn('Error getting display name for current trade type:', displayNameError);
+            }
+
+            showTradeTypeConfirmationModal(
+                {
+                    ...tradeTypeFromUrl,
+                    displayName,
+                    urlParam: tradeTypeParam,
+                    currentTradeType: currentTradeType,
+                    currentTradeTypeDisplayName: currentTradeTypeDisplayName,
+                },
+                () => {
+                    try {
+                        // Mark as processed when user confirms
+                        markUrlParamAsProcessed(tradeTypeParam);
+                        onConfirm();
+                    } catch (confirmError) {
+                        console.warn('Error in onConfirm callback:', confirmError);
+                    }
+                },
+                () => {
+                    try {
+                        // Mark as processed when user cancels
+                        markUrlParamAsProcessed(tradeTypeParam);
+                        onCancel();
+                    } catch (cancelError) {
+                        console.warn('Error in onCancel callback:', cancelError);
+                    }
+                }
+            );
+        };
+
+        // Start the workspace check with retry mechanism
+        return checkWorkspaceAndShowModal();
     } catch (error) {
         console.warn('Error in checkAndShowTradeTypeModal:', error);
         return false;

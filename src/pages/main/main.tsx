@@ -226,8 +226,11 @@ const AppWrapper = observer(() => {
 
                 // Wait for Blockly to finish loading before checking for URL parameters
                 if (!blockly_store.is_loading) {
-                    // Blockly is already loaded, check immediately
-                    handleTradeTypeModal();
+                    // Blockly is loaded, but add longer delay to ensure workspace is fully initialized
+                    // and trade type fields are populated
+                    setTimeout(() => {
+                        handleTradeTypeModal();
+                    }, 500);
                 } else {
                     // Blockly is still loading, wait for it to finish with optimized polling
                     let pollAttempts = 0;
