@@ -72,7 +72,7 @@ export const disableUrlParameterApplication = () => {
 /**
  * Sets the pending URL trade type to be applied when field options are available
  */
-export const setPendingUrlTradeType = () => {
+export const setTradeTypeFromUrl = () => {
     try {
         const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
 

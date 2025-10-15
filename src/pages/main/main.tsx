@@ -20,7 +20,6 @@ import {
     disableUrlParameterApplication,
     enableUrlParameterApplication,
     removeTradeTypeFromUrl,
-    setPendingUrlTradeType,
     setupTradeTypeChangeListener,
     updateTradeTypeFromUrlParams,
 } from '@/utils/blockly-url-param-handler';
