@@ -54,6 +54,7 @@ const ContractTypes: React.FC<TContractTypes> = observer(({ name }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [symbol, tradetype]);
 
+    // Define the validation function
     const validateMinMaxForOptions = async (values: TFormData) => {
         if (!values.type || !values.symbol || !values.durationtype) return;
 
@@ -96,19 +97,41 @@ const ContractTypes: React.FC<TContractTypes> = observer(({ name }) => {
         }
     };
 
-    const debounceChange = React.useCallback(
-        debounce(validateMinMaxForOptions, 1000, {
-            trailing: true,
-            leading: false,
-        }),
-        []
-    );
+    // Store the latest version of validateMinMaxForOptions in a ref
+    const validateMinMaxForOptionsRef = React.useRef(validateMinMaxForOptions);
+
+    // Update the ref whenever the function changes
+    React.useEffect(() => {
+        validateMinMaxForOptionsRef.current = validateMinMaxForOptions;
+    }, [validateMinMaxForOptions]);
+
+    // Create a stable debounced function that uses the ref to always access the latest function
+    const debounceChange = React.useMemo(() => {
+        return debounce(
+            values => {
+                return validateMinMaxForOptionsRef.current(values);
+            },
+            1000,
+            {
+                trailing: true,
+                leading: false,
+            }
+        );
+    }, []);
 
     React.useEffect(() => {
         if (values.type && values.symbol && values.durationtype) {
             // Set loading state to true before API call
             quick_strategy.setOptionsLoading(true);
             debounceChange(values);
+
+            // Add cleanup function to prevent loading state from getting stuck
+            return () => {
+                // Cancel the debounced function call
+                debounceChange.clear();
+                // Reset loading state in case component unmounts before debounced function executes
+                quick_strategy.setOptionsLoading(false);
+            };
         }
     }, [
         values.stake,

@@ -1,5 +1,8 @@
 import { CONTRACT_TYPES } from '@/components/shared';
 
+// Default barrier values
+const DEFAULT_DIGIT_BARRIER = 5;
+
 export const DEFAULT_OPTIONS_PROPOSAL_REQUEST = {
     amount: undefined,
     basis: 'stake',
@@ -25,7 +28,6 @@ export const requestOptionsProposalForQS = (input_values, ws) => {
         basis,
     };
 
-    // Add barrier value of 5 only for specific digit contract types
     const digit_contracts = [
         CONTRACT_TYPES.MATCH_DIFF.MATCH, // DIGITMATCH
         CONTRACT_TYPES.MATCH_DIFF.DIFF, // DIGITDIFF
@@ -34,7 +36,7 @@ export const requestOptionsProposalForQS = (input_values, ws) => {
     ];
 
     if (digit_contracts.includes(contract_type)) {
-        proposal_request.barrier = 5;
+        proposal_request.barrier = DEFAULT_DIGIT_BARRIER;
     }
 
     return ws
