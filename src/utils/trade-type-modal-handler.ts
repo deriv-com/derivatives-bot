@@ -62,6 +62,36 @@ const updateModalState = (newState: Partial<TradeTypeModalState>) => {
 };
 
 /**
+ * Updates the current trade type data in the modal if it's currently visible
+ */
+export const updateModalTradeTypeData = () => {
+    if (!modalState.isVisible || !modalState.tradeTypeData) {
+        return;
+    }
+
+    // Get fresh current trade type from workspace
+    const currentTradeType = getCurrentTradeTypeFromWorkspace();
+
+    if (currentTradeType) {
+        const currentTradeTypeDisplayName = getInternalTradeTypeDisplayName(
+            currentTradeType.tradeTypeCategory,
+            currentTradeType.tradeType
+        );
+
+        // Update the modal data with the fresh current trade type
+        const updatedTradeTypeData = {
+            ...modalState.tradeTypeData,
+            currentTradeType: currentTradeType,
+            currentTradeTypeDisplayName: currentTradeTypeDisplayName,
+        };
+
+        updateModalState({
+            tradeTypeData: updatedTradeTypeData,
+        });
+    }
+};
+
+/**
  * Shows the trade type confirmation modal
  */
 export const showTradeTypeConfirmationModal = (
@@ -69,12 +99,53 @@ export const showTradeTypeConfirmationModal = (
     onConfirm: () => void,
     onCancel: () => void
 ) => {
-    updateModalState({
-        isVisible: true,
-        tradeTypeData,
-        onConfirm,
-        onCancel,
-    });
+    // Function to show modal with current workspace data
+    const showModalWithCurrentData = () => {
+        const currentTradeType = getCurrentTradeTypeFromWorkspace();
+
+        const finalTradeTypeData = currentTradeType
+            ? {
+                  ...tradeTypeData,
+                  currentTradeType: currentTradeType,
+                  currentTradeTypeDisplayName: getInternalTradeTypeDisplayName(
+                      currentTradeType.tradeTypeCategory,
+                      currentTradeType.tradeType
+                  ),
+              }
+            : tradeTypeData;
+
+        updateModalState({
+            isVisible: true,
+            tradeTypeData: finalTradeTypeData,
+            onConfirm,
+            onCancel,
+        });
+    };
+
+    // Try to get current trade type immediately
+    const currentTradeType = getCurrentTradeTypeFromWorkspace();
+
+    if (currentTradeType) {
+        // If we have the data immediately, show modal
+        showModalWithCurrentData();
+    } else {
+        // If we don't have the data yet, poll until we do or timeout
+        let attempts = 0;
+        const maxAttempts = 20; // 2 seconds max wait
+
+        const pollForData = () => {
+            const currentTradeType = getCurrentTradeTypeFromWorkspace();
+
+            if (currentTradeType || attempts >= maxAttempts) {
+                showModalWithCurrentData();
+            } else {
+                attempts++;
+                setTimeout(pollForData, 100);
+            }
+        };
+
+        pollForData();
+    }
 };
 
 /**
@@ -93,9 +164,33 @@ export const hideTradeTypeConfirmationModal = () => {
  * Handles the user confirming the trade type change
  */
 export const handleTradeTypeConfirm = () => {
+    // Apply the trade type changes directly to the Blockly workspace
+    if (modalState.tradeTypeData) {
+        const { tradeTypeCategory, tradeType } = modalState.tradeTypeData;
+
+        // Apply the changes to the workspace
+        const success = applyTradeTypeDropdownChanges(tradeTypeCategory, tradeType);
+
+        if (success) {
+            console.log(`Successfully applied trade type: ${tradeTypeCategory}/${tradeType}`);
+        } else {
+            console.warn(`Failed to apply trade type: ${tradeTypeCategory}/${tradeType}`);
+        }
+    }
+
+    // Remove the URL parameter after applying changes
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('trade_type')) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('trade_type');
+        window.history.replaceState({}, '', url.toString());
+    }
+
+    // Call the original onConfirm callback if it exists
     if (modalState.onConfirm) {
         modalState.onConfirm();
     }
+
     hideTradeTypeConfirmationModal();
 };
 
@@ -103,9 +198,19 @@ export const handleTradeTypeConfirm = () => {
  * Handles the user canceling the trade type change
  */
 export const handleTradeTypeCancel = () => {
+    // Remove the URL parameter when user cancels
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('trade_type')) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('trade_type');
+        window.history.replaceState({}, '', url.toString());
+    }
+
+    // Call the original onCancel callback if it exists
     if (modalState.onCancel) {
         modalState.onCancel();
     }
+
     hideTradeTypeConfirmationModal();
 };
 
