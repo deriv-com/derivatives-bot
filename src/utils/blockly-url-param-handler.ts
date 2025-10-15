@@ -1,54 +1,8 @@
-import { resetUrlParamProcessing } from './trade-type-modal-handler';
+import { getModalState,resetUrlParamProcessing } from './trade-type-modal-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
 // Named constants for timeouts
 const FIELD_POPULATION_DELAY = 500;
-
-// Define Blockly types
-interface BlocklyBlock {
-    type: string;
-    getFieldValue: (fieldName: string) => string;
-    setFieldValue: (value: string, fieldName: string) => void;
-    getChildByType: (type: string) => BlocklyBlock | null;
-}
-
-interface BlocklyWorkspace {
-    getAllBlocks: () => BlocklyBlock[];
-    addChangeListener: (listener: (event: BlocklyEvent) => void) => void;
-    removeChangeListener: (listener: (event: BlocklyEvent) => void) => void;
-    render: () => void;
-}
-
-interface BlocklyEvent {
-    type: string;
-    element?: string;
-    name?: string;
-    oldValue?: string;
-    newValue?: string;
-}
-
-interface BlocklyEvents {
-    BlockChange: new (
-        block: BlocklyBlock,
-        element: string,
-        name: string,
-        oldValue: string,
-        newValue: string
-    ) => BlocklyEvent;
-    fire: (event: BlocklyEvent) => void;
-    setGroup: (group: string) => void;
-    getGroup: () => string;
-}
-
-// Extend the Window interface to include Blockly types
-declare global {
-    interface Window {
-        Blockly: {
-            derivWorkspace?: BlocklyWorkspace;
-            Events: BlocklyEvents;
-        };
-    }
-}
 
 // Store URL trade type to apply after field options are populated
 let pendingUrlTradeType: { tradeTypeCategory: string; tradeType: string; isValid: boolean } | null = null;
@@ -355,7 +309,12 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const tradeTypeParam = urlParams.get('trade_type');
 
-                if (!tradeTypeParam) tradeTypeChangeListener = null;
+                // Only remove URL parameter if it exists AND the modal is not currently open
+                // (i.e., it's a genuine manual user change, not when modal is pending)
+                const modalState = getModalState();
+                if (tradeTypeParam && !modalState.isVisible) {
+                    removeTradeTypeFromUrl();
+                }
             }
         };
 

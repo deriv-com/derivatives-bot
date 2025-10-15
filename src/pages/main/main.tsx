@@ -171,6 +171,8 @@ const AppWrapper = observer(() => {
     };
 
     React.useEffect(() => {
+        let pollTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
         // Handle URL trade type parameters when switching to Bot Builder tab
         if (active_tab === BOT_BUILDER) {
             // Use requestAnimationFrame to ensure Blockly workspace is fully initialized
@@ -224,15 +226,24 @@ const AppWrapper = observer(() => {
                             handleTradeTypeModal();
                         } else if (pollAttempts < maxPollAttempts) {
                             pollAttempts++;
-                            setTimeout(checkBlocklyLoaded, 100);
+                            pollTimeoutId = setTimeout(checkBlocklyLoaded, 100);
                         } else {
                             console.warn('Blockly loading timeout - proceeding without URL parameter check');
                         }
                     };
+
                     checkBlocklyLoaded();
                 }
             });
         }
+
+        // Cleanup function to prevent memory leaks
+        return () => {
+            if (pollTimeoutId) {
+                clearTimeout(pollTimeoutId);
+                pollTimeoutId = null;
+            }
+        };
     }, [active_tab, is_loading]);
 
     React.useEffect(() => {
