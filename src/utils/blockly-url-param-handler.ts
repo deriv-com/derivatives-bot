@@ -318,10 +318,7 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 // Only remove URL parameter if it exists AND the modal is not currently open
                 // (i.e., it's a genuine manual user change, not when modal is pending)
                 const modalState = getModalState();
-                if (tradeTypeParam && !modalState.isVisible) {
-                    console.log('test 2');
-                    //removeTradeTypeFromUrl();
-                }
+                if (tradeTypeParam && !modalState.isVisible) return;
             }
         };
 
