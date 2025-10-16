@@ -1,5 +1,5 @@
 import { ComponentProps, useMemo } from 'react';
-import { LANGUAGES } from '@/utils/languages';
+import { FILTERED_LANGUAGES } from '@/utils/languages';
 import { useTranslations } from '@deriv-com/translations';
 import { Text, useDevice } from '@deriv-com/ui';
 
@@ -13,7 +13,7 @@ const MenuHeader = ({ hideLanguageSetting, openLanguageSetting }: TMenuHeader) =
     const { isDesktop } = useDevice();
 
     const countryIcon = useMemo(
-        () => LANGUAGES.find(({ code }) => code === currentLang)?.placeholderIconInMobile,
+        () => FILTERED_LANGUAGES.find(({ code }) => code === currentLang)?.placeholderIconInMobile,
         [currentLang]
     );
 

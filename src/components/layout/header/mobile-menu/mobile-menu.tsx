@@ -3,7 +3,7 @@ import useModalManager from '@/hooks/useModalManager';
 import { getActiveTabUrl } from '@/utils/getActiveTabUrl';
 import { FILTERED_LANGUAGES } from '@/utils/languages';
 import { useTranslations } from '@deriv-com/translations';
-import { Drawer, MobileLanguagesDrawer,useDevice } from '@deriv-com/ui';
+import { Drawer, MobileLanguagesDrawer, useDevice } from '@deriv-com/ui';
 import NetworkStatus from './../../footer/NetworkStatus';
 import ServerTime from './../../footer/ServerTime';
 import BackButton from './back-button';
@@ -33,6 +33,7 @@ const MobileMenu = ({ onLogout }: TMobileMenuProps) => {
     const openSubmenu = (submenu: string) => setActiveSubmenu(submenu);
     const closeSubmenu = () => setActiveSubmenu(null);
     const openLanguageSetting = () => showModal('MobileLanguagesDrawer');
+    const isLanguageSettingVisible = Boolean(isModalOpenFor('MobileLanguagesDrawer'));
 
     if (isDesktop) return null;
     return (
@@ -43,11 +44,34 @@ const MobileMenu = ({ onLogout }: TMobileMenuProps) => {
 
             <Drawer isOpen={isDrawerOpen} onCloseDrawer={closeDrawer} width='29.5rem'>
                 <Drawer.Header onCloseDrawer={closeDrawer}>
-                    <MenuHeader hideLanguageSetting={false} openLanguageSetting={openLanguageSetting} />
+                    <MenuHeader
+                        hideLanguageSetting={isLanguageSettingVisible}
+                        openLanguageSetting={openLanguageSetting}
+                    />
                 </Drawer.Header>
 
                 <Drawer.Content>
-                    {activeSubmenu === 'reports' ? (
+                    {isLanguageSettingVisible ? (
+                        <>
+                            <div className='mobile-menu__back-btn'>
+                                <BackButton buttonText={localize('Language')} onClick={hideModal} />
+                            </div>
+
+                            <MobileLanguagesDrawer
+                                isOpen
+                                languages={FILTERED_LANGUAGES}
+                                onClose={hideModal}
+                                onLanguageSwitch={code => {
+                                    switchLanguage(code);
+                                    hideModal();
+                                    window.location.replace(getActiveTabUrl());
+                                    window.location.reload();
+                                }}
+                                selectedLanguage={currentLang}
+                                wrapperClassName='mobile-menu__language-drawer'
+                            />
+                        </>
+                    ) : activeSubmenu === 'reports' ? (
                         <>
                             <div className='mobile-menu__back-btn'>
                                 <BackButton buttonText={localize('Reports')} onClick={closeSubmenu} />
@@ -70,21 +94,6 @@ const MobileMenu = ({ onLogout }: TMobileMenuProps) => {
                     <NetworkStatus />
                 </Drawer.Footer>
             </Drawer>
-
-            {isModalOpenFor('MobileLanguagesDrawer') && (
-                <MobileLanguagesDrawer
-                    isOpen
-                    languages={FILTERED_LANGUAGES}
-                    onClose={hideModal}
-                    onLanguageSwitch={(code: string) => {
-                        switchLanguage(code);
-                        hideModal();
-                        window.location.replace(getActiveTabUrl());
-                        window.location.reload();
-                    }}
-                    selectedLanguage={currentLang}
-                />
-            )}
         </div>
     );
 };
