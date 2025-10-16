@@ -10,7 +10,7 @@ import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
 import { TAuthData } from '@/types/api-types';
-import { initializeI18n, localize, TranslationProvider } from '@deriv-com/translations';
+import { initializeI18n, localize, TranslationProvider, useTranslations } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
 import './app-root.scss';
 
@@ -22,6 +22,28 @@ const i18nInstance = initializeI18n({
     cdnUrl: `${TRANSLATIONS_CDN_URL || 'https://translations.deriv.com'}/${R2_PROJECT_NAME}/${CROWDIN_BRANCH_NAME}`,
 });
 
+// Component to handle language URL parameter
+const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
+    const { switchLanguage } = useTranslations();
+
+    React.useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get('lang');
+
+        if (langParam) {
+            // Convert to uppercase to match our language codes
+            const langCode = langParam.toUpperCase();
+            // Only switch if it's one of our supported filtered languages
+            const supportedLangs = ['EN', 'ES', 'FR', 'PT', 'AR', 'IT', 'RU'];
+            if (supportedLangs.includes(langCode)) {
+                switchLanguage(langCode);
+            }
+        }
+    }, [switchLanguage]);
+
+    return <>{children}</>;
+};
+
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route
@@ -31,14 +53,16 @@ const router = createBrowserRouter(
                     fallback={<ChunkLoader message={localize('Please wait while we connect to the server...')} />}
                 >
                     <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
-                        <StoreProvider>
-                            <LocalStorageSyncWrapper>
-                                <RoutePromptDialog />
-                                <CoreStoreProvider>
-                                    <Layout />
-                                </CoreStoreProvider>
-                            </LocalStorageSyncWrapper>
-                        </StoreProvider>
+                        <LanguageHandler>
+                            <StoreProvider>
+                                <LocalStorageSyncWrapper>
+                                    <RoutePromptDialog />
+                                    <CoreStoreProvider>
+                                        <Layout />
+                                    </CoreStoreProvider>
+                                </LocalStorageSyncWrapper>
+                            </StoreProvider>
+                        </LanguageHandler>
                     </TranslationProvider>
                 </Suspense>
             }
