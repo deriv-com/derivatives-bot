@@ -1,26 +1,26 @@
-// import useModalManager from '@/hooks/useModalManager';
-// import { getActiveTabUrl } from '@/utils/getActiveTabUrl';
-// import { LANGUAGES } from '@/utils/languages';
-// import { useTranslations } from '@deriv-com/translations';
-// import { DesktopLanguagesModal } from '@deriv-com/ui';
+import useModalManager from '@/hooks/useModalManager';
+import { getActiveTabUrl } from '@/utils/getActiveTabUrl';
+import { FILTERED_LANGUAGES } from '@/utils/languages';
+import { useTranslations } from '@deriv-com/translations';
+import { DesktopLanguagesModal } from '@deriv-com/ui';
 import ChangeTheme from './ChangeTheme';
 import Endpoint from './Endpoint';
 import FullScreen from './FullScreen';
-// import LanguageSettings from './LanguageSettings';
+import LanguageSettings from './LanguageSettings';
 import NetworkStatus from './NetworkStatus';
 import ServerTime from './ServerTime';
 import './footer.scss';
 
 const Footer = () => {
-    // const { currentLang = 'EN', localize, switchLanguage } = useTranslations();
-    // const { hideModal, isModalOpenFor, showModal } = useModalManager();
+    const { currentLang = 'EN', localize, switchLanguage } = useTranslations();
+    const { hideModal, isModalOpenFor, showModal } = useModalManager();
 
-    // const openLanguageSettingModal = () => showModal('DesktopLanguagesModal');
+    const openLanguageSettingModal = () => showModal('DesktopLanguagesModal');
     return (
         <footer className='app-footer'>
             <FullScreen />
-            {/* <LanguageSettings openLanguageSettingModal={openLanguageSettingModal} />
-            <div className='app-footer__vertical-line' /> */}
+            <LanguageSettings openLanguageSettingModal={openLanguageSettingModal} />
+            <div className='app-footer__vertical-line' />
             <ChangeTheme />
             <div className='app-footer__vertical-line' />
             <ServerTime />
@@ -28,11 +28,11 @@ const Footer = () => {
             <NetworkStatus />
             <Endpoint />
 
-            {/* {isModalOpenFor('DesktopLanguagesModal') && (
+            {isModalOpenFor('DesktopLanguagesModal') && (
                 <DesktopLanguagesModal
                     headerTitle={localize('Select Language')}
                     isModalOpen
-                    languages={LANGUAGES}
+                    languages={FILTERED_LANGUAGES}
                     onClose={hideModal}
                     onLanguageSwitch={code => {
                         switchLanguage(code);
@@ -42,7 +42,7 @@ const Footer = () => {
                     }}
                     selectedLanguage={currentLang}
                 />
-            )} */}
+            )}
         </footer>
     );
 };
