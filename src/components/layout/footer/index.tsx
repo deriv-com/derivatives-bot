@@ -35,10 +35,17 @@ const Footer = () => {
                     languages={FILTERED_LANGUAGES}
                     onClose={hideModal}
                     onLanguageSwitch={code => {
-                        switchLanguage(code);
-                        hideModal();
-                        window.location.replace(getActiveTabUrl());
-                        window.location.reload();
+                        try {
+                            switchLanguage(code);
+                            hideModal();
+                            // Page reload is necessary because Blockly is outside React lifecycle
+                            // and won't re-render with new language without full page refresh
+                            window.location.replace(getActiveTabUrl());
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Failed to switch language:', error);
+                            hideModal();
+                        }
                     }}
                     selectedLanguage={currentLang}
                 />

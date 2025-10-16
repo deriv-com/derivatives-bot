@@ -24,7 +24,13 @@ const MenuHeader = ({ hideLanguageSetting, openLanguageSetting }: TMenuHeader) =
             </Text>
 
             {!hideLanguageSetting && (
-                <button className='mobile-menu__header__language items-center' onClick={openLanguageSetting}>
+                <button
+                    className='mobile-menu__header__language items-center'
+                    onClick={openLanguageSetting}
+                    aria-label={`${localize('Change language')} - ${localize('Current language')}: ${currentLang}`}
+                    aria-expanded='false'
+                    aria-haspopup='menu'
+                >
                     {countryIcon}
                     <Text className='ml-[0.4rem]' size={isDesktop ? 'xs' : 'sm'} weight='bold'>
                         {currentLang}

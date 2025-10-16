@@ -10,6 +10,7 @@ import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
 import { TAuthData } from '@/types/api-types';
+import { FILTERED_LANGUAGES } from '@/utils/languages';
 import { initializeI18n, localize, TranslationProvider, useTranslations } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
 import './app-root.scss';
@@ -32,11 +33,20 @@ const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
 
         if (langParam) {
             // Convert to uppercase to match our language codes
-            const langCode = langParam.toUpperCase();
-            // Only switch if it's one of our supported filtered languages
-            const supportedLangs = ['EN', 'ES', 'FR', 'PT', 'AR', 'IT', 'RU'];
-            if (supportedLangs.includes(langCode)) {
-                switchLanguage(langCode);
+            const langCode = langParam.toUpperCase() as (typeof FILTERED_LANGUAGES)[number]['code'];
+            // Use FILTERED_LANGUAGES instead of hard-coded array
+            const supportedLangCodes = FILTERED_LANGUAGES.map(lang => lang.code);
+
+            if (supportedLangCodes.includes(langCode)) {
+                try {
+                    switchLanguage(langCode);
+                    // Remove lang parameter after processing to avoid URL pollution
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('lang');
+                    window.history.replaceState({}, '', url.toString());
+                } catch (error) {
+                    console.error('Failed to switch language:', error);
+                }
             }
         }
     }, [switchLanguage]);
