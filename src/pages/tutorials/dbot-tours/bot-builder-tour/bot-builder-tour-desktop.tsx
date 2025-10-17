@@ -11,10 +11,21 @@ import { useTourHandler } from '../useTourHandler';
 const BotBuilderTourDesktop = observer(() => {
     const { is_close_tour, is_finished, handleJoyrideCallback, setIsCloseTour } = useTourHandler();
     const { dashboard, load_modal } = useStore();
-    const { active_tab, active_tour, setActiveTour, setTourDialogVisibility } = dashboard;
+    const { active_tab, active_tour, setActiveTour, setTourDialogVisibility, is_tour_dialog_visible } = dashboard;
     const { is_load_modal_open } = load_modal;
-    const token = getSetting('bot_builder_token');
-    if (!token && active_tab === 1) setTourDialogVisibility(true);
+    // Check if tour should be shown with setTimeout to prevent showing on every reload
+    React.useEffect(() => {
+        if (active_tab === 1) {
+            const timeoutId = setTimeout(() => {
+                const token = getSetting('bot_builder_token');
+                if (!token && !is_tour_dialog_visible) {
+                    setTourDialogVisibility(true);
+                }
+            }, 100);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [active_tab, is_tour_dialog_visible, setTourDialogVisibility]);
 
     React.useEffect(() => {
         if (is_finished) {

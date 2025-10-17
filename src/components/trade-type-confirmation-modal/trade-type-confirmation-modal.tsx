@@ -13,21 +13,33 @@ interface TradeTypeConfirmationModalProps {
     is_visible: boolean;
     trade_type_display_name: string;
     current_trade_type: string;
+    current_trade_type_display_name?: string;
     onConfirm: () => void;
     onCancel: () => void;
 }
 
 const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = observer(
-    ({ is_visible, trade_type_display_name, current_trade_type, onConfirm, onCancel }) => {
+    ({
+        is_visible,
+        trade_type_display_name,
+        current_trade_type,
+        current_trade_type_display_name,
+        onConfirm,
+        onCancel,
+    }) => {
         const { dashboard } = useStore();
-
         const { is_tour_dialog_visible } = dashboard;
+        const [display_name, setDisplayName] = React.useState(trade_type_display_name);
 
         // Check if user is seeing the tour (first time user)
         const isFirstTimeUser = React.useMemo(() => {
             const botBuilderToken = getSetting('bot_builder_token');
             return !botBuilderToken;
         }, []);
+        // Force re-render when trade_type_display_name changes
+        React.useEffect(() => {
+            setDisplayName(trade_type_display_name);
+        }, [trade_type_display_name, display_name]);
 
         // Handle first-time users - apply changes silently without showing modal
         React.useEffect(() => {
@@ -58,11 +70,9 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                     if (tradeTypeFromUrl && tradeTypeFromUrl.isValid) {
                         applyTradeTypeDropdownChanges(tradeTypeFromUrl.tradeTypeCategory, tradeTypeFromUrl.tradeType);
                     }
-
                     // Remove URL parameter
                     removeTradeTypeFromUrl();
 
-                    // Call the original onConfirm callback
                     onConfirm();
                 }}
                 onCancel={() => {
@@ -83,14 +93,14 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                     <p>
                         <Localize
                             i18n_default_text='You have selected a new trade type on the homepage: <0>{{trade_type_name}}</0>.'
-                            values={{ trade_type_name: trade_type_display_name }}
+                            values={{ trade_type_name: display_name }}
                             components={[<strong key={0} />]}
                         />
                     </p>
                     <p>
                         <Localize
                             i18n_default_text='Your current selection is: <0>{{current_trade_type}}</0>.'
-                            values={{ current_trade_type }}
+                            values={{ current_trade_type: current_trade_type_display_name || current_trade_type }}
                             components={[<strong key={0} />]}
                         />
                     </p>

@@ -1,53 +1,8 @@
+import { getModalState, resetUrlParamProcessing } from './trade-type-modal-handler';
 import { getTradeTypeFromCurrentUrl } from './url-trade-type-handler';
 
 // Named constants for timeouts
 const FIELD_POPULATION_DELAY = 500;
-
-// Define Blockly types
-interface BlocklyBlock {
-    type: string;
-    getFieldValue: (fieldName: string) => string;
-    setFieldValue: (value: string, fieldName: string) => void;
-    getChildByType: (type: string) => BlocklyBlock | null;
-}
-
-interface BlocklyWorkspace {
-    getAllBlocks: () => BlocklyBlock[];
-    addChangeListener: (listener: (event: BlocklyEvent) => void) => void;
-    removeChangeListener: (listener: (event: BlocklyEvent) => void) => void;
-    render: () => void;
-}
-
-interface BlocklyEvent {
-    type: string;
-    element?: string;
-    name?: string;
-    oldValue?: string;
-    newValue?: string;
-}
-
-interface BlocklyEvents {
-    BlockChange: new (
-        block: BlocklyBlock,
-        element: string,
-        name: string,
-        oldValue: string,
-        newValue: string
-    ) => BlocklyEvent;
-    fire: (event: BlocklyEvent) => void;
-    setGroup: (group: string) => void;
-    getGroup: () => string;
-}
-
-// Extend the Window interface to include Blockly types
-declare global {
-    interface Window {
-        Blockly: {
-            derivWorkspace?: BlocklyWorkspace;
-            Events: BlocklyEvents;
-        };
-    }
-}
 
 // Store URL trade type to apply after field options are populated
 let pendingUrlTradeType: { tradeTypeCategory: string; tradeType: string; isValid: boolean } | null = null;
@@ -72,7 +27,7 @@ export const disableUrlParameterApplication = () => {
 /**
  * Sets the pending URL trade type to be applied when field options are available
  */
-export const setPendingUrlTradeType = () => {
+export const setTradeTypeFromUrl = () => {
     try {
         const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
 
@@ -287,13 +242,19 @@ export const getCurrentTradeTypeFromWorkspace = (): { tradeTypeCategory: string;
         const currentCategory = tradeTypeBlock.getFieldValue('TRADETYPECAT_LIST');
         const currentTradeType = tradeTypeBlock.getFieldValue('TRADETYPE_LIST');
 
-        if (!currentCategory || !currentTradeType) {
+        // Validate field values
+        if (
+            typeof currentCategory !== 'string' ||
+            typeof currentTradeType !== 'string' ||
+            currentCategory.trim() === '' ||
+            currentTradeType.trim() === ''
+        ) {
             return null;
         }
 
         return {
-            tradeTypeCategory: currentCategory,
-            tradeType: currentTradeType,
+            tradeTypeCategory: currentCategory.trim(),
+            tradeType: currentTradeType.trim(),
         };
     } catch (error) {
         console.warn('Failed to get current trade type from workspace:', error);
@@ -313,7 +274,6 @@ export const removeTradeTypeFromUrl = (): void => {
         window.history.replaceState({}, '', url.toString());
 
         // Reset URL parameter processing flag when URL parameter is removed
-        const { resetUrlParamProcessing } = require('./trade-type-modal-handler');
         resetUrlParamProcessing();
 
         // Re-enable URL parameter application for future parameters
@@ -355,9 +315,10 @@ export const setupTradeTypeChangeListener = (): (() => void) | null => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const tradeTypeParam = urlParams.get('trade_type');
 
-                if (tradeTypeParam) {
-                    removeTradeTypeFromUrl();
-                }
+                // Only remove URL parameter if it exists AND the modal is not currently open
+                // (i.e., it's a genuine manual user change, not when modal is pending)
+                const modalState = getModalState();
+                if (tradeTypeParam && !modalState.isVisible) return;
             }
         };
 

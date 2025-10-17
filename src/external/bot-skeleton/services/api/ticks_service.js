@@ -267,7 +267,6 @@ export default class TicksService {
         };
         return new Promise((resolve, reject) => {
             if (!api_base.api) resolve([]);
-            console.log('Requesting ticks/candles', request_object);
             doUntilDone(() => api_base.api.send(request_object), ['AlreadySubscribed'], api_base)
                 .then(r => {
                     if (style === 'ticks') {
@@ -284,10 +283,8 @@ export default class TicksService {
                     }
                 })
                 .catch(error => {
-                    console.log(error, 'error in ticks service');
                     // Handle AlreadySubscribed errors gracefully - they're not fatal
                     if (error?.code === 'AlreadySubscribed') {
-                        console.log('Already subscribed to symbol, ignoring error');
                         // For AlreadySubscribed errors, we can still resolve with existing data
                         if (style === 'ticks' && this.ticks.has(symbol)) {
                             resolve(this.ticks.get(symbol));
