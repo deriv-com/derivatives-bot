@@ -350,14 +350,16 @@ const QSInput: React.FC<TQSInput> = observer(
                                             'qs__input',
                                             {
                                                 error:
-                                                    (has_error || !!error_message) &&
-                                                    (name === 'stake' ||
-                                                        name === 'max_stake' ||
-                                                        name === 'loss' ||
-                                                        name === 'profit' ||
-                                                        name === 'take_profit' ||
-                                                        name === 'tick_count' ||
-                                                        name === 'duration'),
+                                                    name === 'stake'
+                                                        ? !!error
+                                                        : (has_error || !!error_message) &&
+                                                          (name === 'stake' ||
+                                                              name === 'max_stake' ||
+                                                              name === 'loss' ||
+                                                              name === 'profit' ||
+                                                              name === 'take_profit' ||
+                                                              name === 'tick_count' ||
+                                                              name === 'duration'),
                                             },
                                             { highlight: loss_threshold_warning_data?.highlight_field?.includes(name) }
                                         )}

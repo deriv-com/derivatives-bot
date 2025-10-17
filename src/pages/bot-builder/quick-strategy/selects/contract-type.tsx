@@ -79,9 +79,7 @@ const ContractTypes: React.FC<TContractTypes> = observer(({ name }) => {
             await requestOptionsProposalForQS(request_proposal, api_base.api);
 
             // Clear previous errors if validation passes
-            if (Number(values.stake) <= 1000) {
-                setFieldError('stake', undefined);
-            }
+            setFieldError('stake', undefined);
         } catch (error_response: any) {
             const error_message = error_response?.message ?? error_response?.error?.message;
 

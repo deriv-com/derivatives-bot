@@ -143,11 +143,13 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                     if (Number(values.take_profit) === 0) {
                         error_message = error_response?.error?.message;
                     } else {
-                        error_message = `Your total payout is ${
-                            Number(values.take_profit) + Number(values.stake)
-                        }. Enter amount less than ${ref_max_payout.current} ${localize(
-                            'By changing your initial stake and/or take profit.'
-                        )}`;
+                        if (values?.take_profit && values.stake && ref_max_payout.current) {
+                            error_message = `Your total payout is ${
+                                Number(values.take_profit) + Number(values.stake)
+                            }. Enter amount less than ${ref_max_payout.current} ${localize(
+                                'By changing your initial stake and/or take profit.'
+                            )}`;
+                        }
                     }
                 }
 
