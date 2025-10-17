@@ -1,5 +1,5 @@
 import { ComponentProps, useMemo } from 'react';
-import { LANGUAGES } from '@/utils/languages';
+import { FILTERED_LANGUAGES } from '@/utils/languages';
 import { useTranslations } from '@deriv-com/translations';
 import { Text, useDevice } from '@deriv-com/ui';
 
@@ -13,7 +13,7 @@ const MenuHeader = ({ hideLanguageSetting, openLanguageSetting }: TMenuHeader) =
     const { isDesktop } = useDevice();
 
     const countryIcon = useMemo(
-        () => LANGUAGES.find(({ code }) => code === currentLang)?.placeholderIconInMobile,
+        () => FILTERED_LANGUAGES.find(({ code }) => code === currentLang)?.placeholderIconInMobile,
         [currentLang]
     );
 
@@ -24,7 +24,13 @@ const MenuHeader = ({ hideLanguageSetting, openLanguageSetting }: TMenuHeader) =
             </Text>
 
             {!hideLanguageSetting && (
-                <button className='mobile-menu__header__language items-center' onClick={openLanguageSetting}>
+                <button
+                    className='mobile-menu__header__language items-center'
+                    onClick={openLanguageSetting}
+                    aria-label={`${localize('Change language')} - ${localize('Current language')}: ${currentLang}`}
+                    aria-expanded='false'
+                    aria-haspopup='menu'
+                >
                     {countryIcon}
                     <Text className='ml-[0.4rem]' size={isDesktop ? 'xs' : 'sm'} weight='bold'>
                         {currentLang}
