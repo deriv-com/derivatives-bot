@@ -143,11 +143,13 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                     if (Number(values.take_profit) === 0) {
                         error_message = error_response?.error?.message;
                     } else {
-                        error_message = `Your total payout is ${
-                            Number(values.take_profit) + Number(values.stake)
-                        }. Enter amount less than ${ref_max_payout.current} ${localize(
-                            'By changing your initial stake and/or take profit.'
-                        )}`;
+                        if (values?.take_profit && values.stake && ref_max_payout.current) {
+                            error_message = `Your total payout is ${
+                                Number(values.take_profit) + Number(values.stake)
+                            }. Enter amount less than ${ref_max_payout.current} ${localize(
+                                'By changing your initial stake and/or take profit.'
+                            )}`;
+                        }
                     }
                 }
 
@@ -176,13 +178,20 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                 } else {
                     setFieldError('take_profit', error_message);
                     prev_error.current.take_profit = error_message;
+
+                    if (error_response?.error?.details?.field === 'amount') {
+                        // Only show the error if stake value is not empty
+                        if (values.stake !== '' && values.stake !== undefined && values.stake !== null) {
+                            setFieldError('stake', error_message);
+                        }
+                    }
                 }
             }
         }
     };
 
     const debounceChange = React.useCallback(
-        debounce(validateMinMaxForAccumulators, 500, {
+        debounce(validateMinMaxForAccumulators, 1000, {
             trailing: true,
             leading: false,
         }),
