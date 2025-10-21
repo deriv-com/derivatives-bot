@@ -302,6 +302,7 @@ npm test -- dashboard.spec.tsx
 - Keep commits atomic and focused
 - Write descriptive commit messages
 - Rebase feature branches before merging
+- TEST PR
 
 ---
 
