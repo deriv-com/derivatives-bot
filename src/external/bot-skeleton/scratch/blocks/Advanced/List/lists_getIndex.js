@@ -4,16 +4,16 @@ import { modifyContextMenu } from '../../../utils';
 window.Blockly.Blocks.lists_getIndex = {
     init() {
         this.MODE_OPTIONS = [
-            [localize('get'), 'GET'],
-            [localize('get and remove'), 'GET_REMOVE'],
-            [localize('remove'), 'REMOVE'],
+            ['get', 'GET'],
+            ['get and remove', 'GET_REMOVE'],
+            ['remove', 'REMOVE'],
         ];
         this.WHERE_OPTIONS = [
             ['#', 'FROM_START'],
-            [localize('# from end'), 'FROM_END'],
-            [localize('first'), 'FIRST'],
-            [localize('last'), 'LAST'],
-            [localize('random'), 'RANDOM'],
+            ['# from end', 'FROM_END'],
+            ['first', 'FIRST'],
+            ['last', 'LAST'],
+            ['random', 'RANDOM'],
         ];
         const modeMenu = new window.Blockly.FieldDropdown(this.MODE_OPTIONS, value => {
             const isStatement = value === 'REMOVE';

@@ -1,5 +1,4 @@
 /* eslint-disable no-confusing-arrow */
-import { localize } from '@deriv-com/translations';
 import {
     ACTIVE_SYMBOLS,
     MARKET_MAPPINGS,
@@ -327,8 +326,7 @@ export default class ActiveSymbols {
 
         Object.keys(this.processed_symbols).forEach(market_name => {
             const { display_name } = this.processed_symbols[market_name];
-            const market_display_name =
-                display_name + (this.isMarketClosed(market_name) ? ` ${localize('(Closed)')}` : '');
+            const market_display_name = display_name + (this.isMarketClosed(market_name) ? ' (Closed)' : '');
             market_options.push([market_display_name, market_name]);
         });
 
@@ -363,7 +361,7 @@ export default class ActiveSymbols {
             Object.keys(submarkets).forEach(submarket_name => {
                 const { display_name } = submarkets[submarket_name];
                 const submarket_display_name =
-                    display_name + (this.isSubmarketClosed(submarket_name) ? ` ${localize('(Closed)')}` : '');
+                    display_name + (this.isSubmarketClosed(submarket_name) ? ' (Closed)' : '');
                 submarket_options.push([submarket_display_name, submarket_name]);
             });
         }
@@ -430,7 +428,7 @@ export default class ActiveSymbols {
                     symbol_keys.forEach(symbol_name => {
                         const { display_name } = symbols[symbol_name];
                         const symbol_display_name =
-                            display_name + (this.isSymbolClosed(symbol_name) ? ` ${localize('(Closed)')}` : '');
+                            display_name + (this.isSymbolClosed(symbol_name) ? ' (Closed)' : '');
                         accumulator.push([symbol_display_name, symbol_name]);
                     });
                 }
