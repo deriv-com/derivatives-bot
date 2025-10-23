@@ -182,7 +182,7 @@ const QSInput: React.FC<TQSInput> = observer(
             e?.preventDefault();
 
             // For tick_count field or duration field with ticks, ensure we only allow integer values
-            if (name === 'tick_count' || (name === 'duration' && quick_strategy.form_data?.durationtype === 't')) {
+            if (name === 'tick_count' || name === 'duration') {
                 const intValue = Math.floor(Number(value));
                 value = String(intValue);
             }
@@ -213,10 +213,10 @@ const QSInput: React.FC<TQSInput> = observer(
             setErrorMessage(null);
 
             // Allow empty string or partial input to support backspace
-            if (input_value === '' || input_value === '0' || input_value === '0.') {
+            if (input_value === '' || input_value === '0' || input_value === '0.' || input_value === '0.0') {
                 onChange(name, input_value);
 
-                // Show error message for empty values in fields
+                // // Show error message for empty values in fields
                 if (name === 'stake' || name === 'max_stake') {
                     const min_stake = (quick_strategy?.additional_data as any)?.min_stake || 0.35;
                     setErrorMessage(`Minimum stake allowed is ${min_stake}`);
@@ -232,16 +232,20 @@ const QSInput: React.FC<TQSInput> = observer(
             }
 
             // For tick_count field or duration field with ticks, ensure we only allow integer values
-            if (
-                is_number &&
-                (name === 'tick_count' || (name === 'duration' && quick_strategy.form_data?.durationtype === 't')) &&
-                !Number.isInteger(value)
-            ) {
+            if (is_number && (name === 'tick_count' || name === 'duration') && !Number.isInteger(value)) {
                 value = Math.floor(Number(value));
             }
 
             // For all number fields, prevent decimal values less than 1
-            if (is_number && typeof value === 'number' && value < 1 && !Number.isInteger(value)) {
+            if (
+                is_number &&
+                typeof value === 'number' &&
+                value < 1 &&
+                !Number.isInteger(value) &&
+                name !== 'stake' &&
+                name !== 'max_stake' &&
+                name !== 'take_profit'
+            ) {
                 value = 1;
             }
 
@@ -297,7 +301,6 @@ const QSInput: React.FC<TQSInput> = observer(
 
             onChange(name, value);
         };
-
         return (
             <Field name={name} key={name} id={name}>
                 {({ field, meta }: FieldProps) => {
@@ -318,16 +321,22 @@ const QSInput: React.FC<TQSInput> = observer(
                             >
                                 <Popover
                                     alignment='bottom'
-                                    message={error || error_message} // Prioritize backend error over client-side error
+                                    message={
+                                        // For stake field in accumulator strategy, only show error (not error_message)
+                                        name === 'stake' ? error : error || error_message
+                                    }
                                     is_open={
-                                        !!(error || error_message) &&
-                                        (name === 'stake' ||
-                                            name === 'max_stake' ||
-                                            name === 'loss' ||
-                                            name === 'profit' ||
-                                            name === 'take_profit' ||
-                                            name === 'tick_count' ||
-                                            name === 'size')
+                                        name === 'stake'
+                                            ? !!error
+                                            : !!(error || error_message) &&
+                                              (name === 'stake' ||
+                                                  name === 'max_stake' ||
+                                                  name === 'loss' ||
+                                                  name === 'profit' ||
+                                                  name === 'take_profit' ||
+                                                  name === 'tick_count' ||
+                                                  name === 'size' ||
+                                                  name === 'duration')
                                     } // Show error message for all input fields that need validation
                                     zIndex='9999'
                                     classNameBubble='qs__warning-bubble'
@@ -341,13 +350,16 @@ const QSInput: React.FC<TQSInput> = observer(
                                             'qs__input',
                                             {
                                                 error:
-                                                    (has_error || !!error_message) &&
-                                                    (name === 'stake' ||
-                                                        name === 'max_stake' ||
-                                                        name === 'loss' ||
-                                                        name === 'profit' ||
-                                                        name === 'take_profit' ||
-                                                        name === 'tick_count'),
+                                                    name === 'stake'
+                                                        ? !!error
+                                                        : (has_error || !!error_message) &&
+                                                          (name === 'stake' ||
+                                                              name === 'max_stake' ||
+                                                              name === 'loss' ||
+                                                              name === 'profit' ||
+                                                              name === 'take_profit' ||
+                                                              name === 'tick_count' ||
+                                                              name === 'duration'),
                                             },
                                             { highlight: loss_threshold_warning_data?.highlight_field?.includes(name) }
                                         )}
@@ -441,12 +453,6 @@ const QSInput: React.FC<TQSInput> = observer(
                                                     // For non-empty values, validate and show appropriate message
                                                     const numValue = Number(value);
 
-                                                    // Prevent decimal values less than 1
-                                                    if (numValue < 1 && !Number.isInteger(numValue)) {
-                                                        setFieldValue(name, 1);
-                                                        return;
-                                                    }
-
                                                     if (numValue < min_stake) {
                                                         setErrorMessage(`Minimum stake allowed is ${min_stake}`);
                                                     } else if (numValue > max_stake) {
@@ -521,21 +527,10 @@ const QSInput: React.FC<TQSInput> = observer(
                                         bottom_label={is_exclusive_field ? currency : ''}
                                         max_characters={2}
                                         maxLength={2}
-                                        inputMode={
-                                            name === 'tick_count' ||
-                                            (name === 'duration' && quick_strategy.form_data?.durationtype === 't')
-                                                ? 'numeric'
-                                                : undefined
-                                        }
-                                        pattern={
-                                            name === 'tick_count' ||
-                                            (name === 'duration' && quick_strategy.form_data?.durationtype === 't')
-                                                ? '[0-9]*'
-                                                : undefined
-                                        }
+                                        inputMode={name === 'tick_count' || name === 'duration' ? 'numeric' : undefined}
+                                        pattern={name === 'tick_count' || name === 'duration' ? '[0-9]*' : undefined}
                                         onKeyPress={
-                                            name === 'tick_count' ||
-                                            (name === 'duration' && quick_strategy.form_data?.durationtype === 't')
+                                            name === 'tick_count' || name === 'duration'
                                                 ? e => {
                                                       if (e.key === '.') {
                                                           e.preventDefault();
@@ -559,12 +554,6 @@ const QSInput: React.FC<TQSInput> = observer(
                                                 }
 
                                                 const numValue = Number(value);
-
-                                                // Prevent decimal values less than 1
-                                                if (numValue < 1 && !Number.isInteger(numValue)) {
-                                                    setFieldValue(name, 1);
-                                                    return;
-                                                }
 
                                                 // Clear error message if value is valid
                                                 if (numValue >= min_stake && numValue <= max_stake) {

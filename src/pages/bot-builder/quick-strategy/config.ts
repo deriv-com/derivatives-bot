@@ -150,23 +150,7 @@ const LABEL_STAKE = (): TConfigItem => ({
 const STAKE = (): TConfigItem => ({
     type: 'number',
     name: 'stake',
-    validation: [
-        'number',
-        'required',
-        'ceil',
-        {
-            type: 'min',
-            value: 0.35,
-            getMessage: (min: string | number) => localize('Minimum stake allowed is {{ min }}', { min }),
-            getDynamicValue: (store: any) => store.quick_strategy?.additional_data?.min_stake || 0.35,
-        },
-        {
-            type: 'max',
-            value: 1000,
-            getMessage: (max: string | number) => localize('Maximum stake allowed is {{ max }}', { max }),
-            getDynamicValue: (store: any) => store.quick_strategy?.additional_data?.max_stake || 1000,
-        },
-    ],
+    validation: ['number', 'required', 'ceil'],
     has_currency_unit: true,
 });
 
