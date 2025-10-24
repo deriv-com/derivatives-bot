@@ -7,6 +7,7 @@ import { contract_stages, TContractStage } from '@/constants/contract-stage';
 import { run_panel } from '@/constants/run-panel';
 import { ErrorTypes, MessageTypes, observer, unrecoverable_errors } from '@/external/bot-skeleton';
 import { getSelectedTradeType } from '@/external/bot-skeleton/scratch/utils';
+import { handleBackendError, isBackendError } from '@/utils/error-handler';
 // import { journalError, switch_account_notification } from '@/utils/bot-notifications';
 import GTM from '@/utils/gtm';
 import { helpers } from '@/utils/store-helpers';
@@ -635,7 +636,12 @@ export default class RunPanelStore {
             this.error_type = ErrorTypes.RECOVERABLE_ERRORS;
         }
 
-        const error_message = error?.message;
+        // Use localized error message if it's a backend error, otherwise fallback to original message
+        let error_message = error?.message;
+        if (isBackendError(error)) {
+            error_message = handleBackendError(error);
+        }
+
         this.showErrorMessage(error_message);
     };
 

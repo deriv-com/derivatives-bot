@@ -13,9 +13,9 @@ window.Blockly.Blocks.text_trim = {
                     type: 'field_dropdown',
                     name: 'MODE',
                     options: [
-                        [localize('both sides'), 'BOTH'],
-                        [localize('left side'), 'LEFT'],
-                        [localize('right side'), 'RIGHT'],
+                        ['both sides', 'BOTH'],
+                        ['left side', 'LEFT'],
+                        ['right side', 'RIGHT'],
                     ],
                 },
                 {

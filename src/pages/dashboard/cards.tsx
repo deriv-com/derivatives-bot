@@ -89,7 +89,7 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
         {
             id: 'bot-builder',
             icon: <DerivLightBotBuilderIcon height='48px' width='48px' />,
-            content: <Localize i18n_default_text='Bot builder' />,
+            content: <Localize i18n_default_text='Bot Builder' />,
             callback: () => {
                 setActiveTab(DBOT_TABS.BOT_BUILDER);
                 rudderStackSendDashboardClickEvent({

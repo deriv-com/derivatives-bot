@@ -13,8 +13,8 @@ window.Blockly.Blocks.logic_boolean = {
                     type: 'field_dropdown',
                     name: 'BOOL',
                     options: [
-                        [localize('true'), 'TRUE'],
-                        [localize('false'), 'FALSE'],
+                        ['true', 'TRUE'],
+                        ['false', 'FALSE'],
                     ],
                 },
             ],

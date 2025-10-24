@@ -391,42 +391,37 @@ export const BOT_BUILDER_TOUR = [
     {
         target: '.animation__wrapper',
         content: <Step1 show_label />,
-        placement: isDbotRTL() ? 'bottom' : 'right',
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step1A />,
-        placement: isDbotRTL() ? 'bottom' : 'right',
-
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step2 show_label />,
-        placement: isDbotRTL() ? 'bottom' : 'right',
-
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step3 show_label />,
-        placement: isDbotRTL() ? 'bottom' : 'right',
-
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step4 show_label />,
-        placement: isDbotRTL() ? 'bottom' : 'right',
-
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step5 show_label />,
-        placement: isDbotRTL() ? 'bottom' : 'right',
-
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
     },
     {

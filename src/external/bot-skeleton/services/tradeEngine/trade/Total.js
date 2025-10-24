@@ -1,5 +1,5 @@
 import { getRoundedNumber } from '@/components/shared';
-import { localize } from '@deriv-com/translations';
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { LogTypes } from '../../../constants/messages';
 import { createError } from '../../../utils/error';
 import { observer as globalObserver } from '../../../utils/observer';
@@ -102,10 +102,10 @@ export default Engine =>
 
             if (maxLoss && maxTrades) {
                 if (this.sessionRuns >= maxTrades) {
-                    throw createError('CustomLimitsReached', localize('Maximum number of trades reached'));
+                    throw createError('CustomLimitsReached', getLocalizedErrorMessage('MaxTradesReached'));
                 }
                 if (this.sessionProfit <= -maxLoss) {
-                    throw createError('CustomLimitsReached', localize('Maximum loss amount reached'));
+                    throw createError('CustomLimitsReached', getLocalizedErrorMessage('MaxLossReached'));
                 }
             }
         }

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { getCurrencyDisplayCode } from '@/components/shared';
 import Text from '@/components/shared_ui/text';
-import { Localize, localize } from '@deriv-com/translations';
+import { Localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import { TAccountSwitcher } from './common/types';
 import AccountInfoIcon from './account-info-icon';
@@ -43,7 +43,7 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                     <div className='acc-info__content'>
                         <div className='acc-info__account-type-header'>
                             <Text as='p' size='xxxs' className='acc-info__account-type'>
-                                {isVirtual ? localize('Demo') : localize('Real')}
+                                {isVirtual ? 'Demo' : 'Real'}
                             </Text>
                         </div>
                         {(typeof balance !== 'undefined' || !currency) && (

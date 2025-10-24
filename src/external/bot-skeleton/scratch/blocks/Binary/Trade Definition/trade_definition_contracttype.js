@@ -44,7 +44,7 @@ window.Blockly.Blocks.trade_definition_contracttype = {
                 const trade_types = getContractTypeOptions('both', trade_type);
 
                 if (trade_types.length > 1) {
-                    contract_type_options.push([localize('Both'), 'both']);
+                    contract_type_options.push(['Both', 'both']);
                 }
 
                 contract_type_options.push(...trade_types);
