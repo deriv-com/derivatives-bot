@@ -49,8 +49,6 @@
     }
 
     &__arrow {
-        position: absolute;
-        right: 1.3rem;
         fill: var(--text-general);
 
         --fill-color1: var(--text-less-prominent);
@@ -63,7 +61,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        padding-left: 1.2rem;
+        padding-inline-start: 1.2rem;
 
         &-text {
             color: var(--text-prominent);

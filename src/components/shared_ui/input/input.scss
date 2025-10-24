@@ -216,10 +216,10 @@
     }
 
     &__leading-icon {
-        margin-left: 1rem;
+        margin-inline-start: 1rem;
         top: 1rem;
         position: absolute;
-        left: 0;
+        inset-inline-start: 0;
         pointer-events: none;
         cursor: text;
         font-size: var(--text-size-xs);
@@ -229,18 +229,18 @@
 
             + .dc-input__field {
                 // default padding for three letter currency symbols
-                padding-left: calc(1.6rem + 2.4rem);
+                padding-inline-start: calc(1.6rem + 2.4rem);
             }
 
             &--usdc + .dc-input__field,
             &--ust + .dc-input__field {
-                padding-left: calc(1.6rem + 3.2rem);
+                padding-inline-start: calc(1.6rem + 3.2rem);
             }
         }
     }
 
     &__trailing-icon {
-        right: 0;
+        // right: 0;
         font-size: var(--text-size-xs);
 
         &.symbols {
