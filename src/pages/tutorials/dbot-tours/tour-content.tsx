@@ -92,7 +92,7 @@ export const DBOT_ONBOARDING = [
                 step_index={4}
             />
         ),
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
         disableOverlay: false,
     },
@@ -100,7 +100,7 @@ export const DBOT_ONBOARDING = [
         target: '.dc-drawer__container',
         content: (
             <TourSteps
-                label={<Localize i18n_default_text='Check your bot’s performance' />}
+                label={<Localize i18n_default_text="Check your bot's performance" />}
                 content={[
                     <Localize
                         key='check bot performance'
@@ -111,7 +111,7 @@ export const DBOT_ONBOARDING = [
                 step_index={5}
             />
         ),
-        placement: isDbotRTL() ? 'right' : 'left',
+        placement: isDbotRTL() ? 'left' : 'right',
         ...joyride_props,
         disableOverlay: false,
     },
@@ -391,37 +391,37 @@ export const BOT_BUILDER_TOUR = [
     {
         target: '.animation__wrapper',
         content: <Step1 show_label />,
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step1A />,
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step2 show_label />,
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step3 show_label />,
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step4 show_label />,
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
     },
     {
         target: '.animation__wrapper',
         content: <Step5 show_label />,
-        placement: isDbotRTL() ? 'left' : 'right',
+        placement: isDbotRTL() ? 'right' : 'left',
         ...joyride_props,
     },
     {
@@ -551,7 +551,6 @@ export const DBOT_ONBOARDING_MOBILE: TMobileTourConfig[] = [
                     key='check-your-bots-performance'
                     i18n_default_text='See how your bot is doing in real-time.'
                 />
-                ,
             </span>,
         ],
         tour_step_key: 6,

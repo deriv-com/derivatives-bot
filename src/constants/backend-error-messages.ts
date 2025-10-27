@@ -1,29 +1,58 @@
 import { localize } from '@deriv-com/translations';
 
 /**
- * Converts backend parameter format [_1], [_2] to frontend format and maps parameters
+ * Converts backend parameter format to frontend format and maps parameters
  * @param message - The backend error message
- * @param details - The error details containing parameter values
+ * @param errorResponse - The complete error response containing code_args, details, etc.
  * @returns Processed parameters object
  */
-const processBackendParameters = (message: string, details?: Record<string, any>) => {
-    if (!details) return {};
+const processBackendParameters = (message: string, errorResponse?: Record<string, any>) => {
+    if (!errorResponse) return {};
 
     const params: Record<string, any> = {};
 
-    // Handle common parameter mappings from backend error message format
-    if (details._1 !== undefined) params.param1 = details._1;
-    if (details._2 !== undefined) params.param2 = details._2;
-    if (details._3 !== undefined) params.param3 = details._3;
-    if (details._4 !== undefined) params.param4 = details._4;
-    if (details._5 !== undefined) params.param5 = details._5;
+    // Handle new code_args array format
+    if (errorResponse.code_args && Array.isArray(errorResponse.code_args)) {
+        errorResponse.code_args.forEach((value: any, index: number) => {
+            params[`param${index + 1}`] = value;
+        });
+    }
 
-    // Also include any named parameters from details
-    Object.keys(details).forEach(key => {
-        if (!key.startsWith('_')) {
-            params[key] = details[key];
-        }
-    });
+    // Handle legacy format for backward compatibility
+    if (errorResponse.details) {
+        const details = errorResponse.details;
+
+        // Handle common parameter mappings from legacy backend error message format
+        if (details._1 !== undefined) params.param1 = details._1;
+        if (details._2 !== undefined) params.param2 = details._2;
+        if (details._3 !== undefined) params.param3 = details._3;
+        if (details._4 !== undefined) params.param4 = details._4;
+        if (details._5 !== undefined) params.param5 = details._5;
+
+        // Also include any named parameters from details
+        Object.keys(details).forEach(key => {
+            if (!key.startsWith('_')) {
+                params[key] = details[key];
+            }
+        });
+    }
+
+    // Handle direct parameter mapping (for backward compatibility)
+    if (!errorResponse.code_args && !errorResponse.details) {
+        // Handle common parameter mappings from legacy format
+        if (errorResponse._1 !== undefined) params.param1 = errorResponse._1;
+        if (errorResponse._2 !== undefined) params.param2 = errorResponse._2;
+        if (errorResponse._3 !== undefined) params.param3 = errorResponse._3;
+        if (errorResponse._4 !== undefined) params.param4 = errorResponse._4;
+        if (errorResponse._5 !== undefined) params.param5 = errorResponse._5;
+
+        // Also include any named parameters
+        Object.keys(errorResponse).forEach(key => {
+            if (!key.startsWith('_') && !['code', 'subcode', 'message'].includes(key)) {
+                params[key] = errorResponse[key];
+            }
+        });
+    }
 
     return params;
 };
@@ -92,7 +121,7 @@ export const getBackendErrorMessages = () => ({
     ContractUpdateDisabled: localize('Update of stop loss and take profit is not available at the moment.'),
     ContractUpdateFailure: localize('Invalid contract update parameters.'),
     ContractUpdateNotAllowed: localize(
-        "This contract cannot be updated once you've made your purchase. This feature is not available for this contract type."
+        "This contract cannot be updated once you've made your purchase.This feature is not available for this contract type."
     ),
     ContractUpdateTooFrequent: localize('Only one update per second is allowed.'),
     CrossMarketIntraday: localize('Intraday contracts may not cross market open.'),
@@ -137,6 +166,7 @@ export const getBackendErrorMessages = () => ({
     InvalidBarrierDouble: localize('Invalid barrier (Double barrier input is expected).'),
     InvalidBarrierForSpot: localize('Barrier must be at least {{param1}} away from the spot.'),
     InvalidBarrierMixedBarrier: localize('Invalid barrier (Contract can have only one type of barrier).'),
+    InvalidBarrierPredefined: localize('Barriers available are {{param1}}.'),
     InvalidBarrierRange: localize('Barriers must be on either side of the spot.'),
     InvalidBarrierSingle: localize('Invalid barrier (Single barrier input is expected).'),
     InvalidBarrierUndef: localize('Invalid barrier.'),
@@ -153,6 +183,7 @@ export const getBackendErrorMessages = () => ({
     InvalidMinStake: localize("Please enter a stake amount that's at least {{param1}}."),
     InvalidNonBinaryPrice: localize('Contract price cannot be zero.'),
     InvalidPayoutCurrency: localize('Invalid payout currency'),
+    InvalidPayoutPerPoint: localize('Available payout per points are {{param1}}.'),
     InvalidPrice: localize('Price provided can not have more than {{param1}} decimal places.'),
     InvalidRequest: localize('Invalid request.'),
     InvalidStake: localize('Invalid stake/payout.'),
@@ -164,6 +195,7 @@ export const getBackendErrorMessages = () => ({
     InvalidStyle: localize('Invalid style.'),
     InvalidSymbol: localize('Invalid symbol.'),
     InvalidTickExpiry: localize('Invalid duration (tick) for contract type ({{param1}}).'),
+    InvalidToken: localize('Your token has expired or is invalid.'),
     InvalidUpdateArgument: localize('Only a hash reference input is accepted.'),
     InvalidUpdateValue: localize('Please enter a number or a null value.'),
     InvalidVolatility: localize('We could not process this contract at this time.'),
@@ -217,7 +249,7 @@ export const getBackendErrorMessages = () => ({
     OutdatedVolatilityData: localize('Trading is suspended due to missing market (out-of-date volatility) data.'),
     PastExpiryTime: localize('Expiry time cannot be in the past.'),
     PastStartTime: localize('Start time is in the past.'),
-    PayoutLimitExceeded: localize('This contract is limited to {{param1}} payout on this account.'),
+    PayoutLimitExceeded: localize('Maximum payout allowed is {{param1}}.'),
     PayoutLimits: localize(
         'Minimum stake of {{param1}} and maximum payout of {{param2}}. Current payout is {{param3}}.'
     ),
@@ -265,6 +297,7 @@ export const getBackendErrorMessages = () => ({
         "We can't take you to your account right now due to system maintenance. Please try again later."
     ),
     SymbolMissingInBetMarketTable: localize('Trading is suspended for this instrument.'),
+    SingleTickNumberLimits: localize('Number of ticks must be {{param1}}.'),
     TicksNumberLimits: localize('Number of ticks must be between {{param1}} and {{param2}}.'),
     TooManyHolidays: localize('Too many market holidays during the contract period.'),
     TradeTemporarilyUnavailable: localize('This trade is temporarily unavailable.'),
@@ -295,10 +328,10 @@ export const getBackendErrorMessages = () => ({
 /**
  * Helper function to get localized error message by error code
  * @param errorCode - The backend error code
- * @param details - Optional error details containing parameter values
+ * @param errorResponse - The complete error response containing code_args, details, etc.
  * @returns Localized error message
  */
-export const getLocalizedErrorMessage = (errorCode: string, details?: Record<string, any>): string => {
+export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Record<string, any>): string => {
     const errorMessages = getBackendErrorMessages();
     const message = errorMessages[errorCode as keyof typeof errorMessages];
 
@@ -308,7 +341,7 @@ export const getLocalizedErrorMessage = (errorCode: string, details?: Record<str
     }
 
     // Process backend parameters and pass them to localize
-    const processedParams = processBackendParameters(message, details);
+    const processedParams = processBackendParameters(message, errorResponse);
     return localize(message, processedParams);
 };
 

@@ -1,3 +1,6 @@
+import { localize } from '@deriv-com/translations';
+import { translateTradingTimesData } from '../../../utils/market-category-translator';
+
 class TradingTimesService {
     private trading_times_cache: any = null;
     private cache_expiry: number = 0;
@@ -19,7 +22,11 @@ class TradingTimesService {
 
         // For now, skip API call and use trading data directly to avoid authentication issues
         const trading_times = trading_data.trading_times;
-        this.trading_times_cache = trading_times;
+
+        // Translate any API-returned category names
+        const translated_trading_times = translateTradingTimesData(trading_times);
+
+        this.trading_times_cache = translated_trading_times;
         this.cache_expiry = now + this.CACHE_DURATION;
 
         // Double-check the structure before returning
@@ -28,10 +35,10 @@ class TradingTimesService {
             return {
                 markets: [
                     {
-                        name: 'Derived',
+                        name: localize('Derived'),
                         submarkets: [
                             {
-                                name: 'Continuous Indices',
+                                name: localize('Continuous Indices'),
                                 symbols: [
                                     { symbol: 'R_10', display_name: 'Volatility 10 Index', underlying_symbol: 'R_10' },
                                 ],
@@ -42,7 +49,7 @@ class TradingTimesService {
             };
         }
 
-        return trading_times;
+        return translateTradingTimesData(trading_times);
     }
 
     /**
@@ -62,10 +69,10 @@ class TradingTimesService {
             trading_times: {
                 markets: [
                     {
-                        name: 'Derived',
+                        name: localize('Derived'),
                         submarkets: [
                             {
-                                name: 'Continuous Indices',
+                                name: localize('Continuous Indices'),
                                 symbols: [
                                     {
                                         symbol: 'R_10',
@@ -135,7 +142,7 @@ class TradingTimesService {
                                 ],
                             },
                             {
-                                name: 'Crash/Boom',
+                                name: localize('Crash/Boom'),
                                 symbols: [
                                     {
                                         symbol: 'CRASH500',
@@ -158,10 +165,10 @@ class TradingTimesService {
                         ],
                     },
                     {
-                        name: 'Forex',
+                        name: localize('Forex'),
                         submarkets: [
                             {
-                                name: 'Major Pairs',
+                                name: localize('Major Pairs'),
                                 symbols: [
                                     { symbol: 'frxEURUSD', display_name: 'EUR/USD', underlying_symbol: 'frxEURUSD' },
                                     { symbol: 'frxGBPUSD', display_name: 'GBP/USD', underlying_symbol: 'frxGBPUSD' },
@@ -170,7 +177,7 @@ class TradingTimesService {
                                 ],
                             },
                             {
-                                name: 'Forex Basket',
+                                name: localize('Forex Basket'),
                                 symbols: [
                                     { symbol: 'WLDAUD', display_name: 'AUD Basket', underlying_symbol: 'WLDAUD' },
                                     { symbol: 'WLDEUR', display_name: 'EUR Basket', underlying_symbol: 'WLDEUR' },
@@ -181,10 +188,10 @@ class TradingTimesService {
                         ],
                     },
                     {
-                        name: 'Stock Indices',
+                        name: localize('Stock Indices'),
                         submarkets: [
                             {
-                                name: 'American Indices',
+                                name: localize('American Indices'),
                                 symbols: [
                                     { symbol: 'OTC_DJI', display_name: 'Wall Street 30', underlying_symbol: 'OTC_DJI' },
                                     { symbol: 'OTC_SPC', display_name: 'US 500', underlying_symbol: 'OTC_SPC' },
@@ -192,7 +199,7 @@ class TradingTimesService {
                                 ],
                             },
                             {
-                                name: 'European Indices',
+                                name: localize('European Indices'),
                                 symbols: [
                                     { symbol: 'OTC_FTSE', display_name: 'UK 100', underlying_symbol: 'OTC_FTSE' },
                                     { symbol: 'OTC_GDAXI', display_name: 'Germany 40', underlying_symbol: 'OTC_GDAXI' },
@@ -200,7 +207,7 @@ class TradingTimesService {
                                 ],
                             },
                             {
-                                name: 'Asian Indices',
+                                name: localize('Asian Indices'),
                                 symbols: [
                                     {
                                         symbol: 'OTC_AS51',
@@ -213,10 +220,10 @@ class TradingTimesService {
                         ],
                     },
                     {
-                        name: 'Cryptocurrencies',
+                        name: localize('Cryptocurrencies'),
                         submarkets: [
                             {
-                                name: 'Non-Stable Coins',
+                                name: localize('Non-Stable Coins'),
                                 symbols: [
                                     { symbol: 'cryBTCUSD', display_name: 'BTC/USD', underlying_symbol: 'cryBTCUSD' },
                                     { symbol: 'cryETHUSD', display_name: 'ETH/USD', underlying_symbol: 'cryETHUSD' },
@@ -225,10 +232,10 @@ class TradingTimesService {
                         ],
                     },
                     {
-                        name: 'Commodities',
+                        name: localize('Commodities'),
                         submarkets: [
                             {
-                                name: 'Metals',
+                                name: localize('Metals'),
                                 symbols: [
                                     { symbol: 'frxXAUUSD', display_name: 'Gold/USD', underlying_symbol: 'frxXAUUSD' },
                                     { symbol: 'frxXAGUSD', display_name: 'Silver/USD', underlying_symbol: 'frxXAGUSD' },

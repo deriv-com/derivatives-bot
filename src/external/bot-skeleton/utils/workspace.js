@@ -42,5 +42,6 @@ export const removeLimitedBlocks = (workspace, block_types) => {
 export const isDbotRTL = () => {
     const htmlElement = document.documentElement;
     const dirValue = htmlElement.getAttribute('dir');
+    console.log('Direction value:', dirValue);
     return dirValue === 'rtl';
 };

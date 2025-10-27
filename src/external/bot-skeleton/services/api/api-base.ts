@@ -7,6 +7,7 @@ import { setSessionToken } from '@/utils/session-token-utils';
 import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';
 import { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';
+import { translateMarketCategory } from '../../../../utils/market-category-translator';
 import { observer as globalObserver } from '../../utils/observer';
 import { doUntilDone, socket_state } from '../tradeEngine/utils/helpers';
 import {
@@ -466,30 +467,32 @@ class APIBase {
 
             try {
                 trading_times.markets.forEach((market: any) => {
-                    // Use the name property directly as the display name
+                    // Use the name property and translate it
                     if (market.name) {
-                        market_display_names.set(market.name, market.name);
+                        const translatedMarketName = translateMarketCategory(market.name);
+                        market_display_names.set(market.name, translatedMarketName);
 
                         // Also create reverse mapping for market codes
                         for (const [code, name] of market_mapping.entries()) {
                             if (name === market.name) {
-                                market_display_names.set(code, market.name);
+                                market_display_names.set(code, translatedMarketName);
                             }
                         }
                     }
 
                     if (market.submarkets) {
                         market.submarkets.forEach((submarket: any) => {
-                            // Use the name property directly as the display name
+                            // Use the name property and translate it
                             if (submarket.name && market.name) {
+                                const translatedSubmarketName = translateMarketCategory(submarket.name);
                                 const key = `${market.name}_${submarket.name}`;
-                                submarket_display_names.set(key, submarket.name);
+                                submarket_display_names.set(key, translatedSubmarketName);
 
                                 // Also create mapping for market codes and submarket codes
                                 for (const [code, name] of market_mapping.entries()) {
                                     if (name === market.name) {
                                         const code_key = `${code}_${submarket.name}`;
-                                        submarket_display_names.set(code_key, submarket.name);
+                                        submarket_display_names.set(code_key, translatedSubmarketName);
                                     }
                                 }
                             }
