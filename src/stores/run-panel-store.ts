@@ -640,15 +640,49 @@ export default class RunPanelStore {
         let error_message = error?.message;
         if (isBackendError(error)) {
             error_message = handleBackendError(error);
+        } else if (error?.code && typeof error.code === 'string') {
+            // Handle errors that have a code but might not be structured as BackendError
+            // This covers cases like "InvalidtoBuy" errors from bot-skeleton
+            const backendError = {
+                code: error.code,
+                message: error.message,
+                details: error.code_args ? { code_args: error.code_args } : error.details,
+            };
+            error_message = handleBackendError(backendError);
         }
 
-        this.showErrorMessage(error_message);
+        this.showErrorMessage(error_message, error);
     };
 
-    showErrorMessage = (data: string | Error) => {
+    showErrorMessage = (data: string | Error, originalError?: any) => {
+        let processedMessage = data;
+
+        // If it's a string with placeholder patterns, try to process it
+        if (typeof data === 'string' && data.includes('[_')) {
+            // Check if this looks like an "InvalidtoBuy" error
+            if (data.includes('Minimum stake') && data.includes('maximum payout')) {
+                // Try to get the localized message for InvalidtoBuy with parameters
+                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+
+                // If we have the original error with code_args, use those values
+                if (originalError?.code_args && Array.isArray(originalError.code_args)) {
+                    const details = {
+                        param1: originalError.code_args[0],
+                        param2: originalError.code_args[1],
+                        param3: originalError.code_args[2],
+                        param4: originalError.code_args[3],
+                        param5: originalError.code_args[4],
+                    };
+                    processedMessage = getLocalizedErrorMessage('InvalidtoBuy', details);
+                } else {
+                    processedMessage = getLocalizedErrorMessage('InvalidtoBuy');
+                }
+            }
+        }
+
         const { journal } = this.root_store;
         const { ui } = this.core;
-        journal.onError(data);
+        journal.onError(processedMessage);
         if (journal.journal_filters.some(filter => filter === MessageTypes.ERROR)) {
             this.toggleDrawer(true);
             this.setActiveTabIndex(run_panel.JOURNAL);
@@ -695,7 +729,46 @@ export default class RunPanelStore {
 
     onMount = () => {
         const { journal } = this.root_store;
-        observer.register('ui.log.error', this.showErrorMessage);
+
+        // Create a generic handler for ui.log.error that can extract error codes and use getLocalizedErrorMessage
+        const handleUiLogError = (errorMessage: string) => {
+            // If errorMessage is a string with placeholder patterns, try to extract the error code
+            if (typeof errorMessage === 'string' && errorMessage.includes('[_')) {
+                const {
+                    getLocalizedErrorMessage,
+                    getBackendErrorMessages,
+                } = require('@/constants/backend-error-messages');
+                const errorMessages = getBackendErrorMessages();
+
+                // Find the error code by matching the message pattern
+                let matchedErrorCode: string | null = null;
+
+                // Convert placeholders from [_1], [_2] format to {{param1}}, {{param2}} format for comparison
+                const normalizedMessage = errorMessage.replace(/\[_(\d+)\]/g, '{{param$1}}');
+                // Search through all error codes to find a match
+                for (const [errorCode, errorTemplate] of Object.entries(errorMessages)) {
+                    // errorTemplate is a string (the localized template)
+                    if (typeof errorTemplate === 'string' && errorTemplate === normalizedMessage) {
+                        matchedErrorCode = errorCode;
+                        break;
+                    }
+                }
+
+                if (matchedErrorCode) {
+                    // Use the localized message for this error code
+                    const localizedMessage = getLocalizedErrorMessage(matchedErrorCode);
+                    this.showErrorMessage(localizedMessage);
+                    return;
+                } else {
+                    console.log('No matching error code found, using original message');
+                }
+            }
+
+            // Default behavior for other errors or when we can't find a match
+            this.showErrorMessage(errorMessage);
+        };
+
+        observer.register('ui.log.error', handleUiLogError);
         observer.register('ui.log.notify', journal.onNotify);
         observer.register('ui.log.success', journal.onLogSuccess);
         observer.register('client.invalid_token', this.handleInvalidToken);

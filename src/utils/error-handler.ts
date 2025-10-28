@@ -27,8 +27,23 @@ export const handleBackendError = (error: BackendError): string => {
         return getLocalizedErrorMessage('GeneralError');
     }
 
+    // Handle code_args format specifically for parameter replacement
+    let details = error.details;
+    if (error.details?.code_args && Array.isArray(error.details.code_args)) {
+        // Convert code_args array to parameter object for easier processing
+        const code_args = error.details.code_args;
+        details = {
+            ...error.details,
+            param1: code_args[0],
+            param2: code_args[1],
+            param3: code_args[2],
+            param4: code_args[3],
+            param5: code_args[4],
+        };
+    }
+
     // Get localized message for the specific error code with details
-    return getLocalizedErrorMessage(error.code, error.details);
+    return getLocalizedErrorMessage(error.code, details);
 };
 
 /**

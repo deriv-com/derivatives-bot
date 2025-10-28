@@ -187,6 +187,9 @@ export const getBackendErrorMessages = () => ({
     InvalidPrice: localize('Price provided can not have more than {{param1}} decimal places.'),
     InvalidRequest: localize('Invalid request.'),
     InvalidStake: localize('Invalid stake/payout.'),
+    InvalidtoBuy: localize(
+        'Minimum stake of {{param1}} and maximum payout of {{param2}}. Current payout is {{param3}}.'
+    ),
     InvalidStakeMoreThanPrice: localize("Contract's stake amount is more than the maximum purchase price."),
     InvalidStartEnd: localize('Start time {{param1}} must be before end time {{param2}}'),
     InvalidStopOut: localize(
@@ -333,16 +336,25 @@ export const getBackendErrorMessages = () => ({
  */
 export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Record<string, any>): string => {
     const errorMessages = getBackendErrorMessages();
-    const message = errorMessages[errorCode as keyof typeof errorMessages];
+    let message = errorMessages[errorCode as keyof typeof errorMessages];
 
     if (!message) {
-        // Fallback to a generic error message if the error code is not found
-        return localize('An error occurred. Please try again.');
+        // If no predefined message, use the backend message if available
+        message = errorResponse?.message || localize('An error occurred. Please try again.');
     }
 
-    // Process backend parameters and pass them to localize
+    // Handle direct replacement of [_1], [_2], [_3] format with code_args values
+    if (errorResponse?.code_args && Array.isArray(errorResponse.code_args)) {
+        errorResponse.code_args.forEach((value: any, index: number) => {
+            const placeholder = `[_${index + 1}]`;
+            message = message.replace(new RegExp(`\\${placeholder}`, 'g'), value);
+        });
+    }
+
+    // Process backend parameters for {{param}} format and pass them to localize
     const processedParams = processBackendParameters(message, errorResponse);
-    return localize(message, processedParams);
+    const finalMessage = localize(message, processedParams);
+    return finalMessage;
 };
 
 /**
