@@ -33,8 +33,8 @@ const sanitizeParameterValue = (value: any): string => {
             .replace(/javascript\s*:/gi, '')
             .replace(/data\s*:/gi, '')
             .replace(/vbscript\s*:/gi, '')
-            // More robust event handler removal with word boundaries and optional whitespace
-            .replace(/\bon\w+\s*=/gi, '')
+            // More robust event handler removal: remove the entire attribute, including value (quoted or unquoted)
+            .replace(/\bon\w+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '')
             // Remove any remaining dangerous patterns
             .replace(/expression\s*\(/gi, '')
             .replace(/url\s*\(/gi, '');
