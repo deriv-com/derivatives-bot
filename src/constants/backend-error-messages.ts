@@ -24,15 +24,20 @@ const sanitizeParameterValue = (value: any): string => {
         return htmlEntities[match] || match;
     });
 
-    // 2. Repeatedly remove script-like content and event handlers to prevent incomplete sanitization
+    // 2. Repeatedly remove script-like content and event handlers with more robust patterns
     let previous;
     do {
         previous = sanitized;
         sanitized = sanitized
-            .replace(/javascript:/gi, '')
-            .replace(/data:/gi, '')
-            .replace(/vbscript:/gi, '')
-            .replace(/on\w+=/gi, '');
+            // Handle URL schemes with optional whitespace
+            .replace(/javascript\s*:/gi, '')
+            .replace(/data\s*:/gi, '')
+            .replace(/vbscript\s*:/gi, '')
+            // More robust event handler removal with word boundaries and optional whitespace
+            .replace(/\bon\w+\s*=/gi, '')
+            // Remove any remaining dangerous patterns
+            .replace(/expression\s*\(/gi, '')
+            .replace(/url\s*\(/gi, '');
     } while (sanitized !== previous);
 
     // 3. Limit length to prevent buffer overflow attacks

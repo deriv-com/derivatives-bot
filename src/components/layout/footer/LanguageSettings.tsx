@@ -12,7 +12,7 @@ const LanguageSettings = ({ openLanguageSettingModal }: TLanguageSettings) => {
     const { currentLang, localize } = useTranslations();
 
     const countryIcon = useMemo(
-        () => FILTERED_LANGUAGES.find(({ code }: { code: string }) => code == currentLang)?.placeholderIcon,
+        () => FILTERED_LANGUAGES.find(({ code }: { code: string }) => code === currentLang)?.placeholderIcon,
         [currentLang]
     );
 

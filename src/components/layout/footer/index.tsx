@@ -40,8 +40,8 @@ const Footer = () => {
                             hideModal();
                             // Page reload is necessary because Blockly is outside React lifecycle
                             // and won't re-render with new language without full page refresh
+                            // Use replace() to navigate to the active tab URL which will reload the page
                             window.location.replace(getActiveTabUrl());
-                            window.location.reload();
                         } catch (error) {
                             console.error('Failed to switch language:', error);
                             hideModal();
