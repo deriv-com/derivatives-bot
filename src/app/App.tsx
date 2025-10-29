@@ -33,11 +33,13 @@ const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
 
         if (langParam) {
             // Convert to uppercase to match our language codes
-            const langCode = langParam.toUpperCase() as (typeof FILTERED_LANGUAGES)[number]['code'];
+            const langCodeCandidate = langParam.toUpperCase();
             // Use FILTERED_LANGUAGES instead of hard-coded array
             const supportedLangCodes = FILTERED_LANGUAGES.map(lang => lang.code);
 
-            if (supportedLangCodes.includes(langCode)) {
+            if (supportedLangCodes.includes(langCodeCandidate)) {
+                // Type assertion is safe here since we've validated the value
+                const langCode = langCodeCandidate as (typeof FILTERED_LANGUAGES)[number]['code'];
                 try {
                     switchLanguage(langCode);
                     // Remove lang parameter after processing to avoid URL pollution

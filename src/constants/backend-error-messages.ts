@@ -1,6 +1,37 @@
 import { localize } from '@deriv-com/translations';
 
 /**
+ * Sanitizes parameter values to prevent XSS attacks
+ * @param value - The parameter value to sanitize
+ * @returns Sanitized string safe for display
+ */
+const sanitizeParameterValue = (value: any): string => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    
+    const stringValue = String(value);
+    
+    // Remove HTML tags and potentially dangerous characters
+    return stringValue
+        .replace(/[<>'"&]/g, (match) => {
+            const htmlEntities: Record<string, string> = {
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#x27;',
+                '&': '&amp;'
+            };
+            return htmlEntities[match] || match;
+        })
+        // Remove any remaining script-like content
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+=/gi, '')
+        // Limit length to prevent buffer overflow attacks
+        .substring(0, 1000);
+};
+
+/**
  * Converts backend parameter format to frontend format and maps parameters
  * @param message - The backend error message
  * @param errorResponse - The complete error response containing code_args, details, etc.
@@ -18,7 +49,8 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
             let cleanValue = String(value);
             // Remove all trailing dots (not just one)
             cleanValue = cleanValue.replace(/\.+$/, '');
-            params[`param${index + 1}`] = cleanValue;
+            // Apply XSS protection
+            params[`param${index + 1}`] = sanitizeParameterValue(cleanValue);
         });
     }
 
@@ -27,16 +59,16 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
         const details = errorResponse.details;
 
         // Handle common parameter mappings from legacy backend error message format
-        if (details._1 !== undefined) params.param1 = String(details._1).replace(/\.+$/, '');
-        if (details._2 !== undefined) params.param2 = String(details._2).replace(/\.+$/, '');
-        if (details._3 !== undefined) params.param3 = String(details._3).replace(/\.+$/, '');
-        if (details._4 !== undefined) params.param4 = String(details._4).replace(/\.+$/, '');
-        if (details._5 !== undefined) params.param5 = String(details._5).replace(/\.+$/, '');
+        if (details._1 !== undefined) params.param1 = sanitizeParameterValue(String(details._1).replace(/\.+$/, ''));
+        if (details._2 !== undefined) params.param2 = sanitizeParameterValue(String(details._2).replace(/\.+$/, ''));
+        if (details._3 !== undefined) params.param3 = sanitizeParameterValue(String(details._3).replace(/\.+$/, ''));
+        if (details._4 !== undefined) params.param4 = sanitizeParameterValue(String(details._4).replace(/\.+$/, ''));
+        if (details._5 !== undefined) params.param5 = sanitizeParameterValue(String(details._5).replace(/\.+$/, ''));
 
         // Also include any named parameters from details
         Object.keys(details).forEach(key => {
             if (!key.startsWith('_')) {
-                params[key] = String(details[key]).replace(/\.+$/, '');
+                params[key] = sanitizeParameterValue(String(details[key]).replace(/\.+$/, ''));
             }
         });
     }
@@ -44,16 +76,16 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
     // Handle direct parameter mapping (for backward compatibility)
     if (!errorResponse.code_args && !errorResponse.details) {
         // Handle common parameter mappings from legacy format
-        if (errorResponse._1 !== undefined) params.param1 = String(errorResponse._1).replace(/\.+$/, '');
-        if (errorResponse._2 !== undefined) params.param2 = String(errorResponse._2).replace(/\.+$/, '');
-        if (errorResponse._3 !== undefined) params.param3 = String(errorResponse._3).replace(/\.+$/, '');
-        if (errorResponse._4 !== undefined) params.param4 = String(errorResponse._4).replace(/\.+$/, '');
-        if (errorResponse._5 !== undefined) params.param5 = String(errorResponse._5).replace(/\.+$/, '');
+        if (errorResponse._1 !== undefined) params.param1 = sanitizeParameterValue(String(errorResponse._1).replace(/\.+$/, ''));
+        if (errorResponse._2 !== undefined) params.param2 = sanitizeParameterValue(String(errorResponse._2).replace(/\.+$/, ''));
+        if (errorResponse._3 !== undefined) params.param3 = sanitizeParameterValue(String(errorResponse._3).replace(/\.+$/, ''));
+        if (errorResponse._4 !== undefined) params.param4 = sanitizeParameterValue(String(errorResponse._4).replace(/\.+$/, ''));
+        if (errorResponse._5 !== undefined) params.param5 = sanitizeParameterValue(String(errorResponse._5).replace(/\.+$/, ''));
 
         // Also include any named parameters
         Object.keys(errorResponse).forEach(key => {
             if (!key.startsWith('_') && !['code', 'subcode', 'message'].includes(key)) {
-                params[key] = String(errorResponse[key]).replace(/\.+$/, '');
+                params[key] = sanitizeParameterValue(String(errorResponse[key]).replace(/\.+$/, ''));
             }
         });
     }
@@ -343,6 +375,13 @@ export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Reco
     let message = errorMessages[errorCode as keyof typeof errorMessages];
 
     if (!message) {
+        // Log unknown error codes for monitoring and improvement
+        console.warn(`Unknown error code encountered: ${errorCode}`, {
+            errorCode,
+            errorResponse,
+            availableErrorCodes: Object.keys(errorMessages).slice(0, 10) // Log first 10 for reference
+        });
+        
         // If no predefined message, use the backend message if available
         message = errorResponse?.message || localize('An error occurred. Please try again.');
     }

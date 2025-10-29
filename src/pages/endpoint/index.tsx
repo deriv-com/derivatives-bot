@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import { getAppId, getDefaultAppIdAndUrl, getSocketURL } from '@/components/shared';
+import { reloadPage } from '@/utils/navigation-utils';
 import { Button, Input, Text } from '@deriv-com/ui';
 import { LocalStorageConstants } from '@deriv-com/utils';
 import './endpoint.scss';
@@ -71,7 +72,7 @@ const Endpoint = () => {
                                     serverUrl: server_url,
                                 },
                             });
-                            window.location.reload();
+                            reloadPage();
                         }}
                         variant='outlined'
                         type='button'

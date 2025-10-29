@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import Text from '@/components/shared_ui/text';
 import { useStore } from '@/hooks/useStore';
 import { generateUrlWithRedirect } from '@/utils/url-redirect-utils';
+import { reloadPage, navigateToUrl } from '@/utils/navigation-utils';
 import { LegacyClose1pxIcon } from '@deriv/quill-icons/Legacy';
 import { Localize, localize } from '@deriv-com/translations';
 import Dialog from './shared_ui/dialog';
@@ -12,7 +13,7 @@ const BotStopped = observer(() => {
     const { dashboard } = useStore();
     const { is_web_socket_intialised } = dashboard;
     const onClickClose = () => {
-        location.reload();
+        reloadPage();
     };
     return (
         <Dialog
@@ -21,8 +22,9 @@ const BotStopped = observer(() => {
             className={'dc-dialog bot-stopped-dialog'}
             cancel_button_text={localize('Go to Reports')}
             confirm_button_text={localize('Back to Bot')}
-            onCancel={() => (window.location.href = generateUrlWithRedirect(standalone_routes.positions))}
-            onConfirm={() => location.reload()}
+            onCancel={() => navigateToUrl(generateUrlWithRedirect(standalone_routes.positions))}
+            onConfirm={reloadPage}
+            login={() => {}} // Empty function as login is not needed for this dialog
         >
             <div className='dc-dialog__content__header'>
                 <Text data-testid='data-title' weight='bold' as='p' align='left' size='s' color='prominent'>
