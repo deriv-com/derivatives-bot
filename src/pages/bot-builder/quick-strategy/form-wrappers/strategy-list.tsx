@@ -2,6 +2,7 @@ import React from 'react';
 import Text from '@/components/shared_ui/text';
 import { Link } from '@deriv-com/quill-ui';
 import { localize } from '@deriv-com/translations';
+import { localizeAccumulators, localizeOptions } from '@/utils/conditional-localize';
 import {
     STRATEGY_TRADE_ASSOCIATIONS,
     TRADE_TYPE_INDEX,
@@ -78,8 +79,8 @@ const StrategyList = ({ selector_chip_value, search_value, is_searching, onSelec
     const selected_chip_value = TRADE_TYPES[selector_chip_value];
 
     const strategy_types: TStrategyTypes = [
-        { type: localize('Accumulators'), items: accumulator },
-        { type: localize('Options'), items: options },
+        { type: localizeAccumulators(), items: accumulator },
+        { type: localizeOptions(), items: options },
         { type: localize('Multipliers'), items: multiplier },
     ];
 

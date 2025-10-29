@@ -1,5 +1,6 @@
 import { getImageLocation } from '../../public-path';
 import { localize } from '@deriv-com/translations';
+import { localizeAccumulators, localizeReverseMartingale } from '@/utils/conditional-localize';
 import { TFaqContent, TGuideContent, TQuickStrategyContent, TUserGuideContent } from './tutorials.types';
 
 export const USER_GUIDE = 'user guide';
@@ -53,7 +54,7 @@ export const guide_content = (): TGuideContent[] => [
     {
         id: 4,
         type: 'DBotVideo',
-        content: localize('Introducing Accumulator Options on Deriv Bot: Available for automated trading'),
+        content: `${localize('Introducing')} ${localizeAccumulators()} ${localize('Options on Deriv Bot: Available for automated trading')}`,
         url: 'https://www.youtube.com/embed/uMBBmdNaadU',
         src: getImageLocation('introducing_accumulators_on_deriv_bot.png'),
         search_id: `${VIDEOS}-3`,
@@ -484,10 +485,10 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
     },
     {
         qs_name: 'REVERSE_MARTINGALE',
-        type: localize('About Reverse Martingale'),
+        type: `${localize('About')} ${localizeReverseMartingale()}`,
         content: [
-            localize('Exploring the Reverse Martingale strategy in Deriv Bot'),
-            localize('An example of Reverse Martingale strategy'),
+            `${localize('Exploring the')} ${localizeReverseMartingale()} ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} ${localizeReverseMartingale()} ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-3`,
     },

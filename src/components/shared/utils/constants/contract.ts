@@ -1,11 +1,12 @@
 import React from 'react';
 import { localize } from '@deriv-com/translations';
+import { localizeAccumulators } from '@/utils/conditional-localize';
 import { CONTRACT_TYPES, TRADE_TYPES } from '../contract';
 import { TContractOptions } from '../contract/contract-types';
 
 export const getLocalizedBasis = () =>
     ({
-        accumulator: localize('Accumulators'),
+        accumulator: localizeAccumulators(),
         multiplier: localize('Multiplier'),
         payout_per_pip: localize('Payout per pip'),
         payout_per_point: localize('Payout per point'),

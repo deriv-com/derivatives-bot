@@ -58,6 +58,7 @@ export default function useModalManager(config?: TUseModalManagerConfig) {
                     actions.set(modalKey, !isDesktop);
                 });
                 actions.set(currentModal, true);
+                location.reload();
             }
         }
     };

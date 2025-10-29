@@ -1,20 +1,19 @@
 import { getImageLocation } from '../../public-path';
 import { localize } from '@deriv-com/translations';
+import { localizeReverseMartingale } from '@/utils/conditional-localize';
 import { TDescriptionItem } from '../../pages/bot-builder/quick-strategy/types';
 
 export const REVERSE_MARTINGALE = (): TDescriptionItem[] => [
     {
         type: 'subtitle',
-        content: [localize('Exploring the Reverse Martingale strategy in Deriv Bot')],
+        content: [`${localize('Exploring the')} ${localizeReverseMartingale()} ${localize('strategy in Deriv Bot')}`],
         expanded: true,
         no_collapsible: false,
     },
     {
         type: 'text',
         content: [
-            localize(
-                'The Reverse Martingale strategy involves increasing your stake after each successful trade and resets to the initial stake for every losing trade. This strategy aims to secure potential profits from consecutive wins.'
-            ),
+            `${localize('The')} ${localizeReverseMartingale()} ${localize('strategy involves increasing your stake after each successful trade and resets to the initial stake for every losing trade. This strategy aims to secure potential profits from consecutive wins.')}`,
         ],
     },
     {
@@ -23,7 +22,7 @@ export const REVERSE_MARTINGALE = (): TDescriptionItem[] => [
     },
     {
         type: 'text',
-        content: [localize('These are the trade parameters used in Deriv Bot with Reverse Martingale strategy.')],
+        content: [`${localize('These are the trade parameters used in Deriv Bot with')} ${localizeReverseMartingale()} ${localize('strategy.')}`],
     },
     {
         type: 'text',
@@ -67,7 +66,7 @@ export const REVERSE_MARTINGALE = (): TDescriptionItem[] => [
     },
     {
         type: 'subtitle',
-        content: [localize('An example of Reverse Martingale strategy')],
+        content: [`${localize('An example of')} ${localizeReverseMartingale()} ${localize('strategy')}`],
     },
     {
         type: 'media',
@@ -114,9 +113,7 @@ export const REVERSE_MARTINGALE = (): TDescriptionItem[] => [
     {
         type: 'text',
         content: [
-            localize(
-                "The Reverse Martingale strategy in trading may offer substantial gains but also comes with significant risks. With your selected strategy, Deriv Bot provides automated trading with risk management measures like setting initial stake, stake size, maximum stake, profit threshold and loss threshold. It's crucial for traders to assess their risk tolerance, practice in a demo account, and understand the strategy before trading with real money."
-            ),
+            `${localize('The')} ${localizeReverseMartingale()} ${localize("strategy in trading may offer substantial gains but also comes with significant risks. With your selected strategy, Deriv Bot provides automated trading with risk management measures like setting initial stake, stake size, maximum stake, profit threshold and loss threshold. It's crucial for traders to assess their risk tolerance, practice in a demo account, and understand the strategy before trading with real money.")}`,
         ],
     },
     {

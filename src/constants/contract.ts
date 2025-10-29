@@ -1,6 +1,7 @@
 import { getTotalProfit, TContractStore } from '@/components/shared';
 import { TContractOptions } from '@/components/shared';
 import { localize } from '@deriv-com/translations';
+import { localizeAccumulators } from '@/utils/conditional-localize';
 
 export type TContract = {
     name: string;
@@ -47,7 +48,7 @@ type TSupportedContracts = {
 
 export const getSupportedContracts = (is_high_low: TContractOptions): TSupportedContracts => ({
     ACCU: {
-        name: localize('Accumulators'),
+        name: localizeAccumulators(),
         position: 'top',
     },
     ASIANU: {
