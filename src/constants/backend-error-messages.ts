@@ -339,32 +339,24 @@ export const getBackendErrorMessages = () => ({
  * @returns Localized error message
  */
 export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Record<string, any>): string => {
-    console.log('🔍 getLocalizedErrorMessage called with:', { errorCode, errorResponse });
-    
     const errorMessages = getBackendErrorMessages();
     let message = errorMessages[errorCode as keyof typeof errorMessages];
-    
-    console.log('🔍 Found message template:', message);
 
     if (!message) {
         // If no predefined message, use the backend message if available
         message = errorResponse?.message || localize('An error occurred. Please try again.');
-        console.log('🔍 Using fallback message:', message);
     }
 
     // Handle direct replacement of [_1], [_2], [_3] format with code_args values
     if (errorResponse?.code_args && Array.isArray(errorResponse.code_args)) {
-        console.log('🔍 Processing code_args:', errorResponse.code_args);
         errorResponse.code_args.forEach((value: any, index: number) => {
             const placeholder = `[_${index + 1}]`;
             message = message.replace(new RegExp(`\\${placeholder}`, 'g'), value);
         });
-        console.log('🔍 Message after code_args replacement:', message);
     }
 
     // Process backend parameters for {{param}} format
     const processedParams = processBackendParameters(message, errorResponse);
-    console.log('🔍 Processed params:', processedParams);
     
     // For messages that already have parameter placeholders, replace them directly
     // instead of using localize() which adds "..." for unknown translation keys
@@ -374,11 +366,9 @@ export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Reco
             const placeholder = `{{${key}}}`;
             finalMessage = finalMessage.replace(new RegExp(placeholder, 'g'), processedParams[key]);
         });
-        console.log('🔍 Final message after parameter replacement:', finalMessage);
     } else {
         // Only use localize() for static messages without dynamic parameters
         finalMessage = localize(message, processedParams);
-        console.log('🔍 Final localized message:', finalMessage);
     }
     
     return finalMessage;
