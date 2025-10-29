@@ -12,12 +12,8 @@ const sanitizeParameterValue = (value: any): string => {
     
     const stringValue = String(value);
     
-    // For error message parameters, we only need plain text - strip all HTML completely
-    // This is the most secure approach for error messages which should only contain text
-    let sanitized = stringValue
-        // Remove all HTML tags completely
-        .replace(/<[^>]*>/g, '')
-        // Remove all potentially dangerous characters and patterns
+    // Basic sanitization for error message parameters
+    return stringValue
         .replace(/[<>'"&]/g, (match) => {
             const htmlEntities: Record<string, string> = {
                 '<': '&lt;',
@@ -28,39 +24,8 @@ const sanitizeParameterValue = (value: any): string => {
             };
             return htmlEntities[match] || match;
         })
-        // Remove any script-like content completely
-        .replace(/javascript:/gi, '')
-        .replace(/data:/gi, '')
-        .replace(/vbscript:/gi, '')
-        .replace(/expression\(/gi, '')
-        .replace(/url\(/gi, '')
-        // Remove any event handler patterns completely
-        .replace(/\bon\w+\s*=/gi, '')
-        // Remove any remaining suspicious patterns
-        .replace(/eval\s*\(/gi, '')
-        .replace(/setTimeout\s*\(/gi, '')
-        .replace(/setInterval\s*\(/gi, '')
-        // Remove control characters and non-printable characters
-        .replace(/[\x00-\x1F\x7F-\x9F]/g, '');
-
-    // Apply multiple passes to ensure complete sanitization
-    let previous;
-    let iterations = 0;
-    const maxIterations = 5; // Prevent infinite loops
-    
-    do {
-        previous = sanitized;
-        sanitized = sanitized
-            .replace(/<[^>]*>/g, '')
-            .replace(/javascript:/gi, '')
-            .replace(/data:/gi, '')
-            .replace(/vbscript:/gi, '')
-            .replace(/\bon\w+\s*=/gi, '');
-        iterations++;
-    } while (sanitized !== previous && iterations < maxIterations);
-
-    // Final length limit to prevent buffer overflow attacks
-    return sanitized.substring(0, 1000);
+        // Limit length to prevent buffer overflow attacks
+        .substring(0, 1000);
 };
 
 /**
