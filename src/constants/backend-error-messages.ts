@@ -12,23 +12,31 @@ const sanitizeParameterValue = (value: any): string => {
     
     const stringValue = String(value);
     
-    // Remove HTML tags and potentially dangerous characters
-    return stringValue
-        .replace(/[<>'"&]/g, (match) => {
-            const htmlEntities: Record<string, string> = {
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#x27;',
-                '&': '&amp;'
-            };
-            return htmlEntities[match] || match;
-        })
-        // Remove any remaining script-like content
-        .replace(/javascript:/gi, '')
-        .replace(/on\w+=/gi, '')
-        // Limit length to prevent buffer overflow attacks
-        .substring(0, 1000);
+    // 1. Escape dangerous characters first
+    let sanitized = stringValue.replace(/[<>'"&]/g, (match) => {
+        const htmlEntities: Record<string, string> = {
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;',
+            '&': '&amp;'
+        };
+        return htmlEntities[match] || match;
+    });
+
+    // 2. Repeatedly remove script-like content and event handlers to prevent incomplete sanitization
+    let previous;
+    do {
+        previous = sanitized;
+        sanitized = sanitized
+            .replace(/javascript:/gi, '')
+            .replace(/data:/gi, '')
+            .replace(/vbscript:/gi, '')
+            .replace(/on\w+=/gi, '');
+    } while (sanitized !== previous);
+
+    // 3. Limit length to prevent buffer overflow attacks
+    return sanitized.substring(0, 1000);
 };
 
 /**
