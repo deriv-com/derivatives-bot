@@ -636,6 +636,21 @@ export default class RunPanelStore {
             this.error_type = ErrorTypes.RECOVERABLE_ERRORS;
         }
 
+        // Check if this error has subcode and code_args for proper mapping
+        if (error.subcode && error.code_args) {
+            const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+            
+            const details = {
+                param1: error.code_args[0],
+                param2: error.code_args[1],
+                param3: error.code_args[2],
+            };
+            
+            const localizedMessage = getLocalizedErrorMessage(error.subcode, details);
+            this.showErrorMessage(localizedMessage, error);
+            return;
+        }
+
         // Use localized error message if it's a backend error, otherwise fallback to original message
         let error_message = error?.message;
         if (isBackendError(error)) {

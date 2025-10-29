@@ -14,7 +14,11 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
     // Handle new code_args array format
     if (errorResponse.code_args && Array.isArray(errorResponse.code_args)) {
         errorResponse.code_args.forEach((value: any, index: number) => {
-            params[`param${index + 1}`] = value;
+            // Clean up parameter values by removing ALL trailing dots to prevent double dots
+            let cleanValue = String(value);
+            // Remove all trailing dots (not just one)
+            cleanValue = cleanValue.replace(/\.+$/, '');
+            params[`param${index + 1}`] = cleanValue;
         });
     }
 
@@ -23,16 +27,16 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
         const details = errorResponse.details;
 
         // Handle common parameter mappings from legacy backend error message format
-        if (details._1 !== undefined) params.param1 = details._1;
-        if (details._2 !== undefined) params.param2 = details._2;
-        if (details._3 !== undefined) params.param3 = details._3;
-        if (details._4 !== undefined) params.param4 = details._4;
-        if (details._5 !== undefined) params.param5 = details._5;
+        if (details._1 !== undefined) params.param1 = String(details._1).replace(/\.+$/, '');
+        if (details._2 !== undefined) params.param2 = String(details._2).replace(/\.+$/, '');
+        if (details._3 !== undefined) params.param3 = String(details._3).replace(/\.+$/, '');
+        if (details._4 !== undefined) params.param4 = String(details._4).replace(/\.+$/, '');
+        if (details._5 !== undefined) params.param5 = String(details._5).replace(/\.+$/, '');
 
         // Also include any named parameters from details
         Object.keys(details).forEach(key => {
             if (!key.startsWith('_')) {
-                params[key] = details[key];
+                params[key] = String(details[key]).replace(/\.+$/, '');
             }
         });
     }
@@ -40,16 +44,16 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
     // Handle direct parameter mapping (for backward compatibility)
     if (!errorResponse.code_args && !errorResponse.details) {
         // Handle common parameter mappings from legacy format
-        if (errorResponse._1 !== undefined) params.param1 = errorResponse._1;
-        if (errorResponse._2 !== undefined) params.param2 = errorResponse._2;
-        if (errorResponse._3 !== undefined) params.param3 = errorResponse._3;
-        if (errorResponse._4 !== undefined) params.param4 = errorResponse._4;
-        if (errorResponse._5 !== undefined) params.param5 = errorResponse._5;
+        if (errorResponse._1 !== undefined) params.param1 = String(errorResponse._1).replace(/\.+$/, '');
+        if (errorResponse._2 !== undefined) params.param2 = String(errorResponse._2).replace(/\.+$/, '');
+        if (errorResponse._3 !== undefined) params.param3 = String(errorResponse._3).replace(/\.+$/, '');
+        if (errorResponse._4 !== undefined) params.param4 = String(errorResponse._4).replace(/\.+$/, '');
+        if (errorResponse._5 !== undefined) params.param5 = String(errorResponse._5).replace(/\.+$/, '');
 
         // Also include any named parameters
         Object.keys(errorResponse).forEach(key => {
             if (!key.startsWith('_') && !['code', 'subcode', 'message'].includes(key)) {
-                params[key] = errorResponse[key];
+                params[key] = String(errorResponse[key]).replace(/\.+$/, '');
             }
         });
     }
@@ -335,25 +339,48 @@ export const getBackendErrorMessages = () => ({
  * @returns Localized error message
  */
 export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Record<string, any>): string => {
+    console.log('🔍 getLocalizedErrorMessage called with:', { errorCode, errorResponse });
+    
     const errorMessages = getBackendErrorMessages();
     let message = errorMessages[errorCode as keyof typeof errorMessages];
+    
+    console.log('🔍 Found message template:', message);
 
     if (!message) {
         // If no predefined message, use the backend message if available
         message = errorResponse?.message || localize('An error occurred. Please try again.');
+        console.log('🔍 Using fallback message:', message);
     }
 
     // Handle direct replacement of [_1], [_2], [_3] format with code_args values
     if (errorResponse?.code_args && Array.isArray(errorResponse.code_args)) {
+        console.log('🔍 Processing code_args:', errorResponse.code_args);
         errorResponse.code_args.forEach((value: any, index: number) => {
             const placeholder = `[_${index + 1}]`;
             message = message.replace(new RegExp(`\\${placeholder}`, 'g'), value);
         });
+        console.log('🔍 Message after code_args replacement:', message);
     }
 
-    // Process backend parameters for {{param}} format and pass them to localize
+    // Process backend parameters for {{param}} format
     const processedParams = processBackendParameters(message, errorResponse);
-    const finalMessage = localize(message, processedParams);
+    console.log('🔍 Processed params:', processedParams);
+    
+    // For messages that already have parameter placeholders, replace them directly
+    // instead of using localize() which adds "..." for unknown translation keys
+    let finalMessage = message;
+    if (processedParams && Object.keys(processedParams).length > 0) {
+        Object.keys(processedParams).forEach(key => {
+            const placeholder = `{{${key}}}`;
+            finalMessage = finalMessage.replace(new RegExp(placeholder, 'g'), processedParams[key]);
+        });
+        console.log('🔍 Final message after parameter replacement:', finalMessage);
+    } else {
+        // Only use localize() for static messages without dynamic parameters
+        finalMessage = localize(message, processedParams);
+        console.log('🔍 Final localized message:', finalMessage);
+    }
+    
     return finalMessage;
 };
 

@@ -133,8 +133,34 @@ export default class JournalStore {
     onError(message: Error | string) {
         let processedMessage = message;
 
-        // Process error messages to apply frontend error mapping
-        if (typeof message === 'string') {
+        // Check if this is an error object with backend error information
+        if (typeof message === 'object' && message !== null && 'code' in message) {
+            const error = message as any;
+            
+            if (error.subcode && error.code_args) {
+                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+                
+                const details = {
+                    param1: error.code_args[0],
+                    param2: error.code_args[1],
+                    param3: error.code_args[2],
+                };
+                
+                processedMessage = getLocalizedErrorMessage(error.subcode, details);
+            } else if (error.code && error.code_args) {
+                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+                
+                const details = {
+                    param1: error.code_args[0],
+                    param2: error.code_args[1],
+                    param3: error.code_args[2],
+                };
+                
+                processedMessage = getLocalizedErrorMessage(error.code, details);
+            } else {
+                processedMessage = error.message || message;
+            }
+        } else if (typeof message === 'string') {
             // Check if this is a backend error message that needs processing
             if (message.includes('Minimum stake') && message.includes('maximum payout')) {
                 const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
