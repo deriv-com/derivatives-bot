@@ -131,7 +131,40 @@ export default class JournalStore {
     }
 
     onError(message: Error | string) {
-        this.pushMessage(message, MessageTypes.ERROR);
+        let processedMessage = message;
+
+        // Process error messages to apply frontend error mapping
+        if (typeof message === 'string') {
+            // Check if this is a backend error message that needs processing
+            if (message.includes('Minimum stake') && message.includes('maximum payout')) {
+                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+                
+                // Extract parameter values from the message
+                const stakeMatch = message.match(/Minimum stake of ([\d.]+)/);
+                const payoutMatch = message.match(/maximum payout of ([\d.]+)/);
+                const currentMatch = message.match(/Current (?:payout|stake) is ([\d.]+)/);
+                
+                if (stakeMatch && payoutMatch && currentMatch) {
+                    const details = {
+                        param1: stakeMatch[1],
+                        param2: payoutMatch[1],
+                        param3: currentMatch[1],
+                    };
+                    
+                    // Determine which error code to use based on the message content
+                    let errorCode = 'InvalidtoBuy'; // default
+                    if (message.includes('Current payout')) {
+                        errorCode = message.includes('stake') ? 'StakeLimits' : 'PayoutLimits';
+                    } else if (message.includes('Current stake')) {
+                        errorCode = 'StakeLimits';
+                    }
+                    
+                    processedMessage = getLocalizedErrorMessage(errorCode, details);
+                }
+            }
+        }
+
+        this.pushMessage(processedMessage, MessageTypes.ERROR);
     }
 
     onNotify(data: TNotifyData) {

@@ -659,11 +659,23 @@ export default class RunPanelStore {
 
         // If it's a string with placeholder patterns, try to process it
         if (typeof data === 'string' && data.includes('[_')) {
-            // Check if this looks like an "InvalidtoBuy" error
-            if (data.includes('Minimum stake') && data.includes('maximum payout')) {
-                // Try to get the localized message for InvalidtoBuy with parameters
-                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+            const { getLocalizedErrorMessage, getBackendErrorMessages } = require('@/constants/backend-error-messages');
+            const errorMessages = getBackendErrorMessages();
+            
+            // Convert placeholders from [_1], [_2] format to {{param1}}, {{param2}} format for comparison
+            const normalizedMessage = data.replace(/\[_(\d+)\]/g, '{{param$1}}');
+            
+            // Search through all error codes to find a match
+            
+            let matchedErrorCode: string | null = null;
+            for (const [errorCode, errorTemplate] of Object.entries(errorMessages)) {
+                if (typeof errorTemplate === 'string' && errorTemplate === normalizedMessage) {
+                    matchedErrorCode = errorCode;
+                    break;
+                }
+            }
 
+            if (matchedErrorCode) {
                 // If we have the original error with code_args, use those values
                 if (originalError?.code_args && Array.isArray(originalError.code_args)) {
                     const details = {
@@ -673,9 +685,9 @@ export default class RunPanelStore {
                         param4: originalError.code_args[3],
                         param5: originalError.code_args[4],
                     };
-                    processedMessage = getLocalizedErrorMessage('InvalidtoBuy', details);
+                    processedMessage = getLocalizedErrorMessage(matchedErrorCode, details);
                 } else {
-                    processedMessage = getLocalizedErrorMessage('InvalidtoBuy');
+                    processedMessage = getLocalizedErrorMessage(matchedErrorCode);
                 }
             }
         }
@@ -732,6 +744,36 @@ export default class RunPanelStore {
 
         // Create a generic handler for ui.log.error that can extract error codes and use getLocalizedErrorMessage
         const handleUiLogError = (errorMessage: string) => {
+            // Check if this is a stake/payout error message first
+            if (typeof errorMessage === 'string' && errorMessage.includes('Minimum stake') && errorMessage.includes('maximum payout')) {
+                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+                
+                // Extract parameter values from the message
+                const stakeMatch = errorMessage.match(/Minimum stake of ([\d.]+)/);
+                const payoutMatch = errorMessage.match(/maximum payout of ([\d.]+)/);
+                const currentMatch = errorMessage.match(/Current (?:payout|stake) is ([\d.]+)/);
+                
+                if (stakeMatch && payoutMatch && currentMatch) {
+                    const details = {
+                        param1: stakeMatch[1],
+                        param2: payoutMatch[1],
+                        param3: currentMatch[1],
+                    };
+                    
+                    // Determine which error code to use based on the message content
+                    let errorCode = 'InvalidtoBuy'; // default
+                    if (errorMessage.includes('Current payout')) {
+                        errorCode = errorMessage.includes('stake') ? 'StakeLimits' : 'PayoutLimits';
+                    } else if (errorMessage.includes('Current stake')) {
+                        errorCode = 'StakeLimits';
+                    }
+                    
+                    const processedMessage = getLocalizedErrorMessage(errorCode, details);
+                    this.showErrorMessage(processedMessage);
+                    return;
+                }
+            }
+            
             // If errorMessage is a string with placeholder patterns, try to extract the error code
             if (typeof errorMessage === 'string' && errorMessage.includes('[_')) {
                 const {
@@ -759,8 +801,6 @@ export default class RunPanelStore {
                     const localizedMessage = getLocalizedErrorMessage(matchedErrorCode);
                     this.showErrorMessage(localizedMessage);
                     return;
-                } else {
-                    console.log('No matching error code found, using original message');
                 }
             }
 
