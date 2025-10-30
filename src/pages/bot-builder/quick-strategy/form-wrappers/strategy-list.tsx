@@ -1,8 +1,8 @@
 import React from 'react';
 import Text from '@/components/shared_ui/text';
+import { localizeAccumulators } from '@/utils/conditional-localize';
 import { Link } from '@deriv-com/quill-ui';
 import { localize } from '@deriv-com/translations';
-import { localizeAccumulators } from '@/utils/conditional-localize';
 import {
     STRATEGY_TRADE_ASSOCIATIONS,
     TRADE_TYPE_INDEX,

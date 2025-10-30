@@ -136,26 +136,26 @@ export default class JournalStore {
         // Check if this is an error object with backend error information
         if (typeof message === 'object' && message !== null && 'code' in message) {
             const error = message as any;
-            
+
             if (error.subcode && error.code_args) {
                 const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
-                
+
                 const details = {
                     param1: error.code_args[0],
                     param2: error.code_args[1],
                     param3: error.code_args[2],
                 };
-                
+
                 processedMessage = getLocalizedErrorMessage(error.subcode, details);
             } else if (error.code && error.code_args) {
                 const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
-                
+
                 const details = {
                     param1: error.code_args[0],
                     param2: error.code_args[1],
                     param3: error.code_args[2],
                 };
-                
+
                 processedMessage = getLocalizedErrorMessage(error.code, details);
             } else {
                 processedMessage = error.message || message;
@@ -164,19 +164,19 @@ export default class JournalStore {
             // Check if this is a backend error message that needs processing
             if (message.includes('Minimum stake') && message.includes('maximum payout')) {
                 const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
-                
+
                 // Extract parameter values from the message
                 const stakeMatch = message.match(/Minimum stake of ([\d.]+)/);
                 const payoutMatch = message.match(/maximum payout of ([\d.]+)/);
                 const currentMatch = message.match(/Current (?:payout|stake) is ([\d.]+)/);
-                
+
                 if (stakeMatch && payoutMatch && currentMatch) {
                     const details = {
                         param1: stakeMatch[1],
                         param2: payoutMatch[1],
                         param3: currentMatch[1],
                     };
-                    
+
                     // Determine which error code to use based on the message content
                     let errorCode = 'InvalidtoBuy'; // default
                     if (message.includes('Current payout')) {
@@ -184,7 +184,7 @@ export default class JournalStore {
                     } else if (message.includes('Current stake')) {
                         errorCode = 'StakeLimits';
                     }
-                    
+
                     processedMessage = getLocalizedErrorMessage(errorCode, details);
                 }
             }

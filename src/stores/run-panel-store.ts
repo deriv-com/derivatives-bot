@@ -639,13 +639,13 @@ export default class RunPanelStore {
         // Check if this error has subcode and code_args for proper mapping
         if (error.subcode && error.code_args) {
             const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
-            
+
             const details = {
                 param1: error.code_args[0],
                 param2: error.code_args[1],
                 param3: error.code_args[2],
             };
-            
+
             const localizedMessage = getLocalizedErrorMessage(error.subcode, details);
             this.showErrorMessage(localizedMessage, error);
             return;
@@ -676,12 +676,12 @@ export default class RunPanelStore {
         if (typeof data === 'string' && data.includes('[_')) {
             const { getLocalizedErrorMessage, getBackendErrorMessages } = require('@/constants/backend-error-messages');
             const errorMessages = getBackendErrorMessages();
-            
+
             // Convert placeholders from [_1], [_2] format to {{param1}}, {{param2}} format for comparison
             const normalizedMessage = data.replace(/\[_(\d+)\]/g, '{{param$1}}');
-            
+
             // Search through all error codes to find a match
-            
+
             let matchedErrorCode: string | null = null;
             for (const [errorCode, errorTemplate] of Object.entries(errorMessages)) {
                 if (typeof errorTemplate === 'string' && errorTemplate === normalizedMessage) {
@@ -760,21 +760,25 @@ export default class RunPanelStore {
         // Create a generic handler for ui.log.error that can extract error codes and use getLocalizedErrorMessage
         const handleUiLogError = (errorMessage: string) => {
             // Check if this is a stake/payout error message first
-            if (typeof errorMessage === 'string' && errorMessage.includes('Minimum stake') && errorMessage.includes('maximum payout')) {
+            if (
+                typeof errorMessage === 'string' &&
+                errorMessage.includes('Minimum stake') &&
+                errorMessage.includes('maximum payout')
+            ) {
                 const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
-                
+
                 // Extract parameter values from the message
                 const stakeMatch = errorMessage.match(/Minimum stake of ([\d.]+)/);
                 const payoutMatch = errorMessage.match(/maximum payout of ([\d.]+)/);
                 const currentMatch = errorMessage.match(/Current (?:payout|stake) is ([\d.]+)/);
-                
+
                 if (stakeMatch && payoutMatch && currentMatch) {
                     const details = {
                         param1: stakeMatch[1],
                         param2: payoutMatch[1],
                         param3: currentMatch[1],
                     };
-                    
+
                     // Determine which error code to use based on the message content
                     let errorCode = 'InvalidtoBuy'; // default
                     if (errorMessage.includes('Current payout')) {
@@ -782,13 +786,13 @@ export default class RunPanelStore {
                     } else if (errorMessage.includes('Current stake')) {
                         errorCode = 'StakeLimits';
                     }
-                    
+
                     const processedMessage = getLocalizedErrorMessage(errorCode, details);
                     this.showErrorMessage(processedMessage);
                     return;
                 }
             }
-            
+
             // If errorMessage is a string with placeholder patterns, try to extract the error code
             if (typeof errorMessage === 'string' && errorMessage.includes('[_')) {
                 const {

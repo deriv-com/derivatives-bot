@@ -11,8 +11,6 @@ export const reloadPage = (): void => {
         window.location.reload();
     } catch (error) {
         console.error('Failed to reload page:', error);
-        // Fallback: redirect to current URL
-        window.location.href = window.location.href;
     }
 };
 

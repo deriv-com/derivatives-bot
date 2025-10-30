@@ -1,7 +1,7 @@
 import { getTotalProfit, TContractStore } from '@/components/shared';
 import { TContractOptions } from '@/components/shared';
+import { conditionalLocalize, localizeAccumulators } from '@/utils/conditional-localize';
 import { localize } from '@deriv-com/translations';
-import { localizeAccumulators, conditionalLocalize } from '@/utils/conditional-localize';
 
 export type TContract = {
     name: string;

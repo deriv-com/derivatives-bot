@@ -1,5 +1,4 @@
 import Loading, { TLoadingProps } from '../loading/loading';
-
 import '../loading/loading.scss';
 
 const ButtonLoading = (
