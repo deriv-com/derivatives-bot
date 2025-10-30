@@ -1,16 +1,17 @@
 import { config as qs_config } from '@/external/bot-skeleton';
-import { localize } from '@deriv-com/translations';
 import {
-    localizeReverseMartingale,
-    localizeMartingale,
-    localizeDAlembert,
-    localizeOscarsGrind,
-    localizeReverseDAlembert,
     localize1326,
-    localizeMartingaleOnStatReset,
     localizeDAlembergOnStatReset,
-    localizeReverseDAlembergOnStatReset
+    localizeDAlembert,
+    localizeMartingale,
+    localizeMartingaleOnStatReset,
+    localizeOscarsGrind,
+    localizeReverseDAlembergOnStatReset,
+    localizeReverseDAlembert,
+    localizeReverseMartingale,
+    localizeReverseMartingaleOnStatReset,
 } from '@/utils/conditional-localize';
+import { localize } from '@deriv-com/translations';
 import {
     D_ALEMBERT,
     MARTINGALE,
@@ -594,7 +595,7 @@ export const STRATEGIES = (): TStrategies => ({
     },
     ACCUMULATORS_REVERSE_MARTINGALE_ON_STAT_RESET: {
         name: 'accumulators_reverse_martingale_on_stat_reset',
-        label: `${localizeReverseMartingale()} ${localize('on Stat Reset')}`,
+        label: localizeReverseMartingaleOnStatReset(),
         rs_strategy_name: 'accumulators_reverse_martingale_on_stat_reset',
         description: [],
         fields: [

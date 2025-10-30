@@ -1,6 +1,6 @@
 import { getImageLocation } from '../../public-path';
+import { localizeAccumulators } from '@/utils/conditional-localize';
 import { localize } from '@deriv-com/translations';
-import { localizeAccumulators, localizeReverseMartingale, localizeReverseDAlembert } from '@/utils/conditional-localize';
 import { TFaqContent, TGuideContent, TQuickStrategyContent, TUserGuideContent } from './tutorials.types';
 
 export const USER_GUIDE = 'user guide';
@@ -46,7 +46,7 @@ export const guide_content = (): TGuideContent[] => [
     {
         id: 3,
         type: 'DBotVideo',
-        content: localize('How to use Martingale strategy on Deriv Bot'),
+        content: `${localize('How to use')} Martingale ${localize('strategy on Deriv Bot')}`,
         url: 'https://www.youtube.com/embed/FSslvF7P00I',
         src: getImageLocation('how_to_use_martingale.jpg'),
         search_id: `${VIDEOS}-2`,
@@ -153,9 +153,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: localize(
-                    "Yes, you can get started with a pre-built bot using the <strong>Quick strategy</strong> feature. You’ll find some of the most popular trading strategies here: Martingale, D'Alembert, and Oscar's Grind. Just select the strategy, enter your trade parameters, and your bot will be created for you. You can always tweak the parameters later."
-                ),
+                content: `${localize("Yes, you can get started with a pre-built bot using the <strong>Quick strategy</strong> feature. You'll find some of the most popular trading strategies here:")} Martingale, D'Alembert, ${localize('and')} Oscar's Grind. ${localize('Just select the strategy, enter your trade parameters, and your bot will be created for you. You can always tweak the parameters later.')}`,
             },
         ],
         search_id: 'faq-4',
@@ -165,9 +163,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: localize(
-                    "A quick strategy is a ready-made strategy that you can use in Deriv Bot. There are 3 quick strategies you can choose from: Martingale, D'Alembert, and Oscar's Grind."
-                ),
+                content: `${localize('A quick strategy is a ready-made strategy that you can use in Deriv Bot. There are 3 quick strategies you can choose from:')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind.`,
             },
             {
                 type: 'text',
@@ -434,9 +430,7 @@ export const faq_content = (): TFaqContent[] => [
         description: [
             {
                 type: 'text',
-                content: localize(
-                    "Three of the most commonly used strategies in automated trading are Martingale, D'Alembert, and Oscar's Grind — you can find them all ready-made and waiting for you in Deriv Bot."
-                ),
+                content: `${localize('Three of the most commonly used strategies in automated trading are')} Martingale, D'Alembert, ${localize('and')} Oscar's Grind — ${localize('you can find them all ready-made and waiting for you in Deriv Bot.')}`,
             },
         ],
         search_id: 'faq-16',
@@ -458,53 +452,56 @@ export const faq_content = (): TFaqContent[] => [
 export const quick_strategy_content = (): TQuickStrategyContent[] => [
     {
         qs_name: 'MARTINGALE',
-        type: localize('About Martingale'),
+        type: `${localize('About')} Martingale`,
         content: [
-            localize('Exploring the Martingale strategy in Deriv Bot'),
-            localize('An example of Martingale strategy'),
+            `${localize('Exploring the')} Martingale ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} Martingale ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-0`,
     },
     {
         qs_name: 'D_ALEMBERT',
-        type: localize("About D'Alembert"),
+        type: `${localize('About')} D'Alembert`,
         content: [
-            localize('Exploring the D’Alembert strategy in Deriv Bot'),
-            localize('An example of D’Alembert strategy'),
+            `${localize('Exploring the')} D'Alembert ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} D'Alembert ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-1`,
     },
     {
         qs_name: 'OSCARS_GRIND',
-        type: localize("About Oscar's Grind"),
+        type: `${localize('About')} Oscar's Grind`,
         content: [
-            localize('Exploring the Oscar’s Grind strategy in Deriv Bot'),
-            localize('An example of Oscar’s Grind strategy'),
+            `${localize('Exploring the')} Oscar's Grind ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} Oscar's Grind ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-2`,
     },
     {
         qs_name: 'REVERSE_MARTINGALE',
-        type: `${localize('About')} ${localizeReverseMartingale()}`,
+        type: `${localize('About')} Reverse Martingale`,
         content: [
-            `${localize('Exploring the')} ${localizeReverseMartingale()} ${localize('strategy in Deriv Bot')}`,
-            `${localize('An example of')} ${localizeReverseMartingale()} ${localize('strategy')}`,
+            `${localize('Exploring the')} Reverse Martingale ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} Reverse Martingale ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-3`,
     },
     {
         qs_name: 'REVERSE_D_ALEMBERT',
-        type: `${localize('About')} ${localizeReverseDAlembert()}`,
+        type: `${localize('About')} Reverse D'Alembert`,
         content: [
-            `${localize('Exploring the')} ${localizeReverseDAlembert()} ${localize('strategy in Deriv Bot')}`,
-            `${localize('An example of')} ${localizeReverseDAlembert()} ${localize('strategy')}`,
+            `${localize('Exploring the')} Reverse D'Alembert ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} Reverse D'Alembert ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-4`,
     },
     {
         qs_name: 'STRATEGY_1_3_2_6',
-        type: localize('About 1-3-2-6'),
-        content: [localize('Exploring the 1-3-2-6 strategy in Deriv Bot'), localize('An example of 1-3-2-6 strategy')],
+        type: `${localize('About')} 1-3-2-6`,
+        content: [
+            `${localize('Exploring the')} 1-3-2-6 ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} 1-3-2-6 ${localize('strategy')}`,
+        ],
         search_id: `${QUICK_STRATEGY_GUIDES}-5`,
     },
 ];

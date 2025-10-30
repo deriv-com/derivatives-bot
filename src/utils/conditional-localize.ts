@@ -10,6 +10,7 @@ const UNTRANSLATABLE_TERMS = new Set([
     "Reverse D'Alembert",
     '1-3-2-6',
     'Martingale on Stat Reset',
+    'Reverse Martingale on Stat Reset',
     "D'Alembert on Stat Reset",
     "Reverse D'Alembert on Stat Reset",
     // Trade type names that should remain in English
@@ -58,7 +59,7 @@ export const conditionalLocalize = (text: string): string => {
     if (UNTRANSLATABLE_TERMS.has(text)) {
         return text; // Return original English text without translation
     }
-    
+
     // Otherwise, use normal localization
     return localize(text);
 };
@@ -78,7 +79,6 @@ export const localizeAccumulators = (): string => {
 export const localizeReverseMartingale = (): string => {
     return 'Reverse Martingale';
 };
-
 
 /**
  * Helper function specifically for "Martingale" term
@@ -142,4 +142,12 @@ export const localizeDAlembergOnStatReset = (): string => {
  */
 export const localizeReverseDAlembergOnStatReset = (): string => {
     return "Reverse D'Alembert on Stat Reset";
+};
+
+/**
+ * Helper function specifically for "Reverse Martingale on Stat Reset" term
+ * Always returns "Reverse Martingale on Stat Reset" without translation
+ */
+export const localizeReverseMartingaleOnStatReset = (): string => {
+    return 'Reverse Martingale on Stat Reset';
 };

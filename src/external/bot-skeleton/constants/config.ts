@@ -287,21 +287,21 @@ export const config = () => ({
     strategies: {
         martingale: {
             index: 0,
-            label: localize('Martingale'),
+            label: 'Martingale',
             description: localize(
                 'The Martingale Strategy is a classic trading technique that has been used for more than a hundred years, popularised by the French mathematician Paul Pierre Levy in the 18th century.'
             ),
         },
         dalembert: {
             index: 1,
-            label: localize("D'Alembert"),
+            label: "D'Alembert",
             description: localize(
                 'The concept of the D’Alembert Strategy is said to be similar to the Martingale Strategy where you will increase your contract size after a loss. With the D’Alembert Strategy, you will also decrease your contract size after a successful trade.'
             ),
         },
         oscars_grind: {
             index: 2,
-            label: localize("Oscar's Grind"),
+            label: "Oscar's Grind",
             description: localize(
                 "The Oscar's Grind Strategy is a low-risk positive progression strategy that first appeared in 1965. By using this strategy, the size of your contract will increase after successful trades, but remains unchanged after unsuccessful trades."
             ),
@@ -334,4 +334,3 @@ export const config = () => ({
         },
     },
 });
-
