@@ -7,6 +7,7 @@ import { contract_stages, TContractStage } from '@/constants/contract-stage';
 import { run_panel } from '@/constants/run-panel';
 import { ErrorTypes, MessageTypes, observer, unrecoverable_errors } from '@/external/bot-skeleton';
 import { getSelectedTradeType } from '@/external/bot-skeleton/scratch/utils';
+import { handleBackendError, isBackendError } from '@/utils/error-handler';
 // import { journalError, switch_account_notification } from '@/utils/bot-notifications';
 import GTM from '@/utils/gtm';
 import { helpers } from '@/utils/store-helpers';
@@ -635,14 +636,80 @@ export default class RunPanelStore {
             this.error_type = ErrorTypes.RECOVERABLE_ERRORS;
         }
 
-        const error_message = error?.message;
-        this.showErrorMessage(error_message);
+        // Check if this error has subcode and code_args for proper mapping
+        if (error.subcode && error.code_args) {
+            const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+            
+            const details = {
+                param1: error.code_args[0],
+                param2: error.code_args[1],
+                param3: error.code_args[2],
+            };
+            
+            const localizedMessage = getLocalizedErrorMessage(error.subcode, details);
+            this.showErrorMessage(localizedMessage, error);
+            return;
+        }
+
+        // Use localized error message if it's a backend error, otherwise fallback to original message
+        let error_message = error?.message;
+        if (isBackendError(error)) {
+            error_message = handleBackendError(error);
+        } else if (error?.code && typeof error.code === 'string') {
+            // Handle errors that have a code but might not be structured as BackendError
+            // This covers cases like "InvalidtoBuy" errors from bot-skeleton
+            const backendError = {
+                code: error.code,
+                message: error.message,
+                details: error.code_args ? { code_args: error.code_args } : error.details,
+            };
+            error_message = handleBackendError(backendError);
+        }
+
+        this.showErrorMessage(error_message, error);
     };
 
-    showErrorMessage = (data: string | Error) => {
+    showErrorMessage = (data: string | Error, originalError?: any) => {
+        let processedMessage = data;
+
+        // If it's a string with placeholder patterns, try to process it
+        if (typeof data === 'string' && data.includes('[_')) {
+            const { getLocalizedErrorMessage, getBackendErrorMessages } = require('@/constants/backend-error-messages');
+            const errorMessages = getBackendErrorMessages();
+            
+            // Convert placeholders from [_1], [_2] format to {{param1}}, {{param2}} format for comparison
+            const normalizedMessage = data.replace(/\[_(\d+)\]/g, '{{param$1}}');
+            
+            // Search through all error codes to find a match
+            
+            let matchedErrorCode: string | null = null;
+            for (const [errorCode, errorTemplate] of Object.entries(errorMessages)) {
+                if (typeof errorTemplate === 'string' && errorTemplate === normalizedMessage) {
+                    matchedErrorCode = errorCode;
+                    break;
+                }
+            }
+
+            if (matchedErrorCode) {
+                // If we have the original error with code_args, use those values
+                if (originalError?.code_args && Array.isArray(originalError.code_args)) {
+                    const details = {
+                        param1: originalError.code_args[0],
+                        param2: originalError.code_args[1],
+                        param3: originalError.code_args[2],
+                        param4: originalError.code_args[3],
+                        param5: originalError.code_args[4],
+                    };
+                    processedMessage = getLocalizedErrorMessage(matchedErrorCode, details);
+                } else {
+                    processedMessage = getLocalizedErrorMessage(matchedErrorCode);
+                }
+            }
+        }
+
         const { journal } = this.root_store;
         const { ui } = this.core;
-        journal.onError(data);
+        journal.onError(processedMessage);
         if (journal.journal_filters.some(filter => filter === MessageTypes.ERROR)) {
             this.toggleDrawer(true);
             this.setActiveTabIndex(run_panel.JOURNAL);
@@ -689,7 +756,74 @@ export default class RunPanelStore {
 
     onMount = () => {
         const { journal } = this.root_store;
-        observer.register('ui.log.error', this.showErrorMessage);
+
+        // Create a generic handler for ui.log.error that can extract error codes and use getLocalizedErrorMessage
+        const handleUiLogError = (errorMessage: string) => {
+            // Check if this is a stake/payout error message first
+            if (typeof errorMessage === 'string' && errorMessage.includes('Minimum stake') && errorMessage.includes('maximum payout')) {
+                const { getLocalizedErrorMessage } = require('@/constants/backend-error-messages');
+                
+                // Extract parameter values from the message
+                const stakeMatch = errorMessage.match(/Minimum stake of ([\d.]+)/);
+                const payoutMatch = errorMessage.match(/maximum payout of ([\d.]+)/);
+                const currentMatch = errorMessage.match(/Current (?:payout|stake) is ([\d.]+)/);
+                
+                if (stakeMatch && payoutMatch && currentMatch) {
+                    const details = {
+                        param1: stakeMatch[1],
+                        param2: payoutMatch[1],
+                        param3: currentMatch[1],
+                    };
+                    
+                    // Determine which error code to use based on the message content
+                    let errorCode = 'InvalidtoBuy'; // default
+                    if (errorMessage.includes('Current payout')) {
+                        errorCode = errorMessage.includes('stake') ? 'StakeLimits' : 'PayoutLimits';
+                    } else if (errorMessage.includes('Current stake')) {
+                        errorCode = 'StakeLimits';
+                    }
+                    
+                    const processedMessage = getLocalizedErrorMessage(errorCode, details);
+                    this.showErrorMessage(processedMessage);
+                    return;
+                }
+            }
+            
+            // If errorMessage is a string with placeholder patterns, try to extract the error code
+            if (typeof errorMessage === 'string' && errorMessage.includes('[_')) {
+                const {
+                    getLocalizedErrorMessage,
+                    getBackendErrorMessages,
+                } = require('@/constants/backend-error-messages');
+                const errorMessages = getBackendErrorMessages();
+
+                // Find the error code by matching the message pattern
+                let matchedErrorCode: string | null = null;
+
+                // Convert placeholders from [_1], [_2] format to {{param1}}, {{param2}} format for comparison
+                const normalizedMessage = errorMessage.replace(/\[_(\d+)\]/g, '{{param$1}}');
+                // Search through all error codes to find a match
+                for (const [errorCode, errorTemplate] of Object.entries(errorMessages)) {
+                    // errorTemplate is a string (the localized template)
+                    if (typeof errorTemplate === 'string' && errorTemplate === normalizedMessage) {
+                        matchedErrorCode = errorCode;
+                        break;
+                    }
+                }
+
+                if (matchedErrorCode) {
+                    // Use the localized message for this error code
+                    const localizedMessage = getLocalizedErrorMessage(matchedErrorCode);
+                    this.showErrorMessage(localizedMessage);
+                    return;
+                }
+            }
+
+            // Default behavior for other errors or when we can't find a match
+            this.showErrorMessage(errorMessage);
+        };
+
+        observer.register('ui.log.error', handleUiLogError);
         observer.register('ui.log.notify', journal.onNotify);
         observer.register('ui.log.success', journal.onLogSuccess);
         observer.register('client.invalid_token', this.handleInvalidToken);

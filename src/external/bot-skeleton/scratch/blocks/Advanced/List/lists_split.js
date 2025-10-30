@@ -5,8 +5,8 @@ window.Blockly.Blocks.lists_split = {
     init() {
         const dropdown = new window.Blockly.FieldDropdown(
             [
-                [localize('make list from text'), 'SPLIT'],
-                [localize('make text from list'), 'JOIN'],
+                ['make list from text', 'SPLIT'],
+                ['make text from list', 'JOIN'],
             ],
             newMode => this.updateType(newMode)
         );

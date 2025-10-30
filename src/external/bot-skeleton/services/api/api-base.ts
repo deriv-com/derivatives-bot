@@ -2,10 +2,12 @@ import Cookies from 'js-cookie';
 import CommonStore from '@/stores/common-store';
 import { TAuthData } from '@/types/api-types';
 import { clearAuthData } from '@/utils/auth-utils';
+import { handleBackendError, isBackendError } from '@/utils/error-handler';
 import { setSessionToken } from '@/utils/session-token-utils';
 import { clearInvalidTokenParams } from '@/utils/url-utils';
 import { tradingTimesService } from '../../../../components/shared/services/trading-times-service';
 import { ACTIVE_SYMBOLS, generateDisplayName, MARKET_MAPPINGS } from '../../../../components/shared/utils/common-data';
+import { translateMarketCategory } from '../../../../utils/market-category-translator';
 import { observer as globalObserver } from '../../utils/observer';
 import { doUntilDone, socket_state } from '../tradeEngine/utils/helpers';
 import {
@@ -111,10 +113,15 @@ class APIBase {
                 const response = await this.getSessionToken(oneTimeToken);
 
                 if (response?.error) {
-                    console.error('Token exchange failed:', response.error);
+                    const errorMessage = isBackendError(response.error)
+                        ? handleBackendError(response.error)
+                        : response.error.message || 'Token exchange failed';
+                    console.error('Token exchange failed:', errorMessage);
                     // Clear URL query parameters and emit InvalidToken event for invalid URL parameter tokens
                     clearInvalidTokenParams();
-                    globalObserver.emit('InvalidToken', { error: response.error });
+                    globalObserver.emit('InvalidToken', {
+                        error: { ...response.error, localizedMessage: errorMessage },
+                    });
                     setIsAuthorizing(false);
                     return;
                 }
@@ -227,20 +234,24 @@ class APIBase {
         try {
             const { authorize, error } = await this.api.authorize(this.token);
             if (error) {
+                const errorMessage = isBackendError(error)
+                    ? handleBackendError(error)
+                    : error.message || 'Authorization failed';
+
                 if (error.code === 'InvalidToken') {
                     // Clear URL query parameters for InvalidToken errors
                     clearInvalidTokenParams();
                     if (Cookies.get('logged_state') === 'true') {
-                        globalObserver.emit('InvalidToken', { error });
+                        globalObserver.emit('InvalidToken', { error: { ...error, localizedMessage: errorMessage } });
                     } else {
                         clearAuthData();
                     }
                 } else {
                     // Authorization error
-                    console.error('Authorization error:', error);
+                    console.error('Authorization error:', errorMessage);
                 }
                 setIsAuthorizing(false);
-                return error;
+                return { ...error, localizedMessage: errorMessage };
             }
 
             this.account_info = authorize;
@@ -456,30 +467,32 @@ class APIBase {
 
             try {
                 trading_times.markets.forEach((market: any) => {
-                    // Use the name property directly as the display name
+                    // Use the name property and translate it
                     if (market.name) {
-                        market_display_names.set(market.name, market.name);
+                        const translatedMarketName = translateMarketCategory(market.name);
+                        market_display_names.set(market.name, translatedMarketName);
 
                         // Also create reverse mapping for market codes
                         for (const [code, name] of market_mapping.entries()) {
                             if (name === market.name) {
-                                market_display_names.set(code, market.name);
+                                market_display_names.set(code, translatedMarketName);
                             }
                         }
                     }
 
                     if (market.submarkets) {
                         market.submarkets.forEach((submarket: any) => {
-                            // Use the name property directly as the display name
+                            // Use the name property and translate it
                             if (submarket.name && market.name) {
+                                const translatedSubmarketName = translateMarketCategory(submarket.name);
                                 const key = `${market.name}_${submarket.name}`;
-                                submarket_display_names.set(key, submarket.name);
+                                submarket_display_names.set(key, translatedSubmarketName);
 
                                 // Also create mapping for market codes and submarket codes
                                 for (const [code, name] of market_mapping.entries()) {
                                     if (name === market.name) {
                                         const code_key = `${code}_${submarket.name}`;
-                                        submarket_display_names.set(code_key, submarket.name);
+                                        submarket_display_names.set(code_key, translatedSubmarketName);
                                     }
                                 }
                             }

@@ -1,4 +1,4 @@
-import { localize } from '@deriv-com/translations';
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { api_base } from '../../api/api-base';
 import { doUntilDone, tradeOptionToProposal } from '../utils/helpers';
 import { clearProposals, proposalsReady } from './state/actions';
@@ -22,7 +22,7 @@ export default Engine =>
             const { proposals } = this.data;
 
             if (proposals.length === 0) {
-                throw Error(localize('Proposals are not ready'));
+                throw Error(getLocalizedErrorMessage('ProposalsNotReady'));
             }
 
             const to_buy = proposals.find(proposal => {
@@ -45,7 +45,7 @@ export default Engine =>
             });
 
             if (!to_buy) {
-                throw new Error(localize('Selected proposal does not exist'));
+                throw new Error(getLocalizedErrorMessage('SelectedProposalNotExist'));
             }
 
             return {

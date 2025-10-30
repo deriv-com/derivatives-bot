@@ -165,3 +165,8 @@ export const LANGUAGES = [
         placeholderIconInMobile: <FlagChinaTraditionalIcon height={14.67} width={22} />,
     },
 ];
+
+// Filtered languages for the language switcher (only show specific languages)
+export const FILTERED_LANGUAGES = LANGUAGES.filter(lang =>
+    ['EN', 'ES', 'FR', 'PT', 'AR', 'IT', 'RU', 'VI', 'TR', 'ZH_CN', 'ZH_TW', 'DE', 'BN', 'SW', 'KO'].includes(lang.code)
+);

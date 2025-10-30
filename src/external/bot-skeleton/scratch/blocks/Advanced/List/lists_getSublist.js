@@ -4,14 +4,14 @@ import { modifyContextMenu } from '../../../utils';
 window.Blockly.Blocks.lists_getSublist = {
     init() {
         this.WHERE_OPTIONS_1 = [
-            [localize('get sub-list from #'), 'FROM_START'],
-            [localize('get sub-list from # from end'), 'FROM_END'],
-            [localize('get sub-list from first'), 'FIRST'],
+            ['get sub-list from #', 'FROM_START'],
+            ['get sub-list from # from end', 'FROM_END'],
+            ['get sub-list from first', 'FIRST'],
         ];
         this.WHERE_OPTIONS_2 = [
-            [localize('#'), 'FROM_START'],
-            [localize('# from end'), 'FROM_END'],
-            [localize('last'), 'LAST'],
+            ['#', 'FROM_START'],
+            ['# from end', 'FROM_END'],
+            ['last', 'LAST'],
         ];
 
         this.appendValueInput('LIST').appendField(localize('in list'));

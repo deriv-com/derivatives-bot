@@ -13,8 +13,8 @@ window.Blockly.Blocks.controls_flow_statements = {
                     type: 'field_dropdown',
                     name: 'FLOW',
                     options: [
-                        [localize('break out'), 'BREAK'],
-                        [localize('continue with next iteration'), 'CONTINUE'],
+                        ['break out', 'BREAK'],
+                        ['continue with next iteration', 'CONTINUE'],
                     ],
                 },
             ],

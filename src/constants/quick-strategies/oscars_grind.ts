@@ -5,7 +5,7 @@ import { TDescriptionItem } from '../../pages/bot-builder/quick-strategy/types';
 export const OSCARS_GRIND = (): TDescriptionItem[] => [
     {
         type: 'subtitle',
-        content: [localize('Exploring the Oscar’s Grind strategy in Deriv Bot')],
+        content: [`${localize('Exploring the')} Oscar's Grind ${localize('strategy in Deriv Bot')}`],
         expanded: true,
         no_collapsible: false,
     },
@@ -13,7 +13,7 @@ export const OSCARS_GRIND = (): TDescriptionItem[] => [
         type: 'text',
         content: [
             localize(
-                'The Oscar’s Grind strategy is designed to potentially gain a modest yet steady profit in each trading session. This strategy splits trades into sessions and has three principles.'
+                `${localize('The')} Oscar's Grind ${localize('strategy is designed to potentially gain a modest yet steady profit in each trading session. This strategy splits trades into sessions and has three principles.')}`
             ),
         ],
     },
@@ -23,7 +23,9 @@ export const OSCARS_GRIND = (): TDescriptionItem[] => [
     },
     {
         type: 'text',
-        content: [localize('These are the trade parameters used for Oscar’s Grind strategy in Deriv Bot.')],
+        content: [
+            `${localize('These are the trade parameters used for')} Oscar's Grind ${localize('strategy in Deriv Bot.')}`,
+        ],
     },
     {
         type: 'text',
@@ -51,12 +53,12 @@ export const OSCARS_GRIND = (): TDescriptionItem[] => [
     },
     {
         type: 'subtitle',
-        content: [localize('An example of Oscar’s Grind strategy')],
+        content: [`${localize('An example of')} Oscar's Grind ${localize('strategy')}`],
     },
     {
         type: 'media',
         src: getImageLocation('oscars_grind.png'),
-        alt: localize('An example of Oscar’s Grind strategy'),
+        alt: `${localize('An example of')} Oscar's Grind ${localize('strategy')}`,
     },
     {
         type: 'text',
@@ -138,7 +140,7 @@ export const OSCARS_GRIND = (): TDescriptionItem[] => [
         type: 'text',
         content: [
             localize(
-                "The Oscar's Grind strategy provides a disciplined approach for incremental gains through systematic stake progression. When integrated into Deriv Bot with proper risk management like profit or loss thresholds, it offers traders a potentially powerful automated trading technique. However, traders should first thoroughly assess their risk tolerance and first try trading on a demo account in order to familiarise with the strategy before trading with real funds."
+                `${localize('The')} Oscar's Grind ${localize('strategy provides a disciplined approach for incremental gains through systematic stake progression. When integrated into Deriv Bot with proper risk management like profit or loss thresholds, it offers traders a potentially powerful automated trading technique. However, traders should first thoroughly assess their risk tolerance and first try trading on a demo account in order to familiarise with the strategy before trading with real funds.')}`
             ),
         ],
     },

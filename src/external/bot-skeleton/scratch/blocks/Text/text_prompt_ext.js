@@ -30,8 +30,8 @@ window.Blockly.Blocks.text_prompt_ext = {
                     type: 'field_dropdown',
                     name: 'TYPE',
                     options: [
-                        [localize('string'), 'TEXT'],
-                        [localize('number'), 'NUMBER'],
+                        ['string', 'TEXT'],
+                        ['number', 'NUMBER'],
                     ],
                 },
                 {

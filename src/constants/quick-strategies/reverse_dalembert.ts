@@ -13,7 +13,7 @@ export const REVERSE_D_ALEMBERT = (): TDescriptionItem[] => [
         type: 'text',
         content: [
             localize(
-                "The Reverse D'Alembert strategy involves increasing your stake after a successful trade and reducing it after a losing trade by a predetermined number of units."
+                `${localize('The')} Reverse D'Alembert ${localize('strategy involves increasing your stake after a successful trade and reducing it after a losing trade by a predetermined number of units.')}`
             ),
         ],
     },

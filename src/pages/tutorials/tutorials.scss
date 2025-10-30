@@ -126,13 +126,14 @@
         @include mobile-or-tablet-screen {
             height: 8.7rem;
             width: 14.8rem;
-            margin: 0 0.8rem 0.8rem 0;
+            margin-inline-end: 0.8rem;
         }
 
         &__tours {
             height: 13.5rem;
             background-size: contain;
-            margin: 0 0.8rem 0.8rem 0;
+            margin-bottom: 0.8rem;
+            margin-inline-end: 0.8rem;
             width: 21.5rem;
             cursor: pointer;
 

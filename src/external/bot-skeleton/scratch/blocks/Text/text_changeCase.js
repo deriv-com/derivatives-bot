@@ -20,9 +20,9 @@ window.Blockly.Blocks.text_changeCase = {
                     type: 'field_dropdown',
                     name: 'CASE',
                     options: [
-                        [localize('UPPER CASE'), 'UPPERCASE'],
-                        [localize('lower case'), 'LOWERCASE'],
-                        [localize('Title Case'), 'TITLECASE'],
+                        ['UPPER CASE', 'UPPERCASE'],
+                        ['lower case', 'LOWERCASE'],
+                        ['Title Case', 'TITLECASE'],
                     ],
                 },
             ],

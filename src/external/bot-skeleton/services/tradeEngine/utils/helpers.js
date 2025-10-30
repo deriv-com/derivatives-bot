@@ -1,4 +1,5 @@
 import { findValueByKeyRecursively, formatTime, getRoundedNumber, isEmptyObject } from '@/components/shared';
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { config } from '@/external/bot-skeleton/constants';
 import { localize } from '@deriv-com/translations';
 import { observer as globalObserver } from '../../../utils/observer';
@@ -147,47 +148,36 @@ const getBackoffDelayInMs = (error_obj, delay_index) => {
     const { TRADE_TYPE_CATEGORY_NAMES } = config();
 
     if (code) {
+        const error_details = {
+            message_type: error.msg_type,
+            delay: next_delay_in_seconds,
+            request: echo_req?.req_id,
+            message: message || localize('The market is closed'),
+            trade_type: TRADE_TYPE_CATEGORY_NAMES?.[selected_trade_type] ?? '',
+        };
+
         switch (code) {
             case 'RateLimit':
-                message_to_print = localize(
-                    'You are rate limited for: {{ message_type }}, retrying in {{ delay }}s (ID: {{ request }})',
-                    {
-                        message_type: error.msg_type,
-                        delay: next_delay_in_seconds,
-                        request: echo_req?.req_id,
-                    }
-                );
-
+                message_to_print = getLocalizedErrorMessage('RateLimit', error_details);
                 break;
             case 'DisconnectError':
-                message_to_print = localize('You are disconnected, retrying in {{ delay }}s', {
-                    delay: next_delay_in_seconds,
-                });
+                message_to_print = getLocalizedErrorMessage('DisconnectError', error_details);
                 break;
             case 'MarketIsClosed':
-                message_to_print = localize('{{ message }}, retrying in {{ delay }}s', {
-                    message: message || localize('The market is closed'),
-                    delay: next_delay_in_seconds,
-                });
+                message_to_print = getLocalizedErrorMessage('MarketIsClosed', error_details);
                 break;
             case 'OpenPositionLimitExceeded':
-                message_to_print = localize(
-                    'You already have an open position for {{ trade_type }} contract type, retrying in {{ delay }}s',
-                    {
-                        delay: next_delay_in_seconds,
-                        trade_type: TRADE_TYPE_CATEGORY_NAMES?.[selected_trade_type] ?? '',
-                    }
-                );
+                message_to_print = getLocalizedErrorMessage('OpenPositionLimitExceeded', error_details);
                 break;
             default:
-                message_to_print = localize('Request failed for: {{ message_type }}, retrying in {{ delay }}s', {
+                message_to_print = getLocalizedErrorMessage('RequestFailed', {
                     message_type: msg_type || localize('unknown'),
                     delay: next_delay_in_seconds,
                 });
                 break;
         }
     } else {
-        message_to_print = localize('Request failed for: {{ message_type }}, retrying in {{ delay }}s', {
+        message_to_print = getLocalizedErrorMessage('RequestFailed', {
             message_type: msg_type || localize('unknown'),
             delay: next_delay_in_seconds,
         });
@@ -201,10 +191,10 @@ const getBackoffDelayInMs = (error_obj, delay_index) => {
 export const updateErrorMessage = error => {
     if (error.error?.code === 'InputValidationFailed') {
         if (error.error.details?.duration) {
-            error.error.message = localize('Duration must be a positive integer');
+            error.error.message = getLocalizedErrorMessage('DurationValidationFailed');
         }
         if (error.error.details?.amount) {
-            error.error.message = localize('Amount must be a positive number.');
+            error.error.message = getLocalizedErrorMessage('AmountValidationFailed');
         }
     }
 };

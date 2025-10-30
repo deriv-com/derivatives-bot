@@ -16,10 +16,10 @@ window.Blockly.Blocks.console = {
                     type: 'field_dropdown',
                     name: 'CONSOLE_TYPE',
                     options: [
-                        [localize('Log'), 'log'],
-                        [localize('Warn'), 'warn'],
-                        [localize('Error'), 'error'],
-                        [localize('Table'), 'table'],
+                        ['Log', 'log'],
+                        ['Warn', 'warn'],
+                        ['Error', 'error'],
+                        ['Table', 'table'],
                     ],
                 },
                 {

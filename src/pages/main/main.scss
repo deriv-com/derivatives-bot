@@ -604,7 +604,6 @@
     &__content {
         text-align: center;
         padding: 0 1.6rem;
-        margin-bottom: 1.6rem;
 
         @include mobile-or-tablet-screen {
             line-height: 1.8;
@@ -621,7 +620,7 @@
         text-align: center;
         width: 100%;
         height: 55%;
-        margin-bottom: 1.6rem;
+        margin-bottom: auto;
     }
 
     img {
@@ -639,8 +638,6 @@
 
     &__status {
         width: 100%;
-        position: fixed;
-        bottom: 1.6rem;
     }
 
     &__button-group {
@@ -683,6 +680,10 @@
         .dbot-slider {
             width: 100%;
 
+            &__content {
+                margin-bottom: auto;
+            }
+
             &__status {
                 @include flex-center(flex-start);
             }
@@ -704,6 +705,7 @@
                 width: 50%;
                 display: flex;
                 justify-content: center;
+                padding: 1rem 0;
 
                 .default {
                     background: transparent;

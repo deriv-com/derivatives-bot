@@ -4,6 +4,7 @@ import OpenLiveChatLink from '@/components/shared_ui/open-livechat-link';
 import Text from '@/components/shared_ui/text';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { Localize, localize } from '@deriv-com/translations';
+import { localizeAccumulators } from '@/utils/conditional-localize';
 import { rudderStackSendOpenEvent } from '../../../analytics/rudderstack-common-events';
 import { handleOnConfirmAccumulator } from './utils/accumulator-helper-functions';
 import { IconAnnounce } from './announcement-components';
@@ -76,7 +77,7 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
                     id: 2,
                     text: (
                         <Localize
-                            i18n_default_text='<0>Integration of Accumulators Options</0> for direct strategy application within the QS modal.'
+                            i18n_default_text={`<0>Integration of ${localizeAccumulators()} Options</0> for direct strategy application within the QS modal.`}
                             components={[<strong key={0} />]}
                         />
                     ),
@@ -182,20 +183,20 @@ export const ANNOUNCEMENTS: Record<string, TAnnouncement> = {
     ACCUMULATOR_ANNOUNCE: {
         announcement: {
             id: 'ACCUMULATOR_ANNOUNCE',
-            main_title: localize('Accumulators now on Deriv Bot'),
+            main_title: `${localizeAccumulators()} ${localize('now on Deriv Bot')}`,
             confirm_button_text: localize('Try now'),
             cancel_button_text: localize('Learn more'),
             base_classname: 'announcement-dialog',
             title: (
                 <Localize
-                    i18n_default_text='<0>Boost your trading strategy with Accumulators</0>'
+                    i18n_default_text={`<0>Boost your trading strategy with ${localizeAccumulators()}</0>`}
                     components={[<strong key={0} />]}
                 />
             ),
             content: [
                 {
                     id: 0,
-                    text: localize('Trade Accumulators to build up potential profits with a structured approach.'),
+                    text: `${localize('Trade')} ${localizeAccumulators()} ${localize('to build up potential profits with a structured approach.')}`,
                 },
                 {
                     id: 1,
@@ -266,8 +267,8 @@ export const BOT_ANNOUNCEMENTS_LIST: TAnnouncementItem[] = [
     {
         id: 'ACCUMULATOR_ANNOUNCE',
         icon: IconAnnounce,
-        title: localize('Accumulators is now on Deriv Bot'),
-        message: localize('Boost your trading strategy with Accumulators.'),
+        title: `${localizeAccumulators()} ${localize('is now on Deriv Bot')}`,
+        message: `${localize('Boost your trading strategy with')} ${localizeAccumulators()}.`,
         date: '2 July 2024 00:00 UTC',
         buttonAction: BUTTON_ACTION_TYPE.MODAL_BUTTON_ACTION,
         actionText: '',
