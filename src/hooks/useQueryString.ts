@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * A hook that leverages React Router v6 to sync URL params with the React component lifecycle.
@@ -44,12 +44,11 @@ interface QueryParams {
 }
 
 function useQueryString() {
-    const location = useLocation();
     const navigate = useNavigate();
 
     // Parse the query string into an object
     function getQueryParams(): Partial<QueryParams> {
-        const searchParams = new URLSearchParams(location.search);
+        const searchParams = new URLSearchParams(window.location.search);
         const params: Partial<QueryParams> = {};
         searchParams.forEach((value, key) => {
             params[key as keyof QueryParams] = value;
@@ -59,7 +58,7 @@ function useQueryString() {
 
     // Update the query string in the URL
     function setQueryParams(newParams: Partial<QueryParams>) {
-        const searchParams = new URLSearchParams(location.search);
+        const searchParams = new URLSearchParams(window.location.search);
 
         Object.entries(newParams).forEach(([key, value]) => {
             if (value === undefined) {
@@ -79,7 +78,7 @@ function useQueryString() {
 
     // Function to delete a specific query parameter
     function deleteQueryString(key: keyof QueryParams) {
-        const searchParams = new URLSearchParams(location.search);
+        const searchParams = new URLSearchParams(window.location.search);
         searchParams.delete(key);
         navigate(
             {
