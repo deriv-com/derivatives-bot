@@ -1,32 +1,5 @@
 import { localize } from '@deriv-com/translations';
-
-/**
- * Sanitizes parameter values to prevent XSS attacks
- * @param value - The parameter value to sanitize
- * @returns Sanitized string safe for display
- */
-const sanitizeParameterValue = (value: any): string => {
-    if (value === null || value === undefined) {
-        return '';
-    }
-    
-    const stringValue = String(value);
-    
-    // Basic sanitization for error message parameters
-    return stringValue
-        .replace(/[<>'"&]/g, (match) => {
-            const htmlEntities: Record<string, string> = {
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#x27;',
-                '&': '&amp;'
-            };
-            return htmlEntities[match] || match;
-        })
-        // Limit length to prevent buffer overflow attacks
-        .substring(0, 1000);
-};
+import { sanitizeParameterValue } from '../utils/xss-protection';
 
 /**
  * Converts backend parameter format to frontend format and maps parameters
