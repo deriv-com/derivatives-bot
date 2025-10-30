@@ -29,11 +29,21 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
         const details = errorResponse.details;
 
         // Handle common parameter mappings from legacy backend error message format
-        if (details._1 !== undefined) params.param1 = sanitizeParameterValue(String(details._1).replace(/\.+$/, ''));
-        if (details._2 !== undefined) params.param2 = sanitizeParameterValue(String(details._2).replace(/\.+$/, ''));
-        if (details._3 !== undefined) params.param3 = sanitizeParameterValue(String(details._3).replace(/\.+$/, ''));
-        if (details._4 !== undefined) params.param4 = sanitizeParameterValue(String(details._4).replace(/\.+$/, ''));
-        if (details._5 !== undefined) params.param5 = sanitizeParameterValue(String(details._5).replace(/\.+$/, ''));
+        if (details._1 !== undefined) {
+            params.param1 = sanitizeParameterValue(String(details._1).replace(/\.+$/, ''));
+        }
+        if (details._2 !== undefined) {
+            params.param2 = sanitizeParameterValue(String(details._2).replace(/\.+$/, ''));
+        }
+        if (details._3 !== undefined) {
+            params.param3 = sanitizeParameterValue(String(details._3).replace(/\.+$/, ''));
+        }
+        if (details._4 !== undefined) {
+            params.param4 = sanitizeParameterValue(String(details._4).replace(/\.+$/, ''));
+        }
+        if (details._5 !== undefined) {
+            params.param5 = sanitizeParameterValue(String(details._5).replace(/\.+$/, ''));
+        }
 
         // Also include any named parameters from details
         Object.keys(details).forEach(key => {
