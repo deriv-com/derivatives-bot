@@ -1,6 +1,6 @@
 import { getImageLocation } from '../../public-path';
 import { localize } from '@deriv-com/translations';
-import { localizeAccumulators, localizeReverseMartingale } from '@/utils/conditional-localize';
+import { localizeAccumulators, localizeReverseMartingale, localizeReverseDAlembert } from '@/utils/conditional-localize';
 import { TFaqContent, TGuideContent, TQuickStrategyContent, TUserGuideContent } from './tutorials.types';
 
 export const USER_GUIDE = 'user guide';
@@ -494,10 +494,10 @@ export const quick_strategy_content = (): TQuickStrategyContent[] => [
     },
     {
         qs_name: 'REVERSE_D_ALEMBERT',
-        type: localize('About Reverse D’Alembert'),
+        type: `${localize('About')} ${localizeReverseDAlembert()}`,
         content: [
-            localize('Exploring the Reverse D’Alembert strategy in Deriv Bot'),
-            localize('An example of Reverse D’Alembert strategy'),
+            `${localize('Exploring the')} ${localizeReverseDAlembert()} ${localize('strategy in Deriv Bot')}`,
+            `${localize('An example of')} ${localizeReverseDAlembert()} ${localize('strategy')}`,
         ],
         search_id: `${QUICK_STRATEGY_GUIDES}-4`,
     },

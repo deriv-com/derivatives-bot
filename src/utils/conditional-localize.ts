@@ -4,7 +4,6 @@ import { localize } from '@deriv-com/translations';
 const UNTRANSLATABLE_TERMS = new Set([
     'Accumulators',
     'Reverse Martingale',
-    'Options',
     'Martingale',
     "D'Alembert",
     "Oscar's Grind",
@@ -13,6 +12,40 @@ const UNTRANSLATABLE_TERMS = new Set([
     'Martingale on Stat Reset',
     "D'Alembert on Stat Reset",
     "Reverse D'Alembert on Stat Reset",
+    // Trade type names that should remain in English
+    'Up',
+    'Down',
+    'Call',
+    'Put',
+    'Rise',
+    'Fall',
+    'Higher',
+    'Lower',
+    'Touch',
+    'No Touch',
+    'Matches',
+    'Differs',
+    'Even',
+    'Odd',
+    'Over',
+    'Under',
+    'Asian Up',
+    'Asian Down',
+    'Spread Up',
+    'Spread Down',
+    'Ends Outside',
+    'Ends Between',
+    'Close-to-Low',
+    'High-to-Close',
+    'High-to-Low',
+    'Stays Between',
+    'Goes Outside',
+    'Reset Call',
+    'Reset Put',
+    'Only Ups',
+    'Only Downs',
+    'High Tick',
+    'Low Tick',
 ]);
 
 /**
@@ -46,13 +79,6 @@ export const localizeReverseMartingale = (): string => {
     return 'Reverse Martingale';
 };
 
-/**
- * Helper function specifically for "Options" term
- * Always returns "Options" without translation
- */
-export const localizeOptions = (): string => {
-    return 'Options';
-};
 
 /**
  * Helper function specifically for "Martingale" term

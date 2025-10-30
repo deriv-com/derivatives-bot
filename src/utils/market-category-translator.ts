@@ -37,12 +37,40 @@ const TRADE_TYPE_NAMES = [
 ];
 
 /**
+ * Financial instrument names that should NOT be translated and remain in English
+ * These are standardized international financial instrument names with specific numbers
+ */
+const FINANCIAL_INSTRUMENT_PATTERNS = [
+    /^Volatility \d+( \(\d+s\))? Index$/i,  // Volatility 100 Index, Volatility 100 (1s) Index
+    /^Crash \d+ Index$/i,                   // Crash 500 Index, Crash 1000 Index
+    /^Boom \d+ Index$/i,                    // Boom 500 Index, Boom 1000 Index
+    /^Jump \d+ Index$/i,                    // Jump 10 Index, Jump 25 Index
+    /^Step \d+ Index$/i,                    // Step 100 Index, Step 200 Index
+    /^Bear Market Index$/i,                 // Bear Market Index
+    /^Bull Market Index$/i,                 // Bull Market Index
+    /^Range Break \d+ Index$/i,             // Range Break 100 Index
+];
+
+/**
+ * Checks if a given name is a financial instrument name that should remain in English
+ */
+const isFinancialInstrumentName = (name: string): boolean => {
+    return FINANCIAL_INSTRUMENT_PATTERNS.some(pattern => pattern.test(name));
+};
+
+/**
  * Maps API-returned market category names to their translated versions
  * Excludes trade type names which should remain in English
  */
 export const translateMarketCategory = (categoryName: string): string => {
     // Don't translate trade type names - keep them in English
     if (TRADE_TYPE_NAMES.includes(categoryName)) {
+        return categoryName;
+    }
+
+    // Don't translate financial instrument names - keep them in English
+    // These are standardized international financial instrument names
+    if (isFinancialInstrumentName(categoryName)) {
         return categoryName;
     }
 
