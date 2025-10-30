@@ -235,6 +235,7 @@ export default class ActiveSymbols {
                         group: translateMarketCategory(submarket.display_name),
                         text: symbol.display_name,
                         value: symbol_name,
+                        submarket: submarket_name,
                     });
                 });
             });

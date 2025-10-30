@@ -6,7 +6,7 @@ import { removeTradeTypeFromUrl } from '@/utils/blockly-url-param-handler';
 import { getSetting } from '@/utils/settings';
 import { applyTradeTypeDropdownChanges } from '@/utils/trade-type-modal-handler';
 import { getTradeTypeFromCurrentUrl } from '@/utils/url-trade-type-handler';
-import { Localize } from '@deriv-com/translations';
+import { Localize, localize } from '@deriv-com/translations';
 import './trade-type-confirmation-modal.scss';
 
 interface TradeTypeConfirmationModalProps {
@@ -62,8 +62,8 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
             <Dialog
                 title={<Localize i18n_default_text='Change Trade Type?' />}
                 is_visible={is_visible}
-                confirm_button_text='Yes, Change'
-                cancel_button_text='No, Keep Current'
+                confirm_button_text={localize('Yes, Change')}
+                cancel_button_text={localize('No, Keep Current')}
                 onConfirm={() => {
                     // Apply the dropdown changes when user confirms
                     const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();

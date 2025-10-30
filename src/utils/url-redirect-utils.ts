@@ -1,7 +1,9 @@
+import { getInitialLanguage } from '@deriv-com/translations';
+
 /**
- * Generate URL with redirect parameter back to current page and account_type if available
+ * Generate URL with redirect parameter back to current page, account_type, and language if available
  * @param baseUrl - The base URL to add parameters to
- * @returns URL with redirect parameter to current page and account_type parameter (excluding query params)
+ * @returns URL with redirect parameter to current page, account_type, and lang parameters (excluding query params)
  */
 export const generateUrlWithRedirect = (baseUrl: string): string => {
     try {
@@ -16,6 +18,12 @@ export const generateUrlWithRedirect = (baseUrl: string): string => {
         const accountType = localStorage.getItem('account_type');
         if (accountType) {
             url.searchParams.set('account_type', accountType);
+        }
+
+        // Add lang parameter with current language
+        const currentLanguage = getInitialLanguage();
+        if (currentLanguage) {
+            url.searchParams.set('lang', currentLanguage);
         }
 
         return url.toString();
