@@ -46,16 +46,21 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
     // Handle direct parameter mapping (for backward compatibility)
     if (!errorResponse.code_args && !errorResponse.details) {
         // Handle common parameter mappings from legacy format
-        if (errorResponse._1 !== undefined)
+        if (errorResponse._1 !== undefined) {
             params.param1 = sanitizeParameterValue(String(errorResponse._1).replace(/\.+$/, ''));
-        if (errorResponse._2 !== undefined)
+        }
+        if (errorResponse._2 !== undefined) {
             params.param2 = sanitizeParameterValue(String(errorResponse._2).replace(/\.+$/, ''));
-        if (errorResponse._3 !== undefined)
+        }
+        if (errorResponse._3 !== undefined) {
             params.param3 = sanitizeParameterValue(String(errorResponse._3).replace(/\.+$/, ''));
-        if (errorResponse._4 !== undefined)
+        }
+        if (errorResponse._4 !== undefined) {
             params.param4 = sanitizeParameterValue(String(errorResponse._4).replace(/\.+$/, ''));
-        if (errorResponse._5 !== undefined)
+        }
+        if (errorResponse._5 !== undefined) {
             params.param5 = sanitizeParameterValue(String(errorResponse._5).replace(/\.+$/, ''));
+        }
 
         // Also include any named parameters
         Object.keys(errorResponse).forEach(key => {

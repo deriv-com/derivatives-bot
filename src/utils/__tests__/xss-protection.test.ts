@@ -197,11 +197,7 @@ describe('XSS Protection', () => {
             expect(typeof result).toBe('string');
         });
 
-        it('should fallback to text sanitization on DOMPurify failure', () => {
-            // This test would need proper mocking setup in a real environment
-            const result = sanitizeHtml('<script>alert(1)</script>');
-            expect(result).toBeDefined();
-        });
+        it.todo('should fallback to text sanitization on DOMPurify failure - needs proper DOMPurify mocking');
     });
 
     describe('sanitizeUrlComprehensive', () => {
