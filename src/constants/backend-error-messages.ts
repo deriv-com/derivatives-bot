@@ -46,11 +46,16 @@ const processBackendParameters = (message: string, errorResponse?: Record<string
     // Handle direct parameter mapping (for backward compatibility)
     if (!errorResponse.code_args && !errorResponse.details) {
         // Handle common parameter mappings from legacy format
-        if (errorResponse._1 !== undefined) params.param1 = sanitizeParameterValue(String(errorResponse._1).replace(/\.+$/, ''));
-        if (errorResponse._2 !== undefined) params.param2 = sanitizeParameterValue(String(errorResponse._2).replace(/\.+$/, ''));
-        if (errorResponse._3 !== undefined) params.param3 = sanitizeParameterValue(String(errorResponse._3).replace(/\.+$/, ''));
-        if (errorResponse._4 !== undefined) params.param4 = sanitizeParameterValue(String(errorResponse._4).replace(/\.+$/, ''));
-        if (errorResponse._5 !== undefined) params.param5 = sanitizeParameterValue(String(errorResponse._5).replace(/\.+$/, ''));
+        if (errorResponse._1 !== undefined)
+            params.param1 = sanitizeParameterValue(String(errorResponse._1).replace(/\.+$/, ''));
+        if (errorResponse._2 !== undefined)
+            params.param2 = sanitizeParameterValue(String(errorResponse._2).replace(/\.+$/, ''));
+        if (errorResponse._3 !== undefined)
+            params.param3 = sanitizeParameterValue(String(errorResponse._3).replace(/\.+$/, ''));
+        if (errorResponse._4 !== undefined)
+            params.param4 = sanitizeParameterValue(String(errorResponse._4).replace(/\.+$/, ''));
+        if (errorResponse._5 !== undefined)
+            params.param5 = sanitizeParameterValue(String(errorResponse._5).replace(/\.+$/, ''));
 
         // Also include any named parameters
         Object.keys(errorResponse).forEach(key => {
@@ -349,9 +354,9 @@ export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Reco
         console.warn(`Unknown error code encountered: ${errorCode}`, {
             errorCode,
             errorResponse,
-            availableErrorCodes: Object.keys(errorMessages).slice(0, 10) // Log first 10 for reference
+            availableErrorCodes: Object.keys(errorMessages).slice(0, 10), // Log first 10 for reference
         });
-        
+
         // If no predefined message, use the backend message if available
         message = errorResponse?.message || localize('An error occurred. Please try again.');
     }
@@ -366,7 +371,7 @@ export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Reco
 
     // Process backend parameters for {{param}} format
     const processedParams = processBackendParameters(message, errorResponse);
-    
+
     // For messages that already have parameter placeholders, replace them directly
     // instead of using localize() which adds "..." for unknown translation keys
     let finalMessage = message;
@@ -379,7 +384,7 @@ export const getLocalizedErrorMessage = (errorCode: string, errorResponse?: Reco
         // Only use localize() for static messages without dynamic parameters
         finalMessage = localize(message, processedParams);
     }
-    
+
     return finalMessage;
 };
 

@@ -12,7 +12,7 @@ export const reloadPage = (): void => {
     } catch (error) {
         console.error('Failed to reload page:', error);
         // Fallback: redirect to current URL
-        window.location.href = window.location.href;
+        window.location.reload();
     }
 };
 

@@ -1,6 +1,6 @@
 /**
  * Comprehensive XSS Protection Utility
- * 
+ *
  * This module provides robust XSS protection with multiple layers of defense:
  * - HTML entity encoding
  * - Event handler removal
@@ -65,20 +65,84 @@ const DANGEROUS_SCHEMES = [
  * Event handlers that should be removed
  */
 const EVENT_HANDLERS = [
-    'onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate',
-    'onbeforecopy', 'onbeforecut', 'onbeforedeactivate', 'onbeforeeditfocus',
-    'onbeforepaste', 'onbeforeprint', 'onbeforeunload', 'onbeforeupdate', 'onblur',
-    'onbounce', 'oncellchange', 'onchange', 'onclick', 'oncontextmenu', 'oncontrolselect',
-    'oncopy', 'oncut', 'ondataavailable', 'ondatasetchanged', 'ondatasetcomplete',
-    'ondblclick', 'ondeactivate', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave',
-    'ondragover', 'ondragstart', 'ondrop', 'onerror', 'onerrorupdate', 'onfilterchange',
-    'onfinish', 'onfocus', 'onfocusin', 'onfocusout', 'onhelp', 'onkeydown', 'onkeypress',
-    'onkeyup', 'onlayoutcomplete', 'onload', 'onlosecapture', 'onmousedown', 'onmouseenter',
-    'onmouseleave', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onmousewheel',
-    'onmove', 'onmoveend', 'onmovestart', 'onpaste', 'onpropertychange', 'onreadystatechange',
-    'onreset', 'onresize', 'onresizeend', 'onresizestart', 'onrowenter', 'onrowexit',
-    'onrowsdelete', 'onrowsinserted', 'onscroll', 'onselect', 'onselectionchange',
-    'onselectstart', 'onstart', 'onstop', 'onsubmit', 'onunload',
+    'onabort',
+    'onactivate',
+    'onafterprint',
+    'onafterupdate',
+    'onbeforeactivate',
+    'onbeforecopy',
+    'onbeforecut',
+    'onbeforedeactivate',
+    'onbeforeeditfocus',
+    'onbeforepaste',
+    'onbeforeprint',
+    'onbeforeunload',
+    'onbeforeupdate',
+    'onblur',
+    'onbounce',
+    'oncellchange',
+    'onchange',
+    'onclick',
+    'oncontextmenu',
+    'oncontrolselect',
+    'oncopy',
+    'oncut',
+    'ondataavailable',
+    'ondatasetchanged',
+    'ondatasetcomplete',
+    'ondblclick',
+    'ondeactivate',
+    'ondrag',
+    'ondragend',
+    'ondragenter',
+    'ondragleave',
+    'ondragover',
+    'ondragstart',
+    'ondrop',
+    'onerror',
+    'onerrorupdate',
+    'onfilterchange',
+    'onfinish',
+    'onfocus',
+    'onfocusin',
+    'onfocusout',
+    'onhelp',
+    'onkeydown',
+    'onkeypress',
+    'onkeyup',
+    'onlayoutcomplete',
+    'onload',
+    'onlosecapture',
+    'onmousedown',
+    'onmouseenter',
+    'onmouseleave',
+    'onmousemove',
+    'onmouseout',
+    'onmouseover',
+    'onmouseup',
+    'onmousewheel',
+    'onmove',
+    'onmoveend',
+    'onmovestart',
+    'onpaste',
+    'onpropertychange',
+    'onreadystatechange',
+    'onreset',
+    'onresize',
+    'onresizeend',
+    'onresizestart',
+    'onrowenter',
+    'onrowexit',
+    'onrowsdelete',
+    'onrowsinserted',
+    'onscroll',
+    'onselect',
+    'onselectionchange',
+    'onselectstart',
+    'onstart',
+    'onstop',
+    'onsubmit',
+    'onunload',
 ];
 
 /**
@@ -117,7 +181,7 @@ const EXTENDED_HTML_ENTITIES: Record<string, string> = {
     '?': '&#63;',
     '!': '&#33;',
     '@': '&#64;',
-    '$': '&#36;',
+    $: '&#36;',
     '^': '&#94;',
     '|': '&#124;',
     '~': '&#126;',
@@ -132,11 +196,11 @@ export function encodeHtmlEntities(input: string, extended = false): string {
     }
 
     if (extended) {
-        return input.replace(/[&<>"'\/`=\n\r\t()\[\]{}\\%#+*?!@$^|~]/g, (match) => {
+        return input.replace(/[&<>"'/`=\n\r\t()[\]{}\\%#+*?!@$^|~]/g, match => {
             return EXTENDED_HTML_ENTITIES[match] || match;
         });
     } else {
-        return input.replace(/[&<>"'\/`=\n\r\t]/g, (match) => {
+        return input.replace(/[&<>"'/`=\n\r\t]/g, match => {
             return HTML_ENTITIES[match] || match;
         });
     }
@@ -151,7 +215,7 @@ export function sanitizeUrl(url: string): string {
     }
 
     const trimmedUrl = url.trim().toLowerCase();
-    
+
     // Check for dangerous schemes
     for (const scheme of DANGEROUS_SCHEMES) {
         if (trimmedUrl.startsWith(scheme)) {
@@ -179,7 +243,7 @@ export function removeEventHandlers(input: string): string {
     }
 
     let sanitized = input;
-    
+
     // Remove event handlers (case-insensitive)
     for (const handler of EVENT_HANDLERS) {
         const regex = new RegExp(`\\s*${handler}\\s*=\\s*[^\\s>]*`, 'gi');
@@ -189,10 +253,10 @@ export function removeEventHandlers(input: string): string {
     // Remove javascript: URLs in attributes - more comprehensive
     sanitized = sanitized.replace(/javascript\s*:[^"'>]*/gi, '');
     sanitized = sanitized.replace(/href\s*=\s*["']javascript:[^"']*["']/gi, 'href=""');
-    
+
     // Remove data: URLs that might contain scripts
     sanitized = sanitized.replace(/data\s*:[^;]*;[^,]*,/gi, '');
-    
+
     // Remove javascript: from CSS url() functions
     sanitized = sanitized.replace(/url\s*\(\s*javascript:[^)]*\)/gi, 'url()');
 
@@ -208,61 +272,61 @@ export function multiPassSanitize(input: string, passes = 5): string {
     }
 
     let sanitized = input;
-    
+
     for (let i = 0; i < passes; i++) {
         const previous = sanitized;
-        
+
         // Remove event handlers
         sanitized = removeEventHandlers(sanitized);
-        
+
         // Remove script tags and their content - more comprehensive
         sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
         sanitized = sanitized.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
         sanitized = sanitized.replace(/<script[^>]*>/gi, '');
         sanitized = sanitized.replace(/<\/script>/gi, '');
-        
+
         // Remove style tags and their content - more comprehensive
         sanitized = sanitized.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
         sanitized = sanitized.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
         sanitized = sanitized.replace(/<style[^>]*>/gi, '');
         sanitized = sanitized.replace(/<\/style>/gi, '');
-        
+
         // Additional cleanup for any remaining CSS content that might have been left behind
         sanitized = sanitized.replace(/body\s*\{[^}]*\}/gi, '');
         sanitized = sanitized.replace(/[a-zA-Z-]+\s*:\s*url\([^)]*\)/gi, '');
-        
+
         // Clean up any remaining broken CSS patterns
         sanitized = sanitized.replace(/\{[^}]*url\([^)]*\)[^}]*\}/gi, '');
         sanitized = sanitized.replace(/background\s*:\s*url\([^)]*\)/gi, '');
-        
+
         // Remove iframe tags
         sanitized = sanitized.replace(/<iframe\b[^>]*>.*?<\/iframe>/gi, '');
         sanitized = sanitized.replace(/<iframe[^>]*>/gi, '');
-        
+
         // Remove object and embed tags
         sanitized = sanitized.replace(/<(object|embed)\b[^>]*>.*?<\/\1>/gi, '');
         sanitized = sanitized.replace(/<(object|embed)[^>]*>/gi, '');
-        
+
         // Remove form tags
         sanitized = sanitized.replace(/<form\b[^>]*>.*?<\/form>/gi, '');
         sanitized = sanitized.replace(/<form[^>]*>/gi, '');
-        
+
         // Remove link tags that might load external resources
         sanitized = sanitized.replace(/<link\b[^>]*>/gi, '');
-        
+
         // Remove meta tags
         sanitized = sanitized.replace(/<meta\b[^>]*>/gi, '');
-        
+
         // Handle nested tags like <scr<script>ipt>
         sanitized = sanitized.replace(/<scr[^>]*ipt[^>]*>/gi, '');
         sanitized = sanitized.replace(/<\/scr[^>]*ipt>/gi, '');
-        
+
         // If no changes were made, we can stop early
         if (sanitized === previous) {
             break;
         }
     }
-    
+
     return sanitized;
 }
 
@@ -323,7 +387,7 @@ export function sanitizeHtml(input: string, config: Partial<XSSProtectionConfig>
         ALLOWED_ATTR: finalConfig.allowedAttributes || [],
         ALLOW_DATA_ATTR: false,
         ALLOW_UNKNOWN_PROTOCOLS: false,
-        ALLOWED_URI_REGEXP: finalConfig.allowedSchemes 
+        ALLOWED_URI_REGEXP: finalConfig.allowedSchemes
             ? new RegExp(`^(?:${finalConfig.allowedSchemes.join('|')}):`, 'i')
             : /^(?:https?):$/i,
         SANITIZE_DOM: true,
@@ -366,7 +430,7 @@ export function sanitizeUrlComprehensive(url: string): string {
 
     // First pass - basic URL sanitization
     let sanitized = sanitizeUrl(url);
-    
+
     // If URL was blocked, return empty string
     if (!sanitized) {
         return '';
@@ -375,13 +439,13 @@ export function sanitizeUrlComprehensive(url: string): string {
     // Additional sanitization for URL parameters
     try {
         const urlObj = new URL(sanitized);
-        
+
         // Check each parameter
         urlObj.searchParams.forEach((value, key) => {
             const sanitizedValue = sanitizeText(value);
             urlObj.searchParams.set(key, sanitizedValue);
         });
-        
+
         sanitized = urlObj.toString();
     } catch (error) {
         // If URL parsing fails, apply basic text sanitization
@@ -395,7 +459,7 @@ export function sanitizeUrlComprehensive(url: string): string {
  * Comprehensive XSS protection function that chooses the appropriate method
  */
 export function sanitize(
-    input: any, 
+    input: any,
     type: 'text' | 'html' | 'url' = 'text',
     config: Partial<XSSProtectionConfig> = {}
 ): string {

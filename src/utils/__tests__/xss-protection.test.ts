@@ -1,20 +1,20 @@
 /**
  * Comprehensive XSS Protection Test Suite
- * 
+ *
  * Tests all XSS protection functions against various attack vectors
  */
 
 import {
-    sanitizeText,
+    encodeHtmlEntities,
+    multiPassSanitize,
+    removeEventHandlers,
+    sanitize,
     sanitizeHtml,
+    sanitizeParameterValue,
+    sanitizeText,
     sanitizeUrl,
     sanitizeUrlComprehensive,
-    sanitizeParameterValue,
-    encodeHtmlEntities,
-    removeEventHandlers,
-    multiPassSanitize,
     validateSanitization,
-    sanitize,
 } from '../xss-protection';
 
 describe('XSS Protection', () => {
@@ -36,9 +36,7 @@ describe('XSS Protection', () => {
         });
 
         it('should encode special characters', () => {
-            expect(encodeHtmlEntities('&<>"\'`=\n\r\t')).toBe(
-                '&amp;&lt;&gt;&quot;&#x27;&#x60;&#x3D;&#10;&#13;&#9;'
-            );
+            expect(encodeHtmlEntities('&<>"\'`=\n\r\t')).toBe('&amp;&lt;&gt;&quot;&#x27;&#x60;&#x3D;&#10;&#13;&#9;');
         });
     });
 
@@ -186,7 +184,7 @@ describe('XSS Protection', () => {
 
         it('should respect allowed tags configuration', () => {
             const result = sanitizeHtml('<p>Paragraph</p><div>Div</div>', {
-                allowedTags: ['p']
+                allowedTags: ['p'],
             });
             expect(result).toContain('<p>');
             expect(result).not.toContain('<div>');
@@ -200,12 +198,6 @@ describe('XSS Protection', () => {
         });
 
         it('should fallback to text sanitization on DOMPurify failure', () => {
-            // Mock DOMPurify to throw an error
-            const originalDOMPurify = require('dompurify');
-            const mockSanitize = jest.fn().mockImplementation(() => {
-                throw new Error('DOMPurify error');
-            });
-            
             // This test would need proper mocking setup in a real environment
             const result = sanitizeHtml('<script>alert(1)</script>');
             expect(result).toBeDefined();
@@ -372,7 +364,7 @@ describe('XSS Protection', () => {
             const startTime = Date.now();
             const result = sanitizeText(largeInput);
             const endTime = Date.now();
-            
+
             expect(result).toBeDefined();
             expect(endTime - startTime).toBeLessThan(1000); // Should complete within 1 second
         });
@@ -380,9 +372,9 @@ describe('XSS Protection', () => {
         it('should handle multiple sanitization calls efficiently', () => {
             const inputs = Array(100).fill('<script>alert(1)</script>');
             const startTime = Date.now();
-            
+
             inputs.forEach(input => sanitizeText(input));
-            
+
             const endTime = Date.now();
             expect(endTime - startTime).toBeLessThan(1000); // Should complete within 1 second
         });

@@ -1,5 +1,5 @@
-import { localize } from '@deriv-com/translations';
 import { localizeAccumulators } from '@/utils/conditional-localize';
+import { localize } from '@deriv-com/translations';
 import { STRATEGIES } from '../config';
 
 export enum QsSteps {

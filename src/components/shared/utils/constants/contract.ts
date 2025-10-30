@@ -1,6 +1,6 @@
 import React from 'react';
-import { localize } from '@deriv-com/translations';
 import { localizeAccumulators } from '@/utils/conditional-localize';
+import { localize } from '@deriv-com/translations';
 import { CONTRACT_TYPES, TRADE_TYPES } from '../contract';
 import { TContractOptions } from '../contract/contract-types';
 
