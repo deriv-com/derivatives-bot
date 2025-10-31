@@ -16,15 +16,20 @@ type TSellConditionItem = {
     value: string;
 };
 
-const list_options = [
-    { text: localize('Take Profit'), value: 'take_profit' },
-    { text: localize('Tick Count'), value: 'tick_count' },
-];
-
 const SellConditions: React.FC<TDurationUnit> = ({ attached }: TDurationUnit) => {
     const { quick_strategy } = useStore();
     const { setValue } = quick_strategy;
     const { setFieldValue, values } = useFormikContext<TFormData>();
+
+    // Define list_options inside component to ensure localize() is called on each render
+    const takeProfitText = localize('Take Profit');
+    const tickCountText = localize('Tick Count');
+
+    const list_options = [
+        { text: takeProfitText, value: 'take_profit' },
+        { text: tickCountText, value: 'tick_count' },
+    ];
+
     const [selectedValue, setSelectedValue] = useState<TSellConditionItem>(
         values.boolean_tick_count ? list_options[1] : list_options[0]
     );
@@ -35,7 +40,7 @@ const SellConditions: React.FC<TDurationUnit> = ({ attached }: TDurationUnit) =>
             const is_take_profit = value === 'take_profit';
             // Using hardcoded strings here for internal state management
             // The actual display uses localized values from list_options
-            const text = is_take_profit ? 'Take Profit' : 'Tick Count';
+            const text = is_take_profit ? localize('Take Profit') : localize('Tick Count');
             setValue('boolean_tick_count', !is_take_profit);
             setFieldValue?.('boolean_tick_count', !is_take_profit);
             setSelectedValue({ ...selectedValue, text });

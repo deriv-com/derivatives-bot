@@ -22,8 +22,8 @@ import { TDropdownItems, TFormData } from '../types';
 const TRANSLATION_KEYS = {
     LimitOrderAmountTooLow: localize('Enter an amount equal to or higher than {{param1}}.'),
     ContractBuyValidationError: localize('Contract purchase validation failed'),
-    MinimumTickCount: localize('Minimum tick count is: {{count}}'),
-    MaximumTickCount: localize('Maximum tick count is: {{count}}'),
+    MinimumTickCount: localize('Minimum tick count allowed is {{ min }}'),
+    MaximumTickCount: localize('Maximum tick count allowed is {{ max }}'),
     InvalidMinStake: localize("Please enter a stake amount that's at least {{param1}}."),
 };
 
@@ -138,11 +138,11 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
             const current_tick_count = Number(values.tick_count);
 
             if (!isNaN(current_tick_count) && current_tick_count > max_ticks) {
-                max_error = localize('Maximum tick count is: {{count}}', { count: max_ticks });
+                max_error = localize('Maximum tick count allowed is {{ max }}', { max: max_ticks });
                 setFieldError('tick_count', max_error);
                 prev_error.current.tick_count = max_error;
             } else if (!isNaN(current_tick_count) && current_tick_count < min_ticks) {
-                min_error = localize('Minimum tick count is: {{count}}', { count: min_ticks });
+                min_error = localize('Minimum tick count allowed is {{ min }}', { min: min_ticks });
                 setFieldError('tick_count', min_error);
                 prev_error.current.tick_count = min_error;
             } else {
@@ -183,14 +183,22 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                 // Handle take_profit field errors
                 if (typedError?.error?.details?.field === 'take_profit') {
                     if (Number(values.take_profit) === 0) {
-                        error_message = typedError?.error?.message;
+                        // Use localized error message instead of raw API message
+                        if (typedError?.error?.code) {
+                            error_message = getLocalizedErrorMessage(typedError.error.code, typedError.error);
+                        } else {
+                            error_message = typedError?.error?.message;
+                        }
                     } else {
                         if (values?.take_profit && values.stake && ref_max_payout.current) {
                             const totalPayout = Number(values.take_profit) + Number(values.stake);
-                            error_message = localize('Your total payout is {{total}}. Enter amount less than {{max}}.', {
-                                total: totalPayout,
-                                max: ref_max_payout.current
-                            });
+                            error_message = localize(
+                                'Your total payout is {{total}}. Enter amount less than {{max}}.',
+                                {
+                                    total: totalPayout,
+                                    max: ref_max_payout.current,
+                                }
+                            );
                             const hint = localize('By changing your initial stake and/or take profit.');
                             error_message = `${error_message} ${hint}`;
                         }
@@ -201,16 +209,21 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                 // Handle other field errors with clearer logic
                 else {
                     const errorField = typedError?.error?.details?.field;
-                    
+
                     if (errorField === 'stake' || errorField === 'amount') {
-                        // Error message is already localized from the API handler
-                        error_message = typedError?.error?.message || error_message;
-                        
+                        // Use localized error message
+                        if (typedError?.error?.code) {
+                            error_message = getLocalizedErrorMessage(typedError.error.code, typedError.error);
+                        } else {
+                            error_message = typedError?.error?.message || error_message;
+                        }
+
                         // For 'amount' field from backend, only show error if stake has a value
                         // For 'stake' field, always show error
-                        const shouldShowError = errorField === 'stake' ||
+                        const shouldShowError =
+                            errorField === 'stake' ||
                             (values.stake !== '' && values.stake !== undefined && values.stake !== null);
-                        
+
                         if (shouldShowError) {
                             setFieldError('stake', error_message);
                         }
