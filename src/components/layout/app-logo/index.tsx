@@ -9,7 +9,7 @@ export const AppLogo = () => {
     // Always go to the new home dashboard, regardless of login state
     // Logo now shows on both desktop and mobile
     // Add language parameter to the URL
-    const logoUrl = currentLang ? `${standalone_routes.deriv_app}?lang=${currentLang.toLowerCase()}` : standalone_routes.deriv_app;
+    const logoUrl = currentLang ? `${standalone_routes.deriv_app}?lang=${currentLang.toUpperCase()}` : standalone_routes.deriv_app;
     
     return <DerivLogo className='app-header__logo' href={logoUrl} variant='wallets' />;
 };
