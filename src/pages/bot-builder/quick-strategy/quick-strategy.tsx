@@ -4,7 +4,6 @@ import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import MobileFullPageModal from '@/components/shared_ui/mobile-full-page-modal';
 import Modal from '@/components/shared_ui/modal';
-import Text from '@/components/shared_ui/text';
 import { config as qs_config } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
@@ -137,7 +136,7 @@ const FormikWrapper: React.FC<TFormikWrapper> = observer(({ children }) => {
                             min = 0;
                             max = 9;
                             max_error = getErrorMessage('MAX', max, 'LAST_DIGIT_PREDICTION');
-                            integer_error_message = 'Enter a value from 0 to 9.';
+                            integer_error_message = localize('Enter a value from 0 to 9.');
                         }
                         if (should_validate) {
                             field.validation.forEach(validation => {
@@ -266,13 +265,10 @@ const QuickStrategy = observer(() => {
                         <MobileFullPageModal
                             is_modal_open={is_open}
                             className='quick-strategy__wrapper'
-                            header={
-                                <Text size='xs' weight='bold'>
-                                    {localize(
-                                        `Step ${current_step === QsSteps.StrategyCompleted ? 2 : 1}/2: Choose your strategy`
-                                    )}
-                                </Text>
-                            }
+                            // Split localize calls are intentional - these are separate translatable strings
+                            header={`${localize('Step {{current_step}}/2:', {
+                                current_step: current_step === QsSteps.StrategyCompleted ? 2 : 1,
+                            })} ${localize('Choose your strategy')}`}
                             onClickClose={handleClose}
                             height_offset='8rem'
                         >

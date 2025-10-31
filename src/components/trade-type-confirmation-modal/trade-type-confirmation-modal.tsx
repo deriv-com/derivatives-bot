@@ -60,7 +60,7 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
         if (is_tour_dialog_visible || isFirstTimeUser) return null;
         return (
             <Dialog
-                title={<Localize i18n_default_text='Change Trade Type?' />}
+                title={localize('Change Trade Type?')}
                 is_visible={is_visible}
                 confirm_button_text={localize('Yes, Change')}
                 cancel_button_text={localize('No, Keep Current')}

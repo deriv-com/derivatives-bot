@@ -35,6 +35,7 @@ export default Engine =>
                     // to here cause the opposite proposal may still be valid. Only once
                     // they attempt to purchase the errored proposal we will intervene.
                     if (proposal.error) {
+                        // Ensure we throw the localized error message
                         throw proposal.error;
                     }
 
@@ -73,17 +74,32 @@ export default Engine =>
                         // the other is valid. We will error on Purchase rather than here.
 
                         if (error?.error?.code === 'ContractBuyValidationError') {
+                            // Create localized error message for validation errors
+                            const localizedError = new Error(getLocalizedErrorMessage(error.error.code, error.error));
+                            localizedError.code = error.error.code;
+                            localizedError.details = error.error.details;
+                            localizedError.message_to_client = error.error.message_to_client;
+
                             this.data.proposals.push({
                                 ...error.error.echo_req,
                                 ...error.echo_req.passthrough,
-                                error,
+                                error: localizedError,
                             });
 
                             return null;
                         }
                         if (!has_informed_error) {
                             has_informed_error = true;
-                            this.$scope.observer.emit('Error', error.error);
+                            // Use localized error message for general errors
+                            const localizedErrorMessage = error.error.code
+                                ? getLocalizedErrorMessage(error.error.code, error.error)
+                                : error.error.message || getLocalizedErrorMessage('GeneralError');
+
+                            const localizedError = {
+                                ...error.error,
+                                message: localizedErrorMessage,
+                            };
+                            this.$scope.observer.emit('Error', localizedError);
                         }
                         return null;
                     });
@@ -95,7 +111,22 @@ export default Engine =>
             if (!api_base.api) return;
             const subscription = api_base.api.onMessage().subscribe(response => {
                 if (response.data.msg_type === 'proposal') {
-                    const { passthrough, proposal } = response.data;
+                    const { passthrough, proposal, error } = response.data;
+
+                    // Handle proposal errors with localized messages
+                    if (error) {
+                        const localizedError = new Error(getLocalizedErrorMessage(error.code, error));
+                        localizedError.code = error.code;
+                        localizedError.details = error.details;
+                        localizedError.message_to_client = error.message_to_client;
+
+                        this.data.proposals.push({
+                            ...passthrough,
+                            error: localizedError,
+                        });
+                        return;
+                    }
+
                     if (proposal && this.data.proposals.findIndex(p => p.id === proposal.id) === -1) {
                         // Add proposals based on the ID returned by the API.
                         this.data.proposals.push({ ...proposal, ...passthrough });

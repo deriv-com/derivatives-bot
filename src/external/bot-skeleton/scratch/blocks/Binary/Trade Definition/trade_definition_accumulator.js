@@ -1,4 +1,5 @@
 import { getCurrencyDisplayCode, getDecimalPlaces } from '@/components/shared';
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { localize } from '@deriv-com/translations';
 import { config } from '../../../../constants/config';
 import ApiHelpers from '../../../../services/api/api-helpers';
@@ -254,18 +255,18 @@ window.Blockly.Blocks.trade_definition_accumulator = {
                 const max_payout = this.amount_limits?.max_payout;
                 const min_stake = this.amount_limits?.min_stake;
                 if (min_stake && input_number < min_stake) {
-                    this.error_message = localize("Please enter a stake amount that's at least {{min_stake}}.", {
-                        min_stake,
+                    this.error_message = getLocalizedErrorMessage('InvalidMinStake', {
+                        param1: min_stake,
                     });
                     return input_number < min_stake;
                 }
                 if (max_payout && input_number > max_payout) {
-                    this.error_message = localize("Please enter a payout amount that's lower than {{max_payout}}.", {
-                        max_payout,
+                    this.error_message = getLocalizedErrorMessage('PayoutLimitExceeded', {
+                        param1: max_payout,
                     });
                     return input_number > max_payout;
                 }
-                this.error_message = localize('Amount must be a positive number.');
+                this.error_message = getLocalizedErrorMessage('AmountValidationFailed');
                 return !isNaN(input_number) && input_number <= 0;
             },
         };

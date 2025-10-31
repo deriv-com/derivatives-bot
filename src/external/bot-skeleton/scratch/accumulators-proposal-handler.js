@@ -1,3 +1,4 @@
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { api_base } from '../services/api';
 import DBotStore from './dbot-store';
 
@@ -58,11 +59,26 @@ export const requestProposalForQS = (input_values, ws) => {
         ?.send(proposal_request)
         .then(response => {
             if (response.error) {
-                return Promise.reject(response.error);
+                // Process error through backend error message system
+                const localizedError = {
+                    ...response.error,
+                    message: response.error.code
+                        ? getLocalizedErrorMessage(response.error.code, response.error)
+                        : response.error.message,
+                };
+                return Promise.reject(localizedError);
             }
             return response;
         })
         .catch(error => {
+            // Ensure error is localized if it has an error code
+            if (error.code) {
+                const localizedError = {
+                    ...error,
+                    message: getLocalizedErrorMessage(error.code, error),
+                };
+                throw localizedError;
+            }
             throw error;
         });
 };
