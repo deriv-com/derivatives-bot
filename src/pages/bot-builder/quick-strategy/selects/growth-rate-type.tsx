@@ -22,6 +22,7 @@ const TRANSLATION_KEYS = {
     ContractBuyValidationError: localize('Contract purchase validation failed'),
     MinimumTickCount: localize('Minimum tick count is: {{count}}'),
     MaximumTickCount: localize('Maximum tick count is: {{count}}'),
+    InvalidMinStake: localize("Please enter a stake amount that's at least {{param1}}."),
 };
 
 type TContractTypes = {
