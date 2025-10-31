@@ -77,7 +77,6 @@ export const requestProposalForQS = (input_values, ws) => {
                     ...error,
                     message: getLocalizedErrorMessage(error.code, error),
                 };
-                console.log('Localized Error:', localizedError);
                 throw localizedError;
             }
             throw error;

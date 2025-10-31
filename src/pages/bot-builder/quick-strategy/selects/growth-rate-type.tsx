@@ -13,7 +13,9 @@ import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
 import { TDropdownItems, TFormData } from '../types';
 
-// Ensure these translations are extracted by the translation tool
+// These translation keys are intentionally defined here for CLI extraction tool detection
+// The actual translations are used dynamically in the error handling logic below (lines 154-163)
+// This ensures all possible error message translations are available for extraction
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TRANSLATION_KEYS = {
     LimitOrderAmountTooLow: localize('Enter an amount equal to or higher than {{param1}}.'),
@@ -175,36 +177,40 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                     setFieldValue('tick_count', 1);
                 }
             } else {
+                // Handle take_profit field errors
                 if (typedError?.error?.details?.field === 'take_profit') {
                     if (Number(values.take_profit) === 0) {
                         error_message = typedError?.error?.message;
                     } else {
                         if (values?.take_profit && values.stake && ref_max_payout.current) {
-                            error_message = `Your total payout is ${
-                                Number(values.take_profit) + Number(values.stake)
-                            }. Enter amount less than ${ref_max_payout.current} ${localize(
-                                'By changing your initial stake and/or take profit.'
-                            )}`;
+                            error_message = localize('Your total payout is {{total}}. Enter amount less than {{max}}. {{hint}}', {
+                                total: Number(values.take_profit) + Number(values.stake),
+                                max: ref_max_payout.current,
+                                hint: localize('By changing your initial stake and/or take profit.')
+                            });
                         }
                     }
-                }
-
-                if (typedError?.error?.details?.field === 'stake') {
-                    // Error message is already localized from the API handler
-                    error_message = typedError?.error?.message || error_message;
-
-                    // Set the error on the stake field instead of take_profit
-                    setFieldError('stake', error_message);
-                } else {
                     setFieldError('take_profit', error_message);
                     prev_error.current.take_profit = error_message || null;
-
+                }
+                // Handle stake/amount field errors
+                else if (typedError?.error?.details?.field === 'stake' || typedError?.error?.details?.field === 'amount') {
+                    // Error message is already localized from the API handler
+                    error_message = typedError?.error?.message || error_message;
+                    
+                    // Only show the error if stake value is not empty (for amount field)
                     if (typedError?.error?.details?.field === 'amount') {
-                        // Only show the error if stake value is not empty
                         if (values.stake !== '' && values.stake !== undefined && values.stake !== null) {
                             setFieldError('stake', error_message);
                         }
+                    } else {
+                        setFieldError('stake', error_message);
                     }
+                }
+                // Handle other field errors - default to take_profit
+                else {
+                    setFieldError('take_profit', error_message);
+                    prev_error.current.take_profit = error_message || null;
                 }
             }
         }

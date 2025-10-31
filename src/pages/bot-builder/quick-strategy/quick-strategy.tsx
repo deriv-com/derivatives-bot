@@ -136,7 +136,7 @@ const FormikWrapper: React.FC<TFormikWrapper> = observer(({ children }) => {
                             min = 0;
                             max = 9;
                             max_error = getErrorMessage('MAX', max, 'LAST_DIGIT_PREDICTION');
-                            integer_error_message = 'Enter a value from 0 to 9.';
+                            integer_error_message = localize('Enter a value from 0 to 9.');
                         }
                         if (should_validate) {
                             field.validation.forEach(validation => {
@@ -265,6 +265,7 @@ const QuickStrategy = observer(() => {
                         <MobileFullPageModal
                             is_modal_open={is_open}
                             className='quick-strategy__wrapper'
+                            // Split localize calls are intentional - these are separate translatable strings
                             header={`${localize('Step {{current_step}}/2:', {
                                 current_step: current_step === QsSteps.StrategyCompleted ? 2 : 1,
                             })} ${localize('Choose your strategy')}`}
