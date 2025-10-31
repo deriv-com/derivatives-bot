@@ -54,127 +54,127 @@ export const config = () => ({
     opposites: {
         ACCUMULATOR: [
             {
-                ACCU: localize('Buy'),
+                ACCU: 'Buy',
             },
         ],
         MULTIPLIER: [
             {
-                MULTUP: localize('Up'),
+                MULTUP: 'Up',
             },
             {
-                MULTDOWN: localize('Down'),
+                MULTDOWN: 'Down',
             },
         ],
         CALLPUT: [
             {
-                CALL: localize('Rise'),
+                CALL: 'Rise',
             },
             {
-                PUT: localize('Fall'),
+                PUT: 'Fall',
             },
         ],
         CALLPUTEQUAL: [
             {
-                CALLE: localize('Rise Equals'),
+                CALLE: 'Rise Equals',
             },
             {
-                PUTE: localize('Fall Equals'),
+                PUTE: 'Fall Equals',
             },
         ],
         HIGHERLOWER: [
             {
-                CALL: localize('Higher'),
+                CALL: 'Higher',
             },
             {
-                PUT: localize('Lower'),
+                PUT: 'Lower',
             },
         ],
         TOUCHNOTOUCH: [
             {
-                ONETOUCH: localize('Touch'),
+                ONETOUCH: 'Touch',
             },
             {
-                NOTOUCH: localize('No Touch'),
+                NOTOUCH: 'No Touch',
             },
         ],
         ENDSINOUT: [
             {
-                EXPIRYRANGE: localize('Ends Between'),
+                EXPIRYRANGE: 'Ends Between',
             },
             {
-                EXPIRYMISS: localize('Ends Outside'),
+                EXPIRYMISS: 'Ends Outside',
             },
         ],
         STAYSINOUT: [
             {
-                RANGE: localize('Stays Between'),
+                RANGE: 'Stays Between',
             },
             {
-                UPORDOWN: localize('Goes Outside'),
+                UPORDOWN: 'Goes Outside',
             },
         ],
         ASIANS: [
             {
-                ASIANU: localize('Asian Up'),
+                ASIANU: 'Asian Up',
             },
             {
-                ASIAND: localize('Asian Down'),
+                ASIAND: 'Asian Down',
             },
         ],
         MATCHESDIFFERS: [
             {
-                DIGITMATCH: localize('Matches'),
+                DIGITMATCH: 'Matches',
             },
             {
-                DIGITDIFF: localize('Differs'),
+                DIGITDIFF: 'Differs',
             },
         ],
         EVENODD: [
             {
-                DIGITEVEN: localize('Even'),
+                DIGITEVEN: 'Even',
             },
             {
-                DIGITODD: localize('Odd'),
+                DIGITODD: 'Odd',
             },
         ],
         OVERUNDER: [
             {
-                DIGITOVER: localize('Over'),
+                DIGITOVER: 'Over',
             },
             {
-                DIGITUNDER: localize('Under'),
+                DIGITUNDER: 'Under',
             },
         ],
         HIGHLOWTICKS: [
             {
-                TICKHIGH: localize('High Tick'),
+                TICKHIGH: 'High Tick',
             },
             {
-                TICKLOW: localize('Low Tick'),
+                TICKLOW: 'Low Tick',
             },
         ],
         RESET: [
             {
-                RESETCALL: localize('Reset Call'),
+                RESETCALL: 'Reset Call',
             },
             {
-                RESETPUT: localize('Reset Put'),
+                RESETPUT: 'Reset Put',
             },
         ],
         RUNS: [
             {
-                RUNHIGH: localize('Only Ups'),
+                RUNHIGH: 'Only Ups',
             },
             {
-                RUNLOW: localize('Only Downs'),
+                RUNLOW: 'Only Downs',
             },
         ],
         CALLPUTSPREAD: [
             {
-                CALLSPREAD: localize('Call Spread'),
+                CALLSPREAD: 'Call Spread',
             },
             {
-                PUTSPREAD: localize('Put Spread'),
+                PUTSPREAD: 'Put Spread',
             },
         ],
     },
@@ -183,11 +183,11 @@ export const config = () => ({
         ['Offset -', '-'],
     ],
     ohlcFields: [
-        [localize('Open'), 'open'],
-        [localize('High'), 'high'],
-        [localize('Low'), 'low'],
-        [localize('Close'), 'close'],
-        [localize('Open Time'), 'epoch'],
+        ['Open', 'open'],
+        ['High', 'high'],
+        ['Low', 'low'],
+        ['Close', 'close'],
+        ['Open Time', 'epoch'],
     ],
     candleIntervals: [
         [localize('Default'), 'default'],
@@ -227,17 +227,17 @@ export const config = () => ({
         accumulator: ['accumulator'],
     },
     TRADE_TYPE_CATEGORY_NAMES: {
-        callput: localize('Up/Down'),
-        touchnotouch: localize('Touch/No Touch'),
-        inout: localize('In/Out'),
-        asian: localize('Asians'),
-        digits: localize('Digits'),
-        reset: localize('Reset Call/Reset Put'),
-        callputspread: localize('Call Spread/Put Spread'),
-        highlowticks: localize('High/Low Ticks'),
-        runs: localize('Only Ups/Only Downs'),
-        multiplier: localize('Multipliers'),
-        accumulator: localize('Accumulators'),
+        callput: 'Up/Down',
+        touchnotouch: 'Touch/No Touch',
+        inout: 'In/Out',
+        asian: 'Asians',
+        digits: 'Digits',
+        reset: 'Reset Call/Reset Put',
+        callputspread: 'Call Spread/Put Spread',
+        highlowticks: 'High/Low Ticks',
+        runs: 'Only Ups/Only Downs',
+        multiplier: 'Multipliers',
+        accumulator: 'Accumulators',
     },
     BARRIER_CATEGORIES: {
         euro_atm: ['callput', 'callputequal'],
@@ -287,21 +287,21 @@ export const config = () => ({
     strategies: {
         martingale: {
             index: 0,
-            label: localize('Martingale'),
+            label: 'Martingale',
             description: localize(
                 'The Martingale Strategy is a classic trading technique that has been used for more than a hundred years, popularised by the French mathematician Paul Pierre Levy in the 18th century.'
             ),
         },
         dalembert: {
             index: 1,
-            label: localize("D'Alembert"),
+            label: "D'Alembert",
             description: localize(
                 'The concept of the D’Alembert Strategy is said to be similar to the Martingale Strategy where you will increase your contract size after a loss. With the D’Alembert Strategy, you will also decrease your contract size after a successful trade.'
             ),
         },
         oscars_grind: {
             index: 2,
-            label: localize("Oscar's Grind"),
+            label: "Oscar's Grind",
             description: localize(
                 "The Oscar's Grind Strategy is a low-risk positive progression strategy that first appeared in 1965. By using this strategy, the size of your contract will increase after successful trades, but remains unchanged after unsuccessful trades."
             ),

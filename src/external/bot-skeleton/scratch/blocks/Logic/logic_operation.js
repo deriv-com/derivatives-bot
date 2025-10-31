@@ -17,8 +17,8 @@ window.Blockly.Blocks.logic_operation = {
                     type: 'field_dropdown',
                     name: 'OP',
                     options: [
-                        [localize('and'), 'AND'],
-                        [localize('or'), 'OR'],
+                        ['and', 'AND'],
+                        ['or', 'OR'],
                     ],
                 },
                 {

@@ -24,8 +24,8 @@ window.Blockly.Blocks.lists_indexOf = {
                     type: 'field_dropdown',
                     name: 'END',
                     options: [
-                        [localize('first'), 'FIRST'],
-                        [localize('last'), 'LAST'],
+                        ['first', 'FIRST'],
+                        ['last', 'LAST'],
                     ],
                 },
                 {

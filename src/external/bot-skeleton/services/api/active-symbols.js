@@ -1,12 +1,13 @@
 /* eslint-disable no-confusing-arrow */
-import { localize } from '@deriv-com/translations';
 import {
+    ACTIVE_SYMBOLS,
     MARKET_MAPPINGS,
     MARKET_OPTIONS,
     SUBMARKET_OPTIONS,
     SYMBOL_OPTIONS,
     TRADING_TIMES,
 } from '../../../../components/shared/utils/common-data';
+import { translateMarketCategory } from '../../../../utils/market-category-translator';
 import { config } from '../../constants/config';
 import PendingPromise from '../../utils/pending-promise';
 import { api_base } from './api-base';
@@ -44,6 +45,11 @@ export default class ActiveSymbols {
         } else {
             await api_base.active_symbols_promise;
             this.active_symbols = api_base?.active_symbols ?? [];
+        }
+
+        // Fallback to static data if API fails completely
+        if (this.active_symbols.length === 0) {
+            this.active_symbols = ACTIVE_SYMBOLS;
         }
 
         this.processed_symbols = this.processActiveSymbols();
@@ -226,9 +232,10 @@ export default class ActiveSymbols {
                     if (DISABLED.SYMBOLS.includes(symbol_name)) return;
                     const symbol = symbols[symbol_name];
                     symbols_for_bot.push({
-                        group: submarket.display_name,
+                        group: translateMarketCategory(submarket.display_name),
                         text: symbol.display_name,
                         value: symbol_name,
+                        submarket: submarket_name,
                     });
                 });
             });
@@ -321,8 +328,8 @@ export default class ActiveSymbols {
 
         Object.keys(this.processed_symbols).forEach(market_name => {
             const { display_name } = this.processed_symbols[market_name];
-            const market_display_name =
-                display_name + (this.isMarketClosed(market_name) ? ` ${localize('(Closed)')}` : '');
+            const translated_display_name = translateMarketCategory(display_name);
+            const market_display_name = translated_display_name + (this.isMarketClosed(market_name) ? ' (Closed)' : '');
             market_options.push([market_display_name, market_name]);
         });
 
@@ -356,8 +363,9 @@ export default class ActiveSymbols {
 
             Object.keys(submarkets).forEach(submarket_name => {
                 const { display_name } = submarkets[submarket_name];
+                const translated_display_name = translateMarketCategory(display_name);
                 const submarket_display_name =
-                    display_name + (this.isSubmarketClosed(submarket_name) ? ` ${localize('(Closed)')}` : '');
+                    translated_display_name + (this.isSubmarketClosed(submarket_name) ? ' (Closed)' : '');
                 submarket_options.push([submarket_display_name, submarket_name]);
             });
         }
@@ -424,7 +432,7 @@ export default class ActiveSymbols {
                     symbol_keys.forEach(symbol_name => {
                         const { display_name } = symbols[symbol_name];
                         const symbol_display_name =
-                            display_name + (this.isSymbolClosed(symbol_name) ? ` ${localize('(Closed)')}` : '');
+                            display_name + (this.isSymbolClosed(symbol_name) ? ' (Closed)' : '');
                         accumulator.push([symbol_display_name, symbol_name]);
                     });
                 }

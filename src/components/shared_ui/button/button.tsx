@@ -1,10 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-
 import { Icon } from '@/utils/tmp/dummy';
-
 import Text from '../text';
-
 import ButtonLoading from './button_loading';
 
 export type TButtonCommonProps = {

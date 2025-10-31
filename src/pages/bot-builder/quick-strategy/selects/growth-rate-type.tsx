@@ -122,12 +122,6 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
             let error_message = error_response?.message ?? error_response?.error?.message;
 
             if (values.boolean_tick_count) {
-                // For tick count, replace the generic stake error message with a more appropriate one
-                if (error_message.includes("Please enter a stake amount that's at least")) {
-                    error_message = localize('Minimum tick count allowed is 1');
-                } else if (error_message.includes('Maximum stake allowed is')) {
-                    error_message = localize('Maximum tick count allowed is 1000');
-                }
                 setFieldError('tick_count', error_message);
                 prev_error.current.tick_count = error_message;
 
@@ -143,11 +137,13 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                     if (Number(values.take_profit) === 0) {
                         error_message = error_response?.error?.message;
                     } else {
-                        error_message = `Your total payout is ${
-                            Number(values.take_profit) + Number(values.stake)
-                        }. Enter amount less than ${ref_max_payout.current} ${localize(
-                            'By changing your initial stake and/or take profit.'
-                        )}`;
+                        if (values?.take_profit && values.stake && ref_max_payout.current) {
+                            error_message = `Your total payout is ${
+                                Number(values.take_profit) + Number(values.stake)
+                            }. Enter amount less than ${ref_max_payout.current} ${localize(
+                                'By changing your initial stake and/or take profit.'
+                            )}`;
+                        }
                     }
                 }
 
@@ -176,13 +172,20 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                 } else {
                     setFieldError('take_profit', error_message);
                     prev_error.current.take_profit = error_message;
+
+                    if (error_response?.error?.details?.field === 'amount') {
+                        // Only show the error if stake value is not empty
+                        if (values.stake !== '' && values.stake !== undefined && values.stake !== null) {
+                            setFieldError('stake', error_message);
+                        }
+                    }
                 }
             }
         }
     };
 
     const debounceChange = React.useCallback(
-        debounce(validateMinMaxForAccumulators, 500, {
+        debounce(validateMinMaxForAccumulators, 1000, {
             trailing: true,
             leading: false,
         }),

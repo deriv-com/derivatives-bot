@@ -10,7 +10,8 @@ import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
 import { TAuthData } from '@/types/api-types';
-import { initializeI18n, localize, TranslationProvider } from '@deriv-com/translations';
+import { FILTERED_LANGUAGES } from '@/utils/languages';
+import { initializeI18n, localize, TranslationProvider, useTranslations } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
 import './app-root.scss';
 
@@ -22,6 +23,39 @@ const i18nInstance = initializeI18n({
     cdnUrl: `${TRANSLATIONS_CDN_URL || 'https://translations.deriv.com'}/${R2_PROJECT_NAME}/${CROWDIN_BRANCH_NAME}`,
 });
 
+// Component to handle language URL parameter
+const LanguageHandler = ({ children }: { children: React.ReactNode }) => {
+    const { switchLanguage } = useTranslations();
+
+    React.useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get('lang');
+
+        if (langParam) {
+            // Convert to uppercase to match our language codes
+            const langCodeCandidate = langParam.toUpperCase();
+            // Use FILTERED_LANGUAGES instead of hard-coded array
+            const supportedLangCodes = FILTERED_LANGUAGES.map(lang => lang.code);
+
+            if (supportedLangCodes.includes(langCodeCandidate)) {
+                // Type assertion is safe here since we've validated the value
+                const langCode = langCodeCandidate as (typeof FILTERED_LANGUAGES)[number]['code'];
+                try {
+                    switchLanguage(langCode);
+                    // Remove lang parameter after processing to avoid URL pollution
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('lang');
+                    window.history.replaceState({}, '', url.toString());
+                } catch (error) {
+                    console.error('Failed to switch language:', error);
+                }
+            }
+        }
+    }, [switchLanguage]);
+
+    return <>{children}</>;
+};
+
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route
@@ -31,14 +65,16 @@ const router = createBrowserRouter(
                     fallback={<ChunkLoader message={localize('Please wait while we connect to the server...')} />}
                 >
                     <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
-                        <StoreProvider>
-                            <LocalStorageSyncWrapper>
-                                <RoutePromptDialog />
-                                <CoreStoreProvider>
-                                    <Layout />
-                                </CoreStoreProvider>
-                            </LocalStorageSyncWrapper>
-                        </StoreProvider>
+                        <LanguageHandler>
+                            <StoreProvider>
+                                <LocalStorageSyncWrapper>
+                                    <RoutePromptDialog />
+                                    <CoreStoreProvider>
+                                        <Layout />
+                                    </CoreStoreProvider>
+                                </LocalStorageSyncWrapper>
+                            </StoreProvider>
+                        </LanguageHandler>
                     </TranslationProvider>
                 </Suspense>
             }

@@ -112,20 +112,3 @@ export const standalone_routes = {
     help_center: `${getDerivDomain('derivCom')}/help-centre/`,
     responsible: `${getDerivDomain('derivCom')}/responsible/`,
 };
-
-/**
- * Generate reports URL with current page as redirect parameter
- * @returns Reports URL with redirect to current page
- */
-export const generateReportsUrl = (): string => {
-    try {
-        // Use origin + pathname to exclude query parameters
-        const currentUrl = window.location.origin + window.location.pathname;
-        const reportsBaseUrl = `${getDerivDomain('derivDtrader')}/reports`;
-        return `${reportsBaseUrl}?redirect=${encodeURIComponent(currentUrl)}`;
-    } catch (error) {
-        console.error('Error generating reports URL:', error);
-        // Fallback to static URL
-        return standalone_routes.reports;
-    }
-};

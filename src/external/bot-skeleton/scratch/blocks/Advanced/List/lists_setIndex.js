@@ -4,15 +4,15 @@ import { modifyContextMenu } from '../../../utils';
 window.Blockly.Blocks.lists_setIndex = {
     init() {
         this.MODE_OPTIONS = [
-            [localize('set'), 'SET'],
-            [localize('insert at'), 'INSERT'],
+            ['set', 'SET'],
+            ['insert at', 'INSERT'],
         ];
         this.WHERE_OPTIONS = [
-            [localize('#'), 'FROM_START'],
-            [localize('# from end'), 'FROM_END'],
-            [localize('first'), 'FIRST'],
-            [localize('last'), 'LAST'],
-            [localize('random'), 'RANDOM'],
+            ['#', 'FROM_START'],
+            ['# from end', 'FROM_END'],
+            ['first', 'FIRST'],
+            ['last', 'LAST'],
+            ['random', 'RANDOM'],
         ];
 
         this.appendValueInput('LIST').setCheck('Array').appendField(localize('in list'));

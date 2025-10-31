@@ -1,3 +1,4 @@
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { LogTypes } from '../../../constants/messages';
 import { observer as globalObserver } from '../../../utils/observer';
 import { api_base } from '../../api/api-base';
@@ -60,7 +61,7 @@ export default Engine =>
 
                             const sell_error = {
                                 name: error.code,
-                                message: error.message,
+                                message: getLocalizedErrorMessage(error.code, error.details),
                                 msg_type: e.msg_type,
                                 error: { ...error.error },
                             };

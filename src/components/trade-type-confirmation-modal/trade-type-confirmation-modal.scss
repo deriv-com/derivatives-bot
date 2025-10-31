@@ -1,0 +1,29 @@
+.trade-type-confirmation-modal {
+    &__content {
+        padding: 1rem 0;
+        line-height: 1.6;
+        font-size: 1.4rem;
+        color: var(--text-general);
+
+        p {
+            margin-bottom: 1.2rem;
+            font-size: 1.4rem;
+            color: var(--text-general);
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-prominent);
+            font-size: 1.4rem;
+        }
+    }
+}
+
+// Ensure modal appears above other elements
+.dc-dialog__wrapper--fixed {
+    z-index: 9999;
+}

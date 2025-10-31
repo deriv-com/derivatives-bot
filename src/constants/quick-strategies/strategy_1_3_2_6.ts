@@ -5,7 +5,7 @@ import { TDescriptionItem } from '../../pages/bot-builder/quick-strategy/types';
 export const STRATEGY_1_3_2_6 = (): TDescriptionItem[] => [
     {
         type: 'subtitle',
-        content: [localize('Exploring the 1-3-2-6 strategy in Deriv Bot')],
+        content: [`${localize('Exploring the')} 1-3-2-6 ${localize('strategy in Deriv Bot')}`],
         expanded: true,
         no_collapsible: false,
     },
@@ -23,7 +23,9 @@ export const STRATEGY_1_3_2_6 = (): TDescriptionItem[] => [
     },
     {
         type: 'text',
-        content: [localize('These are the trade parameters used in Deriv Bot with 1-3-2-6 strategy.')],
+        content: [
+            `${localize('These are the trade parameters used in Deriv Bot with')} 1-3-2-6 ${localize('strategy.')}`,
+        ],
     },
     {
         type: 'text',
@@ -51,12 +53,12 @@ export const STRATEGY_1_3_2_6 = (): TDescriptionItem[] => [
     },
     {
         type: 'subtitle',
-        content: [localize('An example of 1-3-2-6 strategy')],
+        content: [`${localize('An example of')} 1-3-2-6 ${localize('strategy')}`],
     },
     {
         type: 'media',
         src: getImageLocation('1-3-2-6.svg'),
-        alt: localize('An example of 1-3-2-6 strategy'),
+        alt: `${localize('An example of')} 1-3-2-6 ${localize('strategy')}`,
     },
     {
         type: 'text',
