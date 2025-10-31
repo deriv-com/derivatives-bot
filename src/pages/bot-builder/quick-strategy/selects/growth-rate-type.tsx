@@ -13,9 +13,11 @@ import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
 import { TDropdownItems, TFormData } from '../types';
 
-// These translation keys are intentionally defined here for CLI extraction tool detection
-// The actual translations are used dynamically in the error handling logic below (lines 154-163)
-// This ensures all possible error message translations are available for extraction
+// TRANSLATION EXTRACTION HINTS
+// These translation keys are required for the CLI extraction tool (npx deriv-extract-translations)
+// to detect dynamically used error messages from getLocalizedErrorMessage() calls.
+// The actual translations are used at runtime in the error handling logic below (lines 160-170).
+// DO NOT REMOVE - Required for proper i18n extraction and translation coverage.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TRANSLATION_KEYS = {
     LimitOrderAmountTooLow: localize('Enter an amount equal to or higher than {{param1}}.'),
@@ -184,34 +186,39 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                         error_message = typedError?.error?.message;
                     } else {
                         if (values?.take_profit && values.stake && ref_max_payout.current) {
-                            error_message = localize('Your total payout is {{total}}. Enter amount less than {{max}}. {{hint}}', {
-                                total: Number(values.take_profit) + Number(values.stake),
-                                max: ref_max_payout.current,
-                                hint: localize('By changing your initial stake and/or take profit.')
+                            const totalPayout = Number(values.take_profit) + Number(values.stake);
+                            error_message = localize('Your total payout is {{total}}. Enter amount less than {{max}}.', {
+                                total: totalPayout,
+                                max: ref_max_payout.current
                             });
+                            const hint = localize('By changing your initial stake and/or take profit.');
+                            error_message = `${error_message} ${hint}`;
                         }
                     }
                     setFieldError('take_profit', error_message);
                     prev_error.current.take_profit = error_message || null;
                 }
-                // Handle stake/amount field errors
-                else if (typedError?.error?.details?.field === 'stake' || typedError?.error?.details?.field === 'amount') {
-                    // Error message is already localized from the API handler
-                    error_message = typedError?.error?.message || error_message;
+                // Handle other field errors with clearer logic
+                else {
+                    const errorField = typedError?.error?.details?.field;
                     
-                    // Only show the error if stake value is not empty (for amount field)
-                    if (typedError?.error?.details?.field === 'amount') {
-                        if (values.stake !== '' && values.stake !== undefined && values.stake !== null) {
+                    if (errorField === 'stake' || errorField === 'amount') {
+                        // Error message is already localized from the API handler
+                        error_message = typedError?.error?.message || error_message;
+                        
+                        // For 'amount' field from backend, only show error if stake has a value
+                        // For 'stake' field, always show error
+                        const shouldShowError = errorField === 'stake' ||
+                            (values.stake !== '' && values.stake !== undefined && values.stake !== null);
+                        
+                        if (shouldShowError) {
                             setFieldError('stake', error_message);
                         }
                     } else {
-                        setFieldError('stake', error_message);
+                        // Default to take_profit for unknown fields
+                        setFieldError('take_profit', error_message);
+                        prev_error.current.take_profit = error_message || null;
                     }
-                }
-                // Handle other field errors - default to take_profit
-                else {
-                    setFieldError('take_profit', error_message);
-                    prev_error.current.take_profit = error_message || null;
                 }
             }
         }
