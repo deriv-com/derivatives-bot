@@ -6,11 +6,21 @@ import { observer } from 'mobx-react-lite';
 import Autocomplete from '@/components/shared_ui/autocomplete';
 import { TItem } from '@/components/shared_ui/dropdown-list';
 import Text from '@/components/shared_ui/text';
+import { getLocalizedErrorMessage } from '@/constants/backend-error-messages';
 import { api_base } from '@/external/bot-skeleton';
 import { requestProposalForQS } from '@/external/bot-skeleton/scratch/accumulators-proposal-handler';
 import { useStore } from '@/hooks/useStore';
 import { localize } from '@deriv-com/translations';
 import { TDropdownItems, TFormData } from '../types';
+
+// Ensure these translations are extracted by the translation tool
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TRANSLATION_KEYS = {
+    LimitOrderAmountTooLow: localize('Enter an amount equal to or higher than {{param1}}.'),
+    ContractBuyValidationError: localize('Contract purchase validation failed'),
+    MinimumTickCount: localize('Minimum tick count is: {{count}}'),
+    MaximumTickCount: localize('Maximum tick count is: {{count}}'),
+};
 
 type TContractTypes = {
     name: string;
@@ -23,9 +33,22 @@ type TProposalRequest = {
     growth_rate: number;
     symbol: string;
     limit_order: {
-        take_profit: number;
+        take_profit?: number;
     };
     boolean_tick_count: boolean;
+};
+
+type TErrorResponse = {
+    message?: string;
+    error?: {
+        code?: string;
+        subcode?: string;
+        message?: string;
+        code_args?: any[];
+        details?: {
+            field?: string;
+        };
+    };
 };
 
 const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
@@ -84,7 +107,11 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
             },
         };
 
-        prev_proposal_payload.current = { ...request_proposal, boolean_tick_count: values.boolean_tick_count };
+        prev_proposal_payload.current = {
+            ...request_proposal,
+            symbol: String(request_proposal.symbol),
+            boolean_tick_count: Boolean(values.boolean_tick_count),
+        };
         try {
             const response = await requestProposalForQS(request_proposal, api_base.api);
             const min_ticks = 1;
@@ -106,11 +133,11 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
             const current_tick_count = Number(values.tick_count);
 
             if (!isNaN(current_tick_count) && current_tick_count > max_ticks) {
-                max_error = `Maximum tick count is: ${max_ticks}`;
+                max_error = localize('Maximum tick count is: {{count}}', { count: max_ticks });
                 setFieldError('tick_count', max_error);
                 prev_error.current.tick_count = max_error;
             } else if (!isNaN(current_tick_count) && current_tick_count < min_ticks) {
-                min_error = `Minimum tick count is: ${min_ticks}`;
+                min_error = localize('Minimum tick count is: {{count}}', { count: min_ticks });
                 setFieldError('tick_count', min_error);
                 prev_error.current.tick_count = min_error;
             } else {
@@ -118,12 +145,27 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                 setFieldError('tick_count', undefined);
             }
             prev_error.current.take_profit = null;
-        } catch (error_response) {
-            let error_message = error_response?.message ?? error_response?.error?.message;
+        } catch (error_response: any) {
+            const typedError = error_response as TErrorResponse;
+            let error_message = typedError?.message ?? typedError?.error?.message;
+
+            // Localize the error message using subcode if available, otherwise use main code
+            if (typedError?.error?.subcode === 'LimitOrderAmountTooLow') {
+                const amount = typedError?.error?.code_args?.[0] || '0.01';
+                error_message = localize('Enter an amount equal to or higher than {{param1}}.', {
+                    param1: amount,
+                });
+            } else if (typedError?.error?.code === 'ContractBuyValidationError') {
+                error_message = localize('Contract purchase validation failed');
+            } else if (typedError?.error?.subcode) {
+                error_message = getLocalizedErrorMessage(typedError.error.subcode, typedError.error);
+            } else if (typedError?.error?.code) {
+                error_message = getLocalizedErrorMessage(typedError.error.code, typedError.error);
+            }
 
             if (values.boolean_tick_count) {
                 setFieldError('tick_count', error_message);
-                prev_error.current.tick_count = error_message;
+                prev_error.current.tick_count = error_message || null;
 
                 // Force rerender by updating the field value
                 const current_value = Number(values.tick_count);
@@ -133,9 +175,9 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                     setFieldValue('tick_count', 1);
                 }
             } else {
-                if (error_response?.error?.details?.field === 'take_profit') {
+                if (typedError?.error?.details?.field === 'take_profit') {
                     if (Number(values.take_profit) === 0) {
-                        error_message = error_response?.error?.message;
+                        error_message = typedError?.error?.message;
                     } else {
                         if (values?.take_profit && values.stake && ref_max_payout.current) {
                             error_message = `Your total payout is ${
@@ -147,33 +189,17 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                     }
                 }
 
-                if (error_response?.error?.details?.field === 'stake') {
-                    // Get the min stake and max payout values from the error message
-                    const min_stake_match = error_response?.error?.message.match(/minimum stake of (\d+\.\d+)/i);
-                    const max_payout_match = error_response?.error?.message.match(/maximum payout of (\d+\.\d+)/i);
-
-                    if (min_stake_match && max_payout_match) {
-                        const min_stake = min_stake_match[1];
-                        const max_payout = max_payout_match[1];
-                        const current_payout = Number(values.take_profit) + Number(values.stake);
-
-                        error_message = localize(
-                            `Minimum stake of ${min_stake} and maximum payout of ${max_payout}. Current payout is ${current_payout.toFixed(2)}.`
-                        );
-                    } else if (error_message.includes('Maximum stake allowed is')) {
-                        const max_stake = quick_strategy?.additional_data?.max_stake || '1000';
-                        error_message = localize(`Maximum stake allowed is ${max_stake}`);
-                    } else {
-                        error_message = `${error_response?.error?.message}`;
-                    }
+                if (typedError?.error?.details?.field === 'stake') {
+                    // Error message is already localized from the API handler
+                    error_message = typedError?.error?.message || error_message;
 
                     // Set the error on the stake field instead of take_profit
                     setFieldError('stake', error_message);
                 } else {
                     setFieldError('take_profit', error_message);
-                    prev_error.current.take_profit = error_message;
+                    prev_error.current.take_profit = error_message || null;
 
-                    if (error_response?.error?.details?.field === 'amount') {
+                    if (typedError?.error?.details?.field === 'amount') {
                         // Only show the error if stake value is not empty
                         if (values.stake !== '' && values.stake !== undefined && values.stake !== null) {
                             setFieldError('stake', error_message);
@@ -186,8 +212,7 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
 
     const debounceChange = React.useCallback(
         debounce(validateMinMaxForAccumulators, 1000, {
-            trailing: true,
-            leading: false,
+            immediate: false,
         }),
         []
     );
@@ -257,8 +282,7 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                         <Autocomplete
                             {...field}
                             readOnly
-                            inputMode='none'
-                            data-testid='dt_qs_contract_type'
+                            data_testid='dt_qs_contract_type'
                             autoComplete='off'
                             className='qs__select contract-type'
                             value={selected_item?.text || ''}
@@ -269,6 +293,17 @@ const GrowthRateSelect: React.FC<TContractTypes> = observer(({ name }) => {
                                     handleChange(value);
                                 }
                             }}
+                            dropdown_offset={'0'}
+                            historyValue={''}
+                            input_id={key}
+                            is_alignment_top={false}
+                            is_list_visible={false}
+                            list_height={''}
+                            list_portal_id={''}
+                            not_found_text={''}
+                            onHideDropdownList={() => {}}
+                            onShowDropdownList={() => {}}
+                            should_filter_by_char={false}
                         />
                     );
                 }}
