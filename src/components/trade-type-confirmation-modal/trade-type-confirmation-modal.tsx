@@ -63,7 +63,7 @@ const TradeTypeConfirmationModal: React.FC<TradeTypeConfirmationModalProps> = ob
                 title={localize('Change Trade Type?')}
                 is_visible={is_visible}
                 confirm_button_text={localize('Yes, Change')}
-                cancel_button_text={localize('Keep my contract')}
+                cancel_button_text={localize('No, Keep Current')}
                 onConfirm={() => {
                     // Apply the dropdown changes when user confirms
                     const tradeTypeFromUrl = getTradeTypeFromCurrentUrl();
