@@ -128,15 +128,37 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         FRXUSDPLN: 'USD/PLN',
         FRXUSDSEK: 'USD/SEK',
 
-        // Legacy format (lowercase)
-        frxEURUSD: 'EUR/USD',
-        frxGBPUSD: 'GBP/USD',
-        frxUSDJPY: 'USD/JPY',
-        frxAUDUSD: 'AUD/USD',
+        // Forex Major Pairs (alternative format)
         frxAUDCAD: 'AUD/CAD',
+        frxAUDCHF: 'AUD/CHF',
+        frxAUDJPY: 'AUD/JPY',
+        frxAUDNZD: 'AUD/NZD',
+        frxAUDPLN: 'AUD/PLN',
+        frxAUDUSD: 'AUD/USD',
+        frxBROUSD: 'Oil/USD',
+        frxEURAUD: 'EUR/AUD',
+        frxEURCAD: 'EUR/CAD',
+        frxEURCHF: 'EUR/CHF',
         frxEURGBP: 'EUR/GBP',
         frxEURJPY: 'EUR/JPY',
+        frxEURNZD: 'EUR/NZD',
+        frxEURUSD: 'EUR/USD',
+        frxGBPAUD: 'GBP/AUD',
+        frxGBPCAD: 'GBP/CAD',
+        frxGBPCHF: 'GBP/CHF',
         frxGBPJPY: 'GBP/JPY',
+        frxGBPNOK: 'GBP/NOK',
+        frxGBPNZD: 'GBP/NZD',
+        frxGBPUSD: 'GBP/USD',
+        frxNZDJPY: 'NZD/JPY',
+        frxNZDUSD: 'NZD/USD',
+        frxUSDCAD: 'USD/CAD',
+        frxUSDCHF: 'USD/CHF',
+        frxUSDJPY: 'USD/JPY',
+        frxUSDMXN: 'USD/MXN',
+        frxUSDNOK: 'USD/NOK',
+        frxUSDPLN: 'USD/PLN',
+        frxUSDSEK: 'USD/SEK',
 
         // Forex Baskets
         WLDAUD: 'AUD Basket',
@@ -190,9 +212,11 @@ export const getSymbolDisplayNameSync = (underlying_symbol: string): string => {
         FRXXPTUSD: 'Platinum/USD',
         WLDXAU: 'Gold Basket',
 
-        // Legacy format (lowercase)
-        frxXAUUSD: 'Gold/USD',
+        // Commodities (alternative format)
         frxXAGUSD: 'Silver/USD',
+        frxXAUUSD: 'Gold/USD',
+        frxXPDUSD: 'Palladium/USD',
+        frxXPTUSD: 'Platinum/USD',
     };
 
     return symbolMap[underlying_symbol] || underlying_symbol;
